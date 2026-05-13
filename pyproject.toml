@@ -1,0 +1,82 @@
+# ======================================================================
+# RNV Color Palette Manager — pyproject.toml
+# PEP 621 project metadata (modern Python packaging standard)
+# ======================================================================
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rnv-color-palette-manager"
+version = "3.3.13"
+description = "A professional color palette management application with multi-theme support, color harmonies, accessibility tools, and export to 16+ formats."
+readme = "README.md"
+requires-python = ">=3.13"
+license = { file = "LICENSE" }
+authors = [
+    { name = "RNV" },
+]
+keywords = [
+    "color",
+    "palette",
+    "design",
+    "pyqt6",
+    "desktop",
+    "color-picker",
+    "color-harmony",
+    "accessibility",
+    "wcag",
+    "color-blindness",
+    "ase",
+    "gpl",
+    "procreate",
+    "affinity",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: X11 Applications :: Qt",
+    "Environment :: Win32 (MS Windows)",
+    "Environment :: MacOS X",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Artistic Software",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
+dependencies = [
+    "PyQt6>=6.5.0,<7.0",
+    "Pillow>=10.0.0,<12.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/RNVizion/rnv-color-palette-manager"
+Repository = "https://github.com/RNVizion/rnv-color-palette-manager"
+Issues = "https://github.com/RNVizion/rnv-color-palette-manager/issues"
+
+[project.scripts]
+rnv-color-palette-manager = "RNV_Color_Palette_Manager:main"
+
+# ======================================================================
+# Setuptools — package discovery
+# ======================================================================
+# The project has a flat layout: the main script lives at the repo root
+# alongside the core/, ui/, and utils/ subpackages. We declare the
+# subpackages explicitly and include the top-level script as a module.
+
+[tool.setuptools]
+py-modules = ["RNV_Color_Palette_Manager"]
+
+[tool.setuptools.packages.find]
+include = ["core*", "ui*", "utils*"]
+exclude = ["tests*", "resources*"]
+
+[tool.setuptools.package-data]
+"*" = ["resources/**/*", "py.typed"]

@@ -1,0 +1,62 @@
+{
+  "version": "1.0",
+  "name": "Test Palette",
+  "colors": [
+    {
+      "name": "Color 1",
+      "color": {
+        "model": "rgb",
+        "r": 1.0,
+        "g": 0.0,
+        "b": 0.0,
+        "a": 1.0
+      },
+      "weight": 50
+    },
+    {
+      "name": "Color 2",
+      "color": {
+        "model": "rgb",
+        "r": 0.0,
+        "g": 1.0,
+        "b": 0.0,
+        "a": 1.0
+      },
+      "weight": 50
+    },
+    {
+      "name": "Color 3",
+      "color": {
+        "model": "rgb",
+        "r": 0.0,
+        "g": 0.0,
+        "b": 1.0,
+        "a": 1.0
+      },
+      "weight": 50
+    },
+    {
+      "name": "Color 4",
+      "color": {
+        "model": "rgb",
+        "r": 0.5019607843137255,
+        "g": 0.5019607843137255,
+        "b": 0.5019607843137255,
+        "a": 1.0
+      },
+      "weight": 50
+    },
+    {
+      "name": "Color 5",
+      "color": {
+        "model": "rgb",
+        "r": 1.0,
+        "g": 0.7843137254901961,
+        "b": 0.39215686274509803,
+        "a": 1.0
+      },
+      "weight": 50
+    }
+  ],
+  "author": "Tester"
+}

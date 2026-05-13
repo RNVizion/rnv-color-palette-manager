@@ -1,0 +1,21 @@
+# RNV Color Palette Manager - Development Dependencies
+# Install with: pip install -r requirements-dev.txt
+#
+# This is OPTIONAL. The production requirements.txt has only PyQt6 + Pillow.
+# These extra dependencies are only needed to run the test suite, benchmarks,
+# and coverage reports.
+
+# ----- Production dependencies (also in requirements.txt) -----
+PyQt6>=6.5.0
+Pillow>=10.0.0
+
+# ----- Test framework -----
+pytest>=8.0.0
+pytest-qt>=4.4.0          # Qt widget testing
+hypothesis>=6.100.0        # Property-based testing for color math
+
+# ----- Coverage reporting -----
+coverage>=7.4.0
+
+# ----- Performance regression testing (Phase 9) -----
+pytest-benchmark>=4.0.0    # Benchmark suite for color math + palette I/O

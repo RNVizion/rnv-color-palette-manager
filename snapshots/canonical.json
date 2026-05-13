@@ -1,0 +1,59 @@
+{
+  "name": "Test Palette",
+  "version": "1.0",
+  "colors": [
+    {
+      "name": "Color 1",
+      "hex": "#ff0000",
+      "rgb": {
+        "r": 255,
+        "g": 0,
+        "b": 0
+      },
+      "weight": 50
+    },
+    {
+      "name": "Color 2",
+      "hex": "#00ff00",
+      "rgb": {
+        "r": 0,
+        "g": 255,
+        "b": 0
+      },
+      "weight": 50
+    },
+    {
+      "name": "Color 3",
+      "hex": "#0000ff",
+      "rgb": {
+        "r": 0,
+        "g": 0,
+        "b": 255
+      },
+      "weight": 50
+    },
+    {
+      "name": "Color 4",
+      "hex": "#808080",
+      "rgb": {
+        "r": 128,
+        "g": 128,
+        "b": 128
+      },
+      "weight": 50
+    },
+    {
+      "name": "Color 5",
+      "hex": "#ffc864",
+      "rgb": {
+        "r": 255,
+        "g": 200,
+        "b": 100
+      },
+      "weight": 50
+    }
+  ],
+  "author": "Tester",
+  "created_at": "2025-01-01T00:00:00",
+  "modified_at": "2025-01-01T00:00:00"
+}

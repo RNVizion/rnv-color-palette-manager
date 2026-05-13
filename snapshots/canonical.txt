@@ -1,0 +1,8 @@
+Test Palette
+============================================================
+
+Color  1: #ff0000  RGB(255,   0,   0)  Weight:  50
+Color  2: #00ff00  RGB(  0, 255,   0)  Weight:  50
+Color  3: #0000ff  RGB(  0,   0, 255)  Weight:  50
+Color  4: #808080  RGB(128, 128, 128)  Weight:  50
+Color  5: #ffc864  RGB(255, 200, 100)  Weight:  50

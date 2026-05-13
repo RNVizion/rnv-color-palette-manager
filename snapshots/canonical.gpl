@@ -1,0 +1,9 @@
+GIMP Palette
+Name: Test Palette
+Columns: 0
+#
+255   0   0	Color 1 (weight: 50)
+  0 255   0	Color 2 (weight: 50)
+  0   0 255	Color 3 (weight: 50)
+128 128 128	Color 4 (weight: 50)
+255 200 100	Color 5 (weight: 50)

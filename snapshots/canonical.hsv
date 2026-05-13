@@ -1,0 +1,8 @@
+# Test Palette - HSV
+# Format: H(0-360) S(0-100) V(0-100) Weight Name
+#
+   0.0 100.0 100.0  50 # Color 1
+ 120.0 100.0 100.0  50 # Color 2
+ 240.0 100.0 100.0  50 # Color 3
+   0.0   0.0  50.2  50 # Color 4
+  38.7  60.8 100.0  50 # Color 5

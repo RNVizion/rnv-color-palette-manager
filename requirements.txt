@@ -1,0 +1,21 @@
+# RNV Color Palette Manager - Python Dependencies
+# Requires Python 3.13+
+
+# ─── Runtime Dependencies ─────────────────────────────────────────────────
+# Required to run the application.
+
+# Qt Framework
+PyQt6>=6.5.0
+
+# Image Processing
+Pillow>=10.0.0
+
+
+# ─── Test & Development Dependencies ──────────────────────────────────────
+# Required only to run the test suite and measure coverage.
+# Not needed for end users running the packaged application.
+
+coverage>=7.4.0
+hypothesis>=6.100.0
+pytest>=8.0.0
+pytest-qt>=4.4.0
