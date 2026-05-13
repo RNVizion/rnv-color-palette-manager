@@ -7,7 +7,8 @@ A professional desktop application for creating, managing, and exporting color p
 [![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-3.3.13-orange.svg)]()
-[![Tests](https://github.com/RNVizion/rnv-color-palette-manager/actions/workflows/tests.yml/badge.svg)](https://github.com/RNVizion/rnv-color-palette-manager/actions/workflows/tests.yml)
+[![Tests (Windows)](https://github.com/RNVizion/rnv-color-palette-manager/actions/workflows/tests.yml/badge.svg)](https://github.com/RNVizion/rnv-color-palette-manager/actions/workflows/tests.yml)
+[![Tests (Linux)](https://github.com/RNVizion/rnv-color-palette-manager/actions/workflows/tests-linux.yml/badge.svg)](https://github.com/RNVizion/rnv-color-palette-manager/actions/workflows/tests-linux.yml)
 [![Test Suite](https://img.shields.io/badge/Tests-745%20passing-brightgreen.svg)]()
 [![Coverage](https://img.shields.io/badge/Coverage-70%25-brightgreen.svg)]()
 
@@ -187,7 +188,8 @@ RNV_Color_Palette_Manager/
 │
 ├── .github/
 │   └── workflows/
-│       └── tests.yml               # CI: runs full suite on every push/PR
+│       ├── tests.yml               # CI: Windows test suite on push/PR
+│       └── tests-linux.yml         # CI: Linux test suite on push/PR
 │
 ├── core/                           # Color science & palette logic
 │   ├── __init__.py
@@ -280,7 +282,7 @@ python run_tests.py                   # Run both suites + coverage report
 
 ### Continuous Integration
 
-A GitHub Actions workflow runs the full suite on Windows with Python 3.13 on every push and pull request. Status visible at the top of this README.
+GitHub Actions runs the full suite on both Windows and Ubuntu Linux with Python 3.13 on every push and pull request. Both workflows run independently — Windows is the primary target platform, Linux provides cross-platform verification. Status visible at the top of this README.
 
 ### Performance benchmarks
 
@@ -298,7 +300,7 @@ For the full guide to the test architecture, patterns for testing PyQt6 widgets 
 - **UI Framework:** PyQt6
 - **Image Processing:** Pillow (PIL)
 - **Testing:** Python `unittest`, pytest, pytest-qt, Hypothesis, pytest-benchmark, coverage.py
-- **CI:** GitHub Actions (Windows runners, Python 3.13)
+- **CI:** GitHub Actions (Windows + Ubuntu Linux runners, Python 3.13)
 - **Color Science:** CIE 1976 L\*a\*b\*, Kubelka-Munk pigment theory, RYB artist color wheel, sRGB gamma correction
 
 ## Design Principles
