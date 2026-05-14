@@ -125,6 +125,21 @@ python RNV_Color_Palette_Manager.py
 
 A PyInstaller spec file is included for building a single-file executable that bundles Python, PyQt6, Pillow, and all resources into one downloadable binary. This is useful for sharing the app with users who don't have Python installed.
 
+**Build scripts (recommended):** Convenience scripts that clean previous artifacts, run the test suite, and build the executable in one step.
+
+```bash
+# Windows
+build_windows.bat                  # Test-gated build (default)
+build_windows.bat --skip-tests     # Faster rebuild during development
+
+# Linux / macOS
+chmod +x build_linux.sh            # One-time: mark executable
+./build_linux.sh                   # Test-gated build (default)
+./build_linux.sh --skip-tests      # Faster rebuild during development
+```
+
+**Manual build (any platform):**
+
 ```bash
 pip install pyinstaller
 pyinstaller RNV_Color_Palette_Manager.spec
@@ -181,6 +196,8 @@ RNV_Color_Palette_Manager/
 ├── test_rnv_palette_manager.py     # unittest baseline suite (374 tests)
 ├── run_tests.py                    # Unified runner for both test suites
 ├── .coveragerc                     # Coverage configuration
+├── build_windows.bat               # Test-gated PyInstaller build (Windows)
+├── build_linux.sh                  # Test-gated PyInstaller build (Linux / macOS)
 ├── clean_python_cache.bat          # Dev convenience (Windows)
 ├── clean_python_cache.sh           # Dev convenience (macOS / Linux)
 ├── __init__.py                     # Root package marker
@@ -311,6 +328,13 @@ For the full guide to the test architecture, patterns for testing PyQt6 widgets 
 - **Fail-safe by default** — every file operation is wrapped in error handling; session state is auto-saved for crash recovery
 
 For the reasoning behind these decisions, platform-specific workarounds, and tradeoffs considered, see [ARCHITECTURE.md](ARCHITECTURE.md).
+
+## Related Projects
+
+Part of the RNVizion suite of color tools:
+
+- **[RNV Color Picker](https://github.com/RNVizion/rnv-color-picker)** — Professional color extraction and palette management for designers and developers.
+- **[RNV Color Mixer](https://github.com/RNVizion/rnv-color-mixer)** — Bringing real-world paint mixing to the digital palette.
 
 ## License
 
