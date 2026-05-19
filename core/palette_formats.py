@@ -845,9 +845,9 @@ class PaletteFormats:
                                 s = float(parts[1]) / 100.0
                                 l = float(parts[2]) / 100.0
                                 weight = int(parts[3]) if len(parts) > 3 else 50
-                                # Note: hsl_to_rgb wraps colorsys.hls_to_rgb, which
-                                # uses HLS ordering. Despite the function name, the
-                                # tuple must be passed in HLS order, not HSL.
+                                # hsl_to_rgb in this codebase expects
+                                # (h, l, s) — see ColorMath. 
+                                # Passing (h, s, l) silently corrupts loaded HSL palettes.
                                 rgb = ColorMath.hsl_to_rgb((h, l, s))
                                 colors.append((rgb, weight))
                             except (ValueError, IndexError):
