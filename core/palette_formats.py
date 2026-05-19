@@ -164,7 +164,7 @@ class PaletteFormats:
         return "Untitled Palette"
 
     @staticmethod
-    def _export_ase(path: str, colors: list[tuple[tuple[int, int, int], int]]) -> None:
+    def _export_ase(path: str, colors: list[tuple[tuple[int, int, int], int]], metadata: PaletteMetadata | None = None) -> None:
         """Export Adobe Swatch Exchange format."""
         with open(path, 'wb') as f:
             f.write(b'ASEF')
