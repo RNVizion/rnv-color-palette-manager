@@ -14,6 +14,8 @@ A professional desktop application for creating, managing, and exporting color p
 
 ---
 
+> **Latest:** Cross-platform export consistency fixes and Linux CI added in `v3.3.13`. See [CHANGELOG.md](CHANGELOG.md) for details.
+
 ## Overview
 
 RNV Color Palette Manager is a feature-rich color palette management tool designed for artists, designers, and developers. It supports advanced color mixing algorithms (CIE LAB, Kubelka-Munk, RYB), color harmony generation, accessibility contrast checking, and export to 16+ professional palette formats including Adobe ASE/ACO, GIMP GPL, Procreate, and Affinity Designer.
@@ -186,6 +188,7 @@ RNV_Color_Palette_Manager/
 ├── README.md                       # This file
 ├── ARCHITECTURE.md                 # Design decisions & tradeoffs
 ├── TESTING.md                      # Test suite guide & patterns
+├── CHANGELOG.md                    # Version history & release notes
 ├── LICENSE                         # MIT license
 ├── .gitignore                      # Python / IDE / OS ignores
 ├── pyproject.toml                  # PEP 621 project metadata
