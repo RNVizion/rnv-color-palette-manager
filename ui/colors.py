@@ -36,7 +36,7 @@ BRAND_GOLD_DARK_RGB: Final[tuple[int, int, int]] = (177, 145, 69)
 SELECTION_OVERLAY_COLOR: Final[str] = "rgba(0,120,215,200)"
 """Blue overlay used during gradient / contrast selection modes."""
 
-SELECTION_OVERLAY_TEXT: Final[str] = "#FFFFFF"
+SELECTION_OVERLAY_TEXT: Final[str] = "#ffffff"
 """Text color on the selection overlay."""
 
 SEARCH_HIGHLIGHT_COLOR: Final[tuple[int,int,int]] = (0, 255, 100)
@@ -63,7 +63,7 @@ ACCENT_PRESSED_TEXT_DARK: Final[str] = "#000000"
 """Text color when pressing a gold-accented button in dark/image themes.
 Black text on gold background for contrast."""
 
-ACCENT_PRESSED_TEXT_LIGHT: Final[str] = "#FFFFFF"
+ACCENT_PRESSED_TEXT_LIGHT: Final[str] = "#ffffff"
 """Text color when pressing a gold-accented button in light theme.
 White text on dark-gold background for contrast."""
 
@@ -118,7 +118,7 @@ IMAGE_PREVIEW_BG: Final[str] = "#f0f0f0"
 TEXTEDIT_BG_DARK: Final[str] = "#000000"
 """QTextEdit background in dark-themed dialogs."""
 
-TEXTEDIT_BG_LIGHT: Final[str] = "#FFFFFF"
+TEXTEDIT_BG_LIGHT: Final[str] = "#ffffff"
 """QTextEdit background in light-themed dialogs."""
 
 # ==================== Default Slot Colors ====================
@@ -137,47 +137,47 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'name': 'Dark',
     # Base colors
     'window_bg': '#000000',
-    'panel_bg': '#1A1A1A',
+    'panel_bg': '#1a1a1a',
     'scroll_bg': '#000000',
-    'card_bg': '#2A2A2A',
-    'input_bg': '#2A2A2A',
+    'card_bg': '#2a2a2a',
+    'input_bg': '#2a2a2a',
     # Text
-    'text_color': '#E0E0E0',
-    'text_secondary': '#AAAAAA',
+    'text_color': '#e0e0e0',
+    'text_secondary': '#aaaaaa',
     'text_disabled': '#666666',
     # Borders
     'border_color': '#333333',
     'hover_color': '#444444',
     # Buttons
-    'button_bg': '#1A1A1A',
-    'button_text': '#E0E0E0',
+    'button_bg': '#1a1a1a',
+    'button_text': '#e0e0e0',
     'button_hover_bg': '#333333',
-    'button_hover_text': '#E0E0E0',
+    'button_hover_text': '#e0e0e0',
     'button_pressed_bg': '#333333',
     'button_pressed_text': '#000000',
     'button_border_color': 'transparent',
     # Dialog / tab widget colors
-    'tab_bg': '#2A2A2A',
+    'tab_bg': '#2a2a2a',
     'tab_selected': '#333333',
-    'tab_hover': '#3A3A3A',
-    'tab_pane_bg': '#1A1A1A',
+    'tab_hover': '#3a3a3a',
+    'tab_pane_bg': '#1a1a1a',
     'scroll_handle': '#505050',
     # Accent (brand gold)
     'accent': BRAND_GOLD,
     'accent_dark': BRAND_GOLD_DARK,
     'accent_text': '#000000',
     # Scrollbar
-    'scrollbar_bg': '#1A1A1A',
+    'scrollbar_bg': '#1a1a1a',
     'scrollbar_handle': '#505050',
     'scrollbar_handle_hover': '#606060',
     'scrollbar_border': '#333333',
     # Dialog
-    'dialog_bg': '#1A1A1A',
+    'dialog_bg': '#1a1a1a',
     'dialog_border': '#333333',
     # Status
-    'success': '#4CAF50',
-    'warning': '#FFC107',
-    'error': '#F44336',
+    'success': '#4caf50',
+    'warning': '#ffc107',
+    'error': '#f44336',
 }
 
 
@@ -185,48 +185,48 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
 LIGHT_THEME_COLORS: Final[ThemeDict] = {
     'name': 'Light',
     # Base colors
-    'window_bg': '#F5F5F5',
-    'panel_bg': '#EEEEEE',
-    'scroll_bg': '#EEEEEE',
-    'card_bg': '#FFFFFF',
-    'input_bg': '#FFFFFF',
+    'window_bg': '#f5f5f5',
+    'panel_bg': '#eeeeee',
+    'scroll_bg': '#eeeeee',
+    'card_bg': '#ffffff',
+    'input_bg': '#ffffff',
     # Text
     'text_color': '#000000',
     'text_secondary': '#555555',
     'text_disabled': '#999999',
     # Borders
-    'border_color': '#CCCCCC',
-    'hover_color': '#E0E0E0',
+    'border_color': '#cccccc',
+    'hover_color': '#e0e0e0',
     # Buttons: white base, dark-grey hover/press, white text on press, no visible border
-    'button_bg': '#FFFFFF',
+    'button_bg': '#ffffff',
     'button_text': '#000000',
     'button_hover_bg': '#333333',
     'button_hover_text': '#000000',
     'button_pressed_bg': '#333333',
-    'button_pressed_text': '#FFFFFF',
+    'button_pressed_text': '#ffffff',
     'button_border_color': 'transparent',
     # Dialog / tab widget colors
-    'tab_bg': '#E0E0E0',
-    'tab_selected': '#FFFFFF',
-    'tab_hover': '#D0D0D0',
-    'tab_pane_bg': '#FFFFFF',
-    'scroll_handle': '#AAAAAA',
+    'tab_bg': '#e0e0e0',
+    'tab_selected': '#ffffff',
+    'tab_hover': '#d0d0d0',
+    'tab_pane_bg': '#ffffff',
+    'scroll_handle': '#aaaaaa',
     # Accent (brand gold - darker variant for readability on light bg)
     'accent': BRAND_GOLD_DARK,
     'accent_dark': BRAND_GOLD_DARK,
     'accent_text': '#000000',
     # Scrollbar
-    'scrollbar_bg': '#F5F5F5',
-    'scrollbar_handle': '#AAAAAA',
+    'scrollbar_bg': '#f5f5f5',
+    'scrollbar_handle': '#aaaaaa',
     'scrollbar_handle_hover': '#888888',
-    'scrollbar_border': '#CCCCCC',
+    'scrollbar_border': '#cccccc',
     # Dialog
-    'dialog_bg': '#F5F5F5',
-    'dialog_border': '#CCCCCC',
+    'dialog_bg': '#f5f5f5',
+    'dialog_border': '#cccccc',
     # Status
-    'success': '#4CAF50',
-    'warning': '#FFC107',
-    'error': '#F44336',
+    'success': '#4caf50',
+    'warning': '#ffc107',
+    'error': '#f44336',
 }
 
 
@@ -238,28 +238,28 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'window_bg': '#ED000000',
     'panel_bg': '#ED1A1A1A',
     'scroll_bg': '#ED000000',
-    'card_bg': '#2A2A2A',
-    'input_bg': '#2A2A2A',
+    'card_bg': '#2a2a2a',
+    'input_bg': '#2a2a2a',
     # Text
-    'text_color': '#E0E0E0',
-    'text_secondary': '#AAAAAA',
+    'text_color': '#e0e0e0',
+    'text_secondary': '#aaaaaa',
     'text_disabled': '#666666',
     # Borders
     'border_color': '#333333',
     'hover_color': '#444444',
     # Buttons
-    'button_bg': '#1A1A1A',
-    'button_text': '#E0E0E0',
+    'button_bg': '#1a1a1a',
+    'button_text': '#e0e0e0',
     'button_hover_bg': '#333333',
-    'button_hover_text': '#E0E0E0',
+    'button_hover_text': '#e0e0e0',
     'button_pressed_bg': '#333333',
     'button_pressed_text': '#000000',
     'button_border_color': 'transparent',
     # Dialog / tab widget colors
-    'tab_bg': '#2A2A2A',
+    'tab_bg': '#2a2a2a',
     'tab_selected': '#333333',
-    'tab_hover': '#3A3A3A',
-    'tab_pane_bg': '#1A1A1A',
+    'tab_hover': '#3a3a3a',
+    'tab_pane_bg': '#1a1a1a',
     'scroll_handle': '#505050',
     # Accent (brand gold)
     'accent': BRAND_GOLD,
@@ -271,12 +271,12 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'scrollbar_handle_hover': 'rgba(80, 80, 80, 120)',
     'scrollbar_border': 'rgba(51, 51, 51, 100)',
     # Dialog
-    'dialog_bg': '#1A1A1A',
+    'dialog_bg': '#1a1a1a',
     'dialog_border': '#333333',
     # Status
-    'success': '#4CAF50',
-    'warning': '#FFC107',
-    'error': '#F44336',
+    'success': '#4caf50',
+    'warning': '#ffc107',
+    'error': '#f44336',
 }
 
 
