@@ -13,7 +13,7 @@ from ui.colors import (
     ThemeName,
     ThemeDict,
     BRAND_GOLD,
-    BRAND_GOLD_DARK,
+    BRAND_DARK_GOLD,
 )
 from ui.theme_manager import ThemeManager
 from ui.image_button import ImageButton
@@ -37,7 +37,7 @@ __all__ = [
     "ThemeDict",
     # Brand colors
     "BRAND_GOLD",
-    "BRAND_GOLD_DARK",
+    "BRAND_DARK_GOLD",
     # Theme manager
     "ThemeManager",
     # Buttons & widgets

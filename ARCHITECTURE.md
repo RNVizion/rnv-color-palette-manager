@@ -32,7 +32,7 @@ All theme color values originate from `ui/colors.py`. No other file in the codeb
 
 **Exceptions that are correct:** `color_search.py` retains a `COLOR_NAMES` lookup dictionary with named color strings (`"red": (255,0,0)`, etc.). This is reference data for the search feature — users typing "red" in the search bar expect it to match `#FF0000` regardless of theme. These are not theme colors and correctly live in that module.
 
-**Mode-aware exception:** `SLOT_SELECTED_COLOR` is defined in `colors.py` but resolves to different gold variants at paint time depending on active theme. Dark/image modes use the brighter `BRAND_GOLD_DARK_RGB`; light mode would blow out on a white background. This is intentional — the constant declares intent, the `paintEvent` resolves to the correct concrete color.
+**Mode-aware exception:** `SLOT_SELECTED_COLOR` is defined in `colors.py` but resolves to different gold variants at paint time depending on active theme. Dark/image modes use the brighter `BRAND_DARK_GOLD_RGB`; light mode would blow out on a white background. This is intentional — the constant declares intent, the `paintEvent` resolves to the correct concrete color.
 
 ---
 

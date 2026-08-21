@@ -57,7 +57,7 @@ from core.palette_formats  import PaletteFormats, ImportResult
 from core.palette_metadata import PaletteMetadata
 from ui.colors             import (
     get_theme_colors, is_dark_theme,
-    BRAND_GOLD, BRAND_GOLD_DARK, BRAND_GOLD_RGB, BRAND_GOLD_DARK_RGB,
+    BRAND_GOLD, BRAND_DARK_GOLD, BRAND_GOLD_RGB, BRAND_DARK_GOLD_RGB,
     SLOT_SELECTED_COLOR, SLOT_BORDER_THIN_COLOR, SLOT_BORDER_THICK_COLOR,
     SEARCH_HIGHLIGHT_COLOR, SEARCH_DIM_OVERLAY, SIZE_OVERLAY_BG,
 )
@@ -398,14 +398,14 @@ class TestColorsModule(unittest.TestCase):
     def test_is_dark_light(self):   self.assertFalse(is_dark_theme("light"))
 
     def test_brand_gold_hex(self):
-        self.assertTrue(BRAND_GOLD.startswith("#")); self.assertTrue(BRAND_GOLD_DARK.startswith("#"))
+        self.assertTrue(BRAND_GOLD.startswith("#")); self.assertTrue(BRAND_DARK_GOLD.startswith("#"))
 
     def test_brand_gold_rgb_tuple(self):
         self.assertEqual(len(BRAND_GOLD_RGB),3)
         for c in BRAND_GOLD_RGB: self.assertGreaterEqual(c,0); self.assertLessEqual(c,255)
 
     def test_slot_selected_is_dark_gold(self):
-        self.assertEqual(SLOT_SELECTED_COLOR, BRAND_GOLD_DARK_RGB)
+        self.assertEqual(SLOT_SELECTED_COLOR, BRAND_DARK_GOLD_RGB)
 
     def test_slot_border_colors(self):
         self.assertEqual(len(SLOT_BORDER_THIN_COLOR),3)
@@ -428,7 +428,7 @@ class TestColorsModule(unittest.TestCase):
         self.assertEqual(get_theme_colors("dark")["accent"].lower(), BRAND_GOLD.lower())
 
     def test_light_accent_is_dark_gold(self):
-        self.assertEqual(get_theme_colors("light")["accent"].lower(), BRAND_GOLD_DARK.lower())
+        self.assertEqual(get_theme_colors("light")["accent"].lower(), BRAND_DARK_GOLD.lower())
 
     def test_image_window_bg_has_alpha(self):
         self.assertTrue(get_theme_colors("image")["window_bg"].startswith("#ED"))

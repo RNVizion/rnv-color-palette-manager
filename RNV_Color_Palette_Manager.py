@@ -53,7 +53,7 @@ from ui.color_search import ColorSearchBar, parse_color_query, MATCH_THRESHOLD
 from ui.batch_export_dialog import BatchExportDialog, BatchExportResult
 from core.color_math import ColorMath
 from ui.colors import (
-    BRAND_GOLD, BRAND_GOLD_DARK, DARK_THEME_COLORS,
+    BRAND_GOLD, BRAND_DARK_GOLD, BRAND_DARK_GOLD_DEEP, BRAND_GOLD_HOVER, DARK_THEME_COLORS,
     ACCENT_PRESSED_TEXT_DARK, ACCENT_PRESSED_TEXT_LIGHT,
     SELECTION_OVERLAY_COLOR, SELECTION_OVERLAY_TEXT,
     SIZE_OVERLAY_BG, SESSION_FALLBACK_COLOR, TRANSPARENT_RGBA,
@@ -819,8 +819,8 @@ class MainWindow(QMainWindow):
 
         # Replace OS blue with brand gold — only safe roles that don't break QColorDialog.
         is_light_theme = (not is_image and self.theme_manager.current_theme == 'light')
-        gold      = QColor(BRAND_GOLD_DARK) if is_light_theme else QColor(BRAND_GOLD)
-        gold_dark = QColor(BRAND_GOLD_DARK)
+        gold      = QColor(BRAND_DARK_GOLD) if is_light_theme else QColor(BRAND_GOLD)
+        gold_dark = QColor(BRAND_DARK_GOLD)
         on_gold   = QColor(ACCENT_PRESSED_TEXT_DARK)
 
         for group in (QPalette.ColorGroup.Active, QPalette.ColorGroup.Inactive,
@@ -848,7 +848,8 @@ class MainWindow(QMainWindow):
 
         # Brand gold constants from centralized colors module
         GOLD = BRAND_GOLD
-        GOLD_DARK = BRAND_GOLD_DARK
+        GOLD_DARK = BRAND_DARK_GOLD
+        DARK_GOLD_DEEP = BRAND_DARK_GOLD_DEEP
 
         # Dark/image hover: bg stays dark, gold text+border; press: gold bg, black text
         # Light hover: white bg, dark-gold text+border; press: dark-gold bg, white text
@@ -862,6 +863,7 @@ class MainWindow(QMainWindow):
             menu_pressed_text = ACCENT_PRESSED_TEXT_LIGHT  # white text
             menu_pressed_border = GOLD_DARK
             accent = GOLD_DARK                             # for selection highlight
+            accent_ink = DARK_GOLD_DEEP                    # gold AS text, on a light ground
         else:
             menu_hover_bg = menu_theme['button_bg']       # black stays
             menu_hover_text = GOLD                         # gold
@@ -870,6 +872,7 @@ class MainWindow(QMainWindow):
             menu_pressed_text = ACCENT_PRESSED_TEXT_DARK   # black text
             menu_pressed_border = GOLD
             accent = GOLD                                  # for selection highlight
+            accent_ink = GOLD                              # dark has headroom; ink is the accent
 
         menu_bg = 'transparent' if is_image else menu_theme['button_bg']
 
@@ -942,7 +945,7 @@ class MainWindow(QMainWindow):
             }}
             QColorDialog QPushButton:hover {{
                 background-color: {theme['card_bg']};
-                color: {accent};
+                color: {accent_ink};
                 border-color: {accent};
             }}
             QColorDialog QPushButton:pressed {{
@@ -970,7 +973,7 @@ class MainWindow(QMainWindow):
             }}
             QInputDialog QPushButton:hover {{
                 background-color: {theme['card_bg']};
-                color: {accent};
+                color: {accent_ink};
                 border-color: {accent};
             }}
             QInputDialog QPushButton:pressed {{

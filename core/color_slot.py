@@ -27,7 +27,7 @@ from utils.config import get_button_image_paths, MAX_SLOTS
 from ui.colors import (
     SLOT_BORDER_THIN_COLOR, SLOT_BORDER_THICK_COLOR,
     SEARCH_HIGHLIGHT_COLOR, SEARCH_DIM_OVERLAY,
-    BRAND_GOLD_RGB, BRAND_GOLD_DARK_RGB,
+    BRAND_GOLD_RGB, BRAND_DARK_GOLD_RGB,
     TRANSPARENT_RGBA,
     DEFAULT_SLOT_COLOR, DEFAULT_SLOT_COLOR_IMAGE_RGB,
 )
@@ -128,14 +128,14 @@ class ColorSlot(QFrame):
 
         # Draw selection border (overrides slot border).
         # Dark/Image mode: light gold (BRAND_GOLD_RGB) — visible on dark bg.
-        # Light mode: dark gold (BRAND_GOLD_DARK_RGB) — visible on light bg.
+        # Light mode: dark gold (BRAND_DARK_GOLD_RGB) — visible on light bg.
         if self._selected:
             is_light = (
                 self.theme_manager is not None
                 and not self.theme_manager.is_image_mode()
                 and getattr(self.theme_manager, 'current_theme', 'dark') == 'light'
             )
-            sel_color = BRAND_GOLD_DARK_RGB if is_light else BRAND_GOLD_RGB
+            sel_color = BRAND_DARK_GOLD_RGB if is_light else BRAND_GOLD_RGB
             pen = painter.pen()
             pen.setColor(QColor(*sel_color))
             pen.setWidth(3)

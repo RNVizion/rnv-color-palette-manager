@@ -141,6 +141,7 @@ class DialogHelper:
         border = colors['border_color']
         accent = colors['accent']
         accent_dark = colors['accent_dark']
+        accent_ink = colors['accent_ink']
         card_bg = colors['card_bg']
         pressed_text = ACCENT_PRESSED_TEXT_DARK
         textedit_bg = TEXTEDIT_BG_DARK
@@ -168,7 +169,7 @@ class DialogHelper:
             }}
             QPushButton:hover {{
                 background-color: {card_bg};
-                color: {accent};
+                color: {accent_ink};
                 border-color: {accent};
             }}
             QPushButton:pressed {{
@@ -199,6 +200,7 @@ class DialogHelper:
         btn_bg = colors['button_bg']
         border = colors['border_color']
         accent_dark = colors['accent_dark']
+        accent_ink = colors['accent_ink']
         pressed_text = ACCENT_PRESSED_TEXT_LIGHT
         textedit_bg = TEXTEDIT_BG_LIGHT
 
@@ -225,7 +227,7 @@ class DialogHelper:
             }}
             QPushButton:hover {{
                 background-color: {btn_bg};
-                color: {accent_dark};
+                color: {accent_ink};
                 border-color: {accent_dark};
             }}
             QPushButton:pressed {{

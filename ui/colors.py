@@ -18,17 +18,65 @@ type ThemeDict = dict[str, str]
 
 
 # ==================== Brand Colors ====================
+# Mirrored from RNVizion/rnv-brand engine/brand.py. Do not hand-write a gold
+# here -- derive it, so a change to the base carries.
+#
+# The register holds TWO golds and derives the rest. Light spends its
+# derivative on TEXT by necessity: BRAND_DARK_GOLD clears 4.5:1 as text on pure
+# white and nothing else, and a gold light enough for #f5f5f5 can no longer
+# take white as a fill. Dark spends one on HOVER by choice -- BRAND_GOLD alone
+# clears every dark ground from 6.15 to 11.35.
+#
+# COVERAGE BOUNDARY: BRAND_DARK_GOLD_DEEP carries text down to #e8e8e8 and no
+# further. Below that, gold does not carry text. That is a ruling, not a gap.
+
+
+def _to_rgb(hex_color: str) -> tuple[int, int, int]:
+    h = hex_color.lstrip("#")
+    return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
+
+
+def lighten(hex_color: str, step: int) -> str:
+    """Shift every channel by the same number of 8-bit steps.
+
+    Uniform per-channel holds hue exactly -- BRAND_DARK_GOLD and its derivative
+    both measure 42.4 degrees. Non-uniform steps do not, which is why every
+    hand-written variant across these apps drifted.
+    """
+    r, g, b = _to_rgb(hex_color)
+    return "#%02x%02x%02x" % tuple(
+        max(0, min(255, c + step)) for c in (r, g, b))
+
+
 BRAND_GOLD: Final[str] = "#d2bc93"
-"""Primary brand gold - use for hover accents, group titles, highlights."""
+"""Primary brand gold - dark-mode accents, hovers, group titles, highlights."""
 
-BRAND_GOLD_DARK: Final[str] = "#b19145"
-"""Darker gold - use for borders, pressed states, light-mode accents."""
+BRAND_DARK_GOLD: Final[str] = "#8c7337"
+"""Light-mode gold - fills, borders, pressed. Darker BECAUSE the ground is
+lighter, which is the opposite of what the old name suggested."""
 
-BRAND_GOLD_RGB: Final[tuple[int, int, int]] = (210, 188, 147)
-"""Brand gold as RGB tuple."""
+BRAND_DARK_GOLD_DEEP: Final[str] = lighten(BRAND_DARK_GOLD, -14)
+"""DERIVED -> #7e6529. The light-mode gold that carries TEXT. Not a fill:
+black on it measures 3.7806, under the floor."""
 
-BRAND_GOLD_DARK_RGB: Final[tuple[int, int, int]] = (177, 145, 69)
-"""Dark brand gold as RGB tuple."""
+BRAND_GOLD_HOVER: Final[str] = lighten(BRAND_GOLD, 13)
+"""DERIVED -> #dfc9a0. The dark-mode hover gold. Hover moves AWAY from
+the ground in both modes: lighter on dark, deeper on light."""
+
+BRAND_GOLD_RGB: Final[tuple[int, int, int]] = _to_rgb(BRAND_GOLD)
+"""Brand gold as an RGB tuple, DERIVED so it cannot drift from the hex."""
+
+BRAND_DARK_GOLD_RGB: Final[tuple[int, int, int]] = _to_rgb(BRAND_DARK_GOLD)
+"""Light-mode gold as an RGB tuple, DERIVED. Restating it by hand is how a
+value change leaves the tuple holding the retired colour, where no hex census
+can see it."""
+
+GOLD_PROVENANCE: Final[dict[str, str]] = {
+    "BRAND_GOLD": "register",
+    "BRAND_DARK_GOLD": "register",
+    "BRAND_DARK_GOLD_DEEP": "derived",
+    "BRAND_GOLD_HOVER": "derived",
+}
 
 
 # ==================== Semantic UI Constants ====================
@@ -51,7 +99,7 @@ SLOT_BORDER_THIN_COLOR: Final[tuple[int,int,int]] = (80, 80, 80)
 SLOT_BORDER_THICK_COLOR: Final[tuple[int,int,int]] = (60, 60, 60)
 """Border color for thick slot border style."""
 
-SLOT_SELECTED_COLOR: Final[tuple[int,int,int]] = BRAND_GOLD_DARK_RGB
+SLOT_SELECTED_COLOR: Final[tuple[int,int,int]] = BRAND_DARK_GOLD_RGB
 """Gold selection highlight border drawn on the active slot.
 Uses dark gold so it is visible in both dark and light modes.
 """
@@ -164,7 +212,8 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'scroll_handle': '#505050',
     # Accent (brand gold)
     'accent': BRAND_GOLD,
-    'accent_dark': BRAND_GOLD_DARK,
+    'accent_dark': BRAND_GOLD_HOVER,
+    'accent_ink': BRAND_GOLD,
     'accent_text': '#000000',
     # Scrollbar
     'scrollbar_bg': '#1a1a1a',
@@ -212,8 +261,9 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     'tab_pane_bg': '#ffffff',
     'scroll_handle': '#aaaaaa',
     # Accent (brand gold - darker variant for readability on light bg)
-    'accent': BRAND_GOLD_DARK,
-    'accent_dark': BRAND_GOLD_DARK,
+    'accent': BRAND_DARK_GOLD,
+    'accent_dark': BRAND_DARK_GOLD,
+    'accent_ink': BRAND_DARK_GOLD_DEEP,
     'accent_text': '#000000',
     # Scrollbar
     'scrollbar_bg': '#f5f5f5',
@@ -263,7 +313,8 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'scroll_handle': '#505050',
     # Accent (brand gold)
     'accent': BRAND_GOLD,
-    'accent_dark': BRAND_GOLD_DARK,
+    'accent_dark': BRAND_GOLD_HOVER,
+    'accent_ink': BRAND_GOLD,
     'accent_text': '#000000',
     # Scrollbar -- uses rgba in CSS strings, not here
     'scrollbar_bg': 'transparent',
@@ -327,9 +378,9 @@ __all__ = [
     "ThemeDict",
     # Brand colors
     "BRAND_GOLD",
-    "BRAND_GOLD_DARK",
+    "BRAND_DARK_GOLD",
     "BRAND_GOLD_RGB",
-    "BRAND_GOLD_DARK_RGB",
+    "BRAND_DARK_GOLD_RGB",
     # Slot defaults
     "DEFAULT_SLOT_COLOR",
     "DEFAULT_SLOT_COLOR_IMAGE",

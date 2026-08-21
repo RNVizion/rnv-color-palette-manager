@@ -37,6 +37,16 @@ from ui.colors import BRAND_GOLD, ACCENT_PRESSED_TEXT_DARK, ACCENT_PRESSED_TEXT_
 logger: Logger = get_logger_instance("AboutDialog")
 
 
+def _ink(dialog) -> str:
+    """The gold that carries TEXT, in the mode the dialog is actually in.
+
+    These two sites hardcoded BRAND_GOLD, so light mode drew #d2bc93 on a light
+    panel at 1.70:1.
+    """
+    from ui.colors import get_theme_colors
+    return get_theme_colors(getattr(dialog, "_theme_name", "dark"))["accent_ink"]
+
+
 class AboutDialog(QDialog):
     """
     About dialog with application information, features, and keyboard shortcuts.
@@ -155,7 +165,7 @@ class AboutDialog(QDialog):
 
         version_label = QLabel(f"Version {APP_VERSION}")
         version_label.setStyleSheet(
-            f"font-size: 14px; color: {BRAND_GOLD}; border: none; background: transparent;"
+            f"font-size: 14px; color: {_ink(self)}; border: none; background: transparent;"
         )
         text_layout.addWidget(version_label)
 
@@ -434,7 +444,7 @@ designers, and developers work with color more effectively.</p>
 
 <hr>
 
-<p style="text-align: center; color: {BRAND_GOLD};">
+<p style="text-align: center; color: {_ink(self)};">
 <b>RNV Color Palette Manager</b><br>
 Professional color palette creation for artists, designers, and developers<br>
 &copy; 2026 RNV Development. All rights reserved.
@@ -483,6 +493,7 @@ Professional color palette creation for artists, designers, and developers<br>
         scroll_handle = theme.get('scroll_handle', theme['scrollbar_handle'])
         btn_bg       = theme['button_bg']
         accent       = theme['accent']
+        accent_ink   = theme['accent_ink']
 
         self.setStyleSheet(f"""
             QDialog {{
@@ -518,12 +529,12 @@ Professional color palette creation for artists, designers, and developers<br>
             }}
             QTabBar::tab:selected {{
                 background-color: {pane_bg};
-                color: {accent};
+                color: {accent_ink};
                 border-bottom: 2px solid {accent};
             }}
             QTabBar::tab:hover:!selected {{
                 background-color: {card_bg};
-                color: {accent};
+                color: {accent_ink};
             }}
             QLabel {{
                 color: {text};
@@ -569,7 +580,7 @@ Professional color palette creation for artists, designers, and developers<br>
             QPushButton:hover {{
                 background-color: {tab_hover};
                 border-color: {accent};
-                color: {accent};
+                color: {accent_ink};
             }}
             QPushButton:pressed {{
                 background-color: {accent};

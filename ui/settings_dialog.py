@@ -29,7 +29,7 @@ from core.palette_metadata import PaletteMetadata
 from utils.logger import Logger, get_logger_instance
 from utils.font_loader import get_font_family
 from ui.colors import (
-    BRAND_GOLD, BRAND_GOLD_DARK,
+    BRAND_GOLD, BRAND_DARK_GOLD, BRAND_DARK_GOLD_DEEP, BRAND_GOLD_HOVER,
     ACCENT_PRESSED_TEXT_DARK, ACCENT_PRESSED_TEXT_LIGHT,
     SESSION_FALLBACK_COLOR, IMAGE_PREVIEW_BORDER,
 )
@@ -800,7 +800,9 @@ class SettingsDialog(QDialog):
 
         # Brand gold constants from centralized colors module
         GOLD = BRAND_GOLD
-        GOLD_DARK = BRAND_GOLD_DARK
+        GOLD_DARK = BRAND_DARK_GOLD
+        DARK_GOLD_DEEP = BRAND_DARK_GOLD_DEEP
+        GOLD_HOVER = BRAND_GOLD_HOVER
         card_bg = theme.get('card_bg', theme['panel_bg'])
         input_bg = theme.get('input_bg', theme.get('card_bg', theme['button_bg']))
         text_secondary = theme.get('text_secondary', theme['text_color'])
@@ -813,6 +815,7 @@ class SettingsDialog(QDialog):
         if is_light:
             accent = GOLD_DARK
             accent_dark = GOLD_DARK
+            accent_ink = DARK_GOLD_DEEP
             btn_hover_bg = card_bg                         # white stays
             btn_hover_text = GOLD_DARK                     # dark gold
             btn_hover_border = GOLD_DARK                   # dark gold
@@ -821,7 +824,8 @@ class SettingsDialog(QDialog):
             btn_pressed_border = GOLD_DARK                 # unchanged
         else:
             accent = GOLD
-            accent_dark = GOLD_DARK
+            accent_dark = GOLD_HOVER
+            accent_ink = GOLD
             btn_hover_bg = card_bg                         # dark stays
             btn_hover_text = GOLD                          # gold
             btn_hover_border = GOLD                        # gold
@@ -865,12 +869,12 @@ class SettingsDialog(QDialog):
             }}
             QTabBar::tab:selected {{
                 background-color: {theme['panel_bg']};
-                color: {accent};
+                color: {accent_ink};
                 border-bottom: 2px solid {accent};
             }}
             QTabBar::tab:hover:!selected {{
                 background-color: {card_bg};
-                color: {accent};
+                color: {accent_ink};
             }}
 
             /* ---- Group Boxes (gold titles) ---- */
@@ -880,13 +884,13 @@ class SettingsDialog(QDialog):
                 border-radius: 4px;
                 margin-top: 12px;
                 padding-top: 18px;
-                color: {accent};
+                color: {accent_ink};
             }}
             QGroupBox::title {{
                 subcontrol-origin: margin;
                 left: 10px;
                 padding: 0 6px;
-                color: {accent};
+                color: {accent_ink};
             }}
 
             /* ---- Labels ---- */
