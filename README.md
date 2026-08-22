@@ -193,7 +193,6 @@ RNV_Color_Palette_Manager/
 ├── .gitignore                      # Python / IDE / OS ignores
 ├── pyproject.toml                  # PEP 621 project metadata
 ├── requirements.txt                # Quick-install dependencies
-├── requirements-dev.txt            # Test/benchmark dependencies (optional)
 ├── RNV_Color_Palette_Manager.py    # Main application entry point
 ├── RNV_Color_Palette_Manager.spec  # PyInstaller build spec
 ├── test_rnv_palette_manager.py     # unittest baseline suite (374 tests)
@@ -255,6 +254,7 @@ RNV_Color_Palette_Manager/
 │   └── color_history.py            # Color change history panel
 │
 ├── tests/                          # Modern pytest suite (371 tests)
+│   └── requirements-dev.txt        # Test/benchmark dependencies
 │   ├── conftest.py                 # Shared fixtures & helpers
 │   ├── test_color_math_properties.py    # Hypothesis property tests
 │   ├── test_export_snapshots.py         # Export format snapshots
@@ -287,7 +287,7 @@ The project ships with a comprehensive test suite — **745 tests across two coe
 ### Quick start
 
 ```bash
-pip install -r requirements-dev.txt   # First-time setup
+pip install -r tests/requirements-dev.txt   # First-time setup
 python run_tests.py                   # Run both suites + coverage report
 ```
 

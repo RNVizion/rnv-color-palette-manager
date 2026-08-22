@@ -10,7 +10,7 @@ mode. It is the single source of truth for "how this project does testing."
 
 ```powershell
 # Install test dependencies (one-time)
-pip install -r requirements-dev.txt
+pip install -r tests/requirements-dev.txt
 
 # Run the full suite (unittest + pytest + coverage report)
 python run_tests.py
@@ -83,7 +83,6 @@ merges their coverage data.
 ├── run_tests.py                        # Unified runner (both suites + coverage)
 ├── .coveragerc                         # Coverage configuration
 ├── pyproject.toml                      # Includes [tool.pytest.ini_options]
-├── requirements-dev.txt                # Test/benchmark dependencies
 └── .benchmarks/                        # pytest-benchmark history (created on first run)
 ```
 
@@ -517,7 +516,7 @@ A few quick-diagnosis tips:
   crashing on a MagicMock attribute. Set those attributes to `None`
   on the stub.
 - **`fixture 'benchmark' not found`** → `pytest-benchmark` isn't
-  installed. Run `pip install -r requirements-dev.txt` against the same
+  installed. Run `pip install -r tests/requirements-dev.txt` against the same
   Python that runs your tests.
 - **Tests touching the user's real session files** → the
   `session_manager` module has path constants that point to the user's

@@ -1,0 +1,32 @@
+Name                           Stmts   Miss Branch BrPart  Cover   Missing
+--------------------------------------------------------------------------
+RNV_Color_Palette_Manager.py    1374   1374    434      0     0%   6-2536
+core/accessibility.py             65     65      4      0     0%   6-180
+core/color_extractor.py          116    116     42      0     0%   6-234
+core/color_harmonies.py           79     79     16      0     0%   7-178
+core/color_math.py               297    242     70      0    15%   23, 28-31, 36-37, 42-44, 49-50, 55-57, 70-87, 105-141, 160-186, 199-227, 247-274, 293-332, 353-383, 396-426, 450-477, 501-547, 564-572, 589-591, 605-615, 628, 645, 668, 686-689, 708-715
+core/color_slot.py               584    584    168      0     0%   7-923
+core/palette_formats.py          761    751    248      0     1%   21-1290
+core/palette_metadata.py          34     11      4      0    61%   38-42, 46, 50, 55, 66, 71, 76
+ui/color_search.py               114    114     24      0     0%   7-267
+ui/colors.py                      94     94      0      0     0%   10-397
+ui/image_button.py               138    138     78      0     0%   5-239
+ui/preview_grid.py                79     79     16      0     0%   6-120
+ui/slot_group.py                 102    102      0      0     0%   7-208
+ui/theme_manager.py               96     96     22      0     0%   6-206
+ui/zoomable_graphics_view.py      43     43      2      0     0%   5-70
+up.py                            231    231    106      0     0%   74-859
+utils/color_history.py           177    177     24      0     0%   7-351
+utils/config.py                   71     24     12      0    59%   91, 104, 123-153, 164
+utils/error_handler.py           209    209     54      0     0%   16-628
+utils/export_history.py           98     98     10      0     0%   13-224
+utils/file_utils.py              175    175     48      0     0%   15-376
+utils/font_loader.py              67     64     20      0     3%   19-204
+utils/logger.py                  186    186     44      0     0%   14-554
+utils/pixmap_cache.py            117    117     22      0     0%   25-306
+utils/recent_palettes.py         107    107     14      0     0%   6-189
+utils/session_manager.py         170    170     28      0     0%   13-362
+utils/settings_manager.py        243    243     40      0     0%   20-491
+utils/undo_manager.py             62     62      8      0     0%   6-158
+--------------------------------------------------------------------------
+TOTAL                           5889   5751   1558      0     2%

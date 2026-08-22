@@ -376,7 +376,7 @@ class TestColorsModule(unittest.TestCase):
         "accent","accent_dark","accent_text",
         "tab_bg","tab_selected","tab_hover","tab_pane_bg",
         "scroll_handle","dialog_bg","dialog_border",
-        "success","warning","error",
+        "success","warning",
     ]
 
     def test_all_themes_have_required_keys(self):

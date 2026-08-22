@@ -19,6 +19,7 @@ from PyQt6.QtCore import Qt, pyqtSignal
 from utils.logger import Logger, get_logger_instance
 from ui.colors import (
     STATUS_ERROR_TEXT,
+    STATUS_ERROR_TEXT_LIGHT,
     ACCENT_PRESSED_TEXT_DARK,
     ACCENT_PRESSED_TEXT_LIGHT,
 )
@@ -332,12 +333,14 @@ class BatchExportDialog(QDialog):
         if not self._folder or not Path(self._folder).is_dir():
             self._lbl_status.setText("⚠ Please select a valid output folder.")
             self._lbl_status.setVisible(True)
-            self._lbl_status.setStyleSheet(f"color: {STATUS_ERROR_TEXT};")
+            self._lbl_status.setStyleSheet(
+                f"color: {self._error_text_color()};")
             return
         if not self.selected_formats:
             self._lbl_status.setText("⚠ Select at least one format.")
             self._lbl_status.setVisible(True)
-            self._lbl_status.setStyleSheet(f"color: {STATUS_ERROR_TEXT};")
+            self._lbl_status.setStyleSheet(
+                f"color: {self._error_text_color()};")
             return
         self.save_defaults()
         super().accept()
@@ -345,6 +348,18 @@ class BatchExportDialog(QDialog):
     # ------------------------------------------------------------------
     # Theme
     # ------------------------------------------------------------------
+
+    def _error_text_color(self) -> str:
+        """The error label's colour for the theme currently in force.
+
+        Follows the idiom _apply_theme already uses for ACCENT_PRESSED_TEXT:
+        ask the theme manager, fall back to the dark value. Both call sites go
+        through here so they cannot drift apart -- which is how one of two
+        sibling sites ends up rendering a retired colour.
+        """
+        if self._theme_manager and self._theme_manager.current_theme == 'light':
+            return STATUS_ERROR_TEXT_LIGHT
+        return STATUS_ERROR_TEXT
 
     def _apply_theme(self) -> None:
         if not self._theme_manager:

@@ -116,8 +116,33 @@ ACCENT_PRESSED_TEXT_LIGHT: Final[str] = "#ffffff"
 White text on dark-gold background for contrast."""
 
 # ==================== Status Colors ====================
+STATUS_ERROR: Final[str] = "#dc3545"
+"""The registered error red. Not drawn by this app, which renders no error
+fill -- it is here so the light value below can be DERIVED from it rather
+than written down.
+
+A written-down derivative orphans the moment its base moves. That is exactly
+what happened to #c4a458, a tint of a gold that was later retired."""
+
 STATUS_ERROR_TEXT: Final[str] = "#ff6b6b"
-"""Inline error/warning label text (e.g. batch export validation)."""
+"""Inline error/warning label text on a DARK ground (e.g. batch export
+validation).
+
+7.5674 on this app's #000000 dialog background. Left alone by the error-red
+pass: dark values that already clear the floor are not replaced to buy
+uniformity."""
+
+STATUS_ERROR_TEXT_LIGHT: Final[str] = lighten(STATUS_ERROR, -20)  # -> #c82131
+"""The same label on a LIGHT ground.
+
+STATUS_ERROR_TEXT reads 2.5454 on #f5f5f5 -- below the 4.5 text floor and
+below even the 3.0 UI floor. This reads 5.1811, and clears 4.5:1 down to
+#e8e8e8, the same coverage boundary BRAND_DARK_GOLD_DEEP publishes.
+
+No red carries text at 4.5:1 on a real light panel, so light spends a
+derivative on TEXT for exactly the reason the gold does: the fill and text
+jobs occupy non-overlapping luminance bands. A uniform per-channel step holds
+hue at 354.25 degrees, identical to the base."""
 
 CHECKBOX_ACCENT: Final[str] = "#0078d4"
 """Checkbox checked state and progress bar fill accent."""
@@ -226,7 +251,6 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     # Status
     'success': '#4caf50',
     'warning': '#ffc107',
-    'error': '#f44336',
 }
 
 
@@ -276,7 +300,6 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     # Status
     'success': '#4caf50',
     'warning': '#ffc107',
-    'error': '#f44336',
 }
 
 
@@ -327,7 +350,6 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     # Status
     'success': '#4caf50',
     'warning': '#ffc107',
-    'error': '#f44336',
 }
 
 
@@ -402,7 +424,9 @@ __all__ = [
     "ACCENT_PRESSED_TEXT_DARK",
     "ACCENT_PRESSED_TEXT_LIGHT",
     # Status colors
+    "STATUS_ERROR",
     "STATUS_ERROR_TEXT",
+    "STATUS_ERROR_TEXT_LIGHT",
     "CHECKBOX_ACCENT",
     # Preview & history borders
     "PREVIEW_GRID_BORDER",

@@ -11,7 +11,7 @@ REM
 REM Requires:
 REM   - Python 3.13 on PATH
 REM   - PyInstaller installed: pip install pyinstaller
-REM   - Test dependencies:     pip install -r requirements-dev.txt
+REM   - Test dependencies:     pip install -r tests/requirements-dev.txt
 REM ============================================================
 
 echo.

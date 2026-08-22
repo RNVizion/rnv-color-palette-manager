@@ -11,7 +11,7 @@
 # Requires:
 #   - Python 3.13 on PATH
 #   - PyInstaller installed:  pip install pyinstaller
-#   - Test dependencies:      pip install -r requirements-dev.txt
+#   - Test dependencies:      pip install -r tests/requirements-dev.txt
 #
 # Notes:
 #   - Linux executables built with PyInstaller are tied to the
