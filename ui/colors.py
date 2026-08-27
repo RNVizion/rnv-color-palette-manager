@@ -216,8 +216,12 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'input_bg': '#2a2a2a',
     # Text
     'text_color': '#e0e0e0',
-    'text_secondary': '#aaaaaa',
-    'text_disabled': '#666666',
+    # NOT CONSUMED. Nothing paints this key -- ui/settings_dialog.py reads it
+    # into a local and never uses that local, which is why a grep for it looks
+    # live. Aligned to the value the apps that DO paint a muted text use, so
+    # wiring it up stays one line and not a colour decision.
+    'text_secondary': '#888888',
+    'text_disabled': '#555555',
     # Borders
     'border_color': '#333333',
     'hover_color': '#444444',
@@ -265,8 +269,9 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     'input_bg': '#ffffff',
     # Text
     'text_color': '#000000',
-    'text_secondary': '#555555',
-    'text_disabled': '#999999',
+    # NOT CONSUMED -- see the note in the dark palette.
+    'text_secondary': '#666666',
+    'text_disabled': '#aaaaaa',
     # Borders
     'border_color': '#cccccc',
     'hover_color': '#e0e0e0',
@@ -315,8 +320,9 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'input_bg': '#2a2a2a',
     # Text
     'text_color': '#e0e0e0',
-    'text_secondary': '#aaaaaa',
-    'text_disabled': '#666666',
+    # NOT CONSUMED -- see the note in the dark palette.
+    'text_secondary': '#888888',
+    'text_disabled': '#555555',
     # Borders
     'border_color': '#333333',
     'hover_color': '#444444',
