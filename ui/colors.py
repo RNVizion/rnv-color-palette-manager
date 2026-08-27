@@ -226,7 +226,7 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'button_text': '#e0e0e0',
     'button_hover_bg': '#333333',
     'button_hover_text': '#e0e0e0',
-    'button_pressed_bg': '#333333',
+    'button_pressed_bg': '#444444',
     'button_pressed_text': '#000000',
     'button_border_color': 'transparent',
     # Dialog / tab widget colors
@@ -275,7 +275,7 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     'button_text': '#000000',
     'button_hover_bg': '#333333',
     'button_hover_text': '#000000',
-    'button_pressed_bg': '#333333',
+    'button_pressed_bg': '#444444',
     'button_pressed_text': '#ffffff',
     'button_border_color': 'transparent',
     # Dialog / tab widget colors
@@ -325,7 +325,7 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'button_text': '#e0e0e0',
     'button_hover_bg': '#333333',
     'button_hover_text': '#e0e0e0',
-    'button_pressed_bg': '#333333',
+    'button_pressed_bg': '#444444',
     'button_pressed_text': '#000000',
     'button_border_color': 'transparent',
     # Dialog / tab widget colors
