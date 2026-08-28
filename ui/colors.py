@@ -213,7 +213,7 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'panel_bg': '#1a1a1a',
     'scroll_bg': '#000000',
     'card_bg': '#2a2a2a',
-    'input_bg': '#2a2a2a',
+    'input_bg': '#1a1a1a',
     # Text
     'text_color': '#e0e0e0',
     # NOT CONSUMED. Nothing paints this key -- ui/settings_dialog.py reads it
@@ -263,7 +263,7 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     'name': 'Light',
     # Base colors
     'window_bg': '#f5f5f5',
-    'panel_bg': '#eeeeee',
+    'panel_bg': '#f5f5f5',
     'scroll_bg': '#eeeeee',
     'card_bg': '#ffffff',
     'input_bg': '#ffffff',
