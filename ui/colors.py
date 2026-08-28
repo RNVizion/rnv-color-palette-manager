@@ -79,6 +79,72 @@ GOLD_PROVENANCE: Final[dict[str, str]] = {
 }
 
 
+# ==================== APP Neutrals ====================
+#
+# MIRRORED FROM RNVizion/rnv-brand engine/brand.py APP. Until 2026-08-28 these
+# were bare hex literals in the palettes below -- no constant, no provenance --
+# and every one is a REGISTERED brand value. A registered value could move
+# upstream and this app would keep the old one silently, which is the failure
+# #c4a458 had, one level down. It nearly happened: APP["text"] moved from
+# #e0e0e0 to #dddddd in rnv-brand@68d195e.
+#
+# THE INK GRID, published in the brand beside that move:
+#
+#     grey(n) = n * 0x11, n in 0..15.   TRUE_BLACK -> WHITE in fifteen steps.
+#
+# IT GOVERNS INKS AND EDGES AND DELIBERATELY DOES NOT GOVERN SURFACES.
+# BRAND_BLACK sits at n = 1.53 and APP_CARD at n = 2.47; BRAND_BLACK is a
+# permanent and will not move to fit a ladder. The scope is part of the rule.
+#
+# THIS PASS WIRES THE INK ONLY. The other five constants are defined and
+# mirrored so drift is caught, but the palettes still spell them as literals;
+# rewiring those is the grey-ramp derivation pass. Mixing a mechanical
+# substitution into a value change makes both unreadable.
+
+TRUE_BLACK: Final[str] = "#000000"
+"""engine/brand.py TRUE_BLACK, and APP["window"]. Primary text in light mode,
+and the label on a pressed control in dark. grey(0)."""
+
+WHITE: Final[str] = "#ffffff"
+"""engine/brand.py WHITE. Control surface in light mode. grey(15)."""
+
+BRAND_BLACK: Final[str] = "#1a1a1a"
+"""engine/brand.py BRAND_BLACK, and APP["panel"]. Charcoal; a permanent.
+Not on the ink grid (n = 1.53) and not required to be -- it is a surface."""
+
+APP_CARD: Final[str] = "#2a2a2a"
+"""engine/brand.py APP["card"]. A surface, not on the grid (n = 2.47)."""
+
+APP_BORDER: Final[str] = "#333333"
+"""engine/brand.py APP["border"]. grey(3). An edge, so the grid governs it."""
+
+APP_TEXT: Final[str] = "#dddddd"
+"""engine/brand.py APP["text"]. grey(13). Primary ink in dark and image mode.
+
+MOVED FROM #e0e0e0 ON 2026-08-28, with the brand rather than after it.
+#e0e0e0 was one hex doing two unrelated jobs -- ink in dark mode, and a light
+SURFACE in the light palette below (hover_color and tab_bg). It refused to sit
+on the grid because the grid governs inks and half its uses were not ink. Only
+the ink half moved. Contrast falls 0.21 to 0.45 and the floor afterwards is
+7.17:1 on the pressed plate #444444, the darkest ground it is drawn on.
+"""
+
+APP_TEXT_DIM: Final[str] = "#aaaaaa"
+"""engine/brand.py APP["text-dim"]. grey(10)."""
+
+APP_PROVENANCE: Final[dict[str, str]] = {
+    "TRUE_BLACK": "register",
+    "WHITE": "register",
+    "BRAND_BLACK": "register",
+    "APP_CARD": "register",
+    "APP_BORDER": "register",
+    "APP_TEXT": "register",
+    "APP_TEXT_DIM": "register",
+}
+"""Declarative, and read by tests/test_app_mirror.py, in the same shape as
+GOLD_PROVENANCE above. A classification that lives only in a test drifts from
+the thing it classifies."""
+
 # ==================== Semantic UI Constants ====================
 # Used directly in code that cannot access a theme dict (e.g. paintEvent)
 SELECTION_OVERLAY_COLOR: Final[str] = "rgba(0,120,215,200)"
@@ -215,7 +281,7 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'card_bg': '#2a2a2a',
     'input_bg': '#1a1a1a',
     # Text
-    'text_color': '#e0e0e0',
+    'text_color': APP_TEXT,
     # NOT CONSUMED. Nothing paints this key -- ui/settings_dialog.py reads it
     # into a local and never uses that local, which is why a grep for it looks
     # live. Aligned to the value the apps that DO paint a muted text use, so
@@ -227,17 +293,40 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'hover_color': '#444444',
     # Buttons
     'button_bg': '#1a1a1a',
-    'button_text': '#e0e0e0',
+    'button_text': APP_TEXT,
     'button_hover_bg': '#333333',
-    'button_hover_text': '#e0e0e0',
+    'button_hover_text': APP_TEXT,
     'button_pressed_bg': '#444444',
     'button_pressed_text': '#000000',
     'button_border_color': 'transparent',
+    # The About dialog's button hover plate. Spelled 'tab_hover' until
+    # 2026-08-28, where it filled a QPushButton and not a tab.
+    #
+    # Deliberately NOT button_hover_bg. That is the MAIN button's inverse
+    # scheme -- #333333 in both modes, with the label flipping -- while dialog
+    # buttons take a softer plate carrying gold text and a gold border.
+    # Flattening the two would lose a scheme. Same value it always had.
+    'dialog_btn_hover_bg': '#3a3a3a',
     # Dialog / tab widget colors
+    #
+    # NOT CONSUMED -- all three of these. This app paints its tabs from
+    # card_bg (at rest AND on hover, so hovering an unselected tab changes
+    # only the label) and from panel_bg for the selected one, in both
+    # ui/about_dialog.py and ui/settings_dialog.py.
+    #
+    # Kept rather than deleted, on the same reasoning as text_secondary above:
+    # rnv-color-picker and rnv-icon-builder DO paint from the equivalents, and
+    # the values here already agree with them -- tab_bg matches both apps, and
+    # tab_selected_bg matches rnv-icon-builder (rnv-color-picker uses the panel
+    # step #1a1a1a instead, a two-against-one this pass records and does not
+    # settle). So wiring them up stays one line and not a colour decision.
+    #
+    # RENAMED 2026-08-28 to the spelling those two apps use. `tab_hover` left
+    # this block entirely: it was consumed, but to fill a QPushButton, and it
+    # is now dialog_btn_hover_bg in the button section above.
     'tab_bg': '#2a2a2a',
-    'tab_selected': '#333333',
-    'tab_hover': '#3a3a3a',
-    'tab_pane_bg': '#1a1a1a',
+    'tab_selected_bg': '#333333',
+    'tab_hover_bg': '#3a3a3a',
     'scroll_handle': '#505050',
     # Accent (brand gold)
     'accent': BRAND_GOLD,
@@ -283,11 +372,34 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     'button_pressed_bg': '#444444',
     'button_pressed_text': '#ffffff',
     'button_border_color': 'transparent',
+    # The About dialog's button hover plate. Spelled 'tab_hover' until
+    # 2026-08-28, where it filled a QPushButton and not a tab.
+    #
+    # Deliberately NOT button_hover_bg. That is the MAIN button's inverse
+    # scheme -- #333333 in both modes, with the label flipping -- while dialog
+    # buttons take a softer plate carrying gold text and a gold border.
+    # Flattening the two would lose a scheme. Same value it always had.
+    'dialog_btn_hover_bg': '#d0d0d0',
     # Dialog / tab widget colors
+    #
+    # NOT CONSUMED -- all three of these. This app paints its tabs from
+    # card_bg (at rest AND on hover, so hovering an unselected tab changes
+    # only the label) and from panel_bg for the selected one, in both
+    # ui/about_dialog.py and ui/settings_dialog.py.
+    #
+    # Kept rather than deleted, on the same reasoning as text_secondary above:
+    # rnv-color-picker and rnv-icon-builder DO paint from the equivalents, and
+    # the values here already agree with them -- tab_bg matches both apps, and
+    # tab_selected_bg matches rnv-icon-builder (rnv-color-picker uses the panel
+    # step #1a1a1a instead, a two-against-one this pass records and does not
+    # settle). So wiring them up stays one line and not a colour decision.
+    #
+    # RENAMED 2026-08-28 to the spelling those two apps use. `tab_hover` left
+    # this block entirely: it was consumed, but to fill a QPushButton, and it
+    # is now dialog_btn_hover_bg in the button section above.
     'tab_bg': '#e0e0e0',
-    'tab_selected': '#ffffff',
-    'tab_hover': '#d0d0d0',
-    'tab_pane_bg': '#ffffff',
+    'tab_selected_bg': '#ffffff',
+    'tab_hover_bg': '#d0d0d0',
     'scroll_handle': '#aaaaaa',
     # Accent (brand gold - darker variant for readability on light bg)
     'accent': BRAND_DARK_GOLD,
@@ -319,7 +431,7 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'card_bg': '#2a2a2a',
     'input_bg': '#2a2a2a',
     # Text
-    'text_color': '#e0e0e0',
+    'text_color': APP_TEXT,
     # NOT CONSUMED -- see the note in the dark palette.
     'text_secondary': '#888888',
     'text_disabled': '#555555',
@@ -328,17 +440,40 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'hover_color': '#444444',
     # Buttons
     'button_bg': '#1a1a1a',
-    'button_text': '#e0e0e0',
+    'button_text': APP_TEXT,
     'button_hover_bg': '#333333',
-    'button_hover_text': '#e0e0e0',
+    'button_hover_text': APP_TEXT,
     'button_pressed_bg': '#444444',
     'button_pressed_text': '#000000',
     'button_border_color': 'transparent',
+    # The About dialog's button hover plate. Spelled 'tab_hover' until
+    # 2026-08-28, where it filled a QPushButton and not a tab.
+    #
+    # Deliberately NOT button_hover_bg. That is the MAIN button's inverse
+    # scheme -- #333333 in both modes, with the label flipping -- while dialog
+    # buttons take a softer plate carrying gold text and a gold border.
+    # Flattening the two would lose a scheme. Same value it always had.
+    'dialog_btn_hover_bg': '#3a3a3a',
     # Dialog / tab widget colors
+    #
+    # NOT CONSUMED -- all three of these. This app paints its tabs from
+    # card_bg (at rest AND on hover, so hovering an unselected tab changes
+    # only the label) and from panel_bg for the selected one, in both
+    # ui/about_dialog.py and ui/settings_dialog.py.
+    #
+    # Kept rather than deleted, on the same reasoning as text_secondary above:
+    # rnv-color-picker and rnv-icon-builder DO paint from the equivalents, and
+    # the values here already agree with them -- tab_bg matches both apps, and
+    # tab_selected_bg matches rnv-icon-builder (rnv-color-picker uses the panel
+    # step #1a1a1a instead, a two-against-one this pass records and does not
+    # settle). So wiring them up stays one line and not a colour decision.
+    #
+    # RENAMED 2026-08-28 to the spelling those two apps use. `tab_hover` left
+    # this block entirely: it was consumed, but to fill a QPushButton, and it
+    # is now dialog_btn_hover_bg in the button section above.
     'tab_bg': '#2a2a2a',
-    'tab_selected': '#333333',
-    'tab_hover': '#3a3a3a',
-    'tab_pane_bg': '#1a1a1a',
+    'tab_selected_bg': '#333333',
+    'tab_hover_bg': '#3a3a3a',
     'scroll_handle': '#505050',
     # Accent (brand gold)
     'accent': BRAND_GOLD,

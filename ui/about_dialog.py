@@ -487,7 +487,10 @@ Professional color palette creation for artists, designers, and developers<br>
         text         = theme['text_color']
         card_bg      = theme['card_bg']
         border       = theme['border_color']
-        tab_hover    = theme.get('tab_hover',    theme['hover_color'])
+        # The pane below deliberately has no key: tab_pane_bg was deleted
+        # on 2026-08-28 because it held nothing panel_bg does not, and
+        # this .get() IS the override point that survived it.
+        btn_hover    = theme['dialog_btn_hover_bg']
         pane_bg      = theme.get('tab_pane_bg', theme['panel_bg'])
         scroll_bg    = theme['scroll_bg']
         scroll_handle = theme.get('scroll_handle', theme['scrollbar_handle'])
@@ -578,7 +581,7 @@ Professional color palette creation for artists, designers, and developers<br>
                 font-weight: bold;
             }}
             QPushButton:hover {{
-                background-color: {tab_hover};
+                background-color: {btn_hover};
                 border-color: {accent};
                 color: {accent_ink};
             }}

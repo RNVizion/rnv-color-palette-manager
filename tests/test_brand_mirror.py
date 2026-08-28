@@ -52,8 +52,16 @@ def contrast(a: str, b: str) -> float:
 def test_provenance_covers_every_gold_constant():
     named = {n for n in dir(C)
              if n.startswith("BRAND_") and isinstance(getattr(C, n), str)}
-    missing = named - set(C.GOLD_PROVENANCE)
+    missing = named - set(C.GOLD_PROVENANCE) - set(C.APP_PROVENANCE)
     assert not missing, f"gold constants with no provenance entry: {sorted(missing)}"
+
+
+def test_no_constant_is_claimed_by_two_provenance_maps():
+    """Widening the sweep above to accept either map only stays safe
+    while the maps do not overlap -- an entry in both would let a wrong
+    classification hide behind the right one."""
+    both = sorted(set(C.GOLD_PROVENANCE) & set(C.APP_PROVENANCE))
+    assert not both, f"claimed by both provenance maps: {both}"
 
 
 def test_provenance_has_no_phantom_entries():

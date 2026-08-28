@@ -48,8 +48,21 @@ INK_PAIRS = (
     ("accent_ink", "panel_bg"),
     ("accent_ink", "dialog_bg"),
     ("accent_ink", "card_bg"),
-    ("accent_ink", "tab_pane_bg"),
 )
+
+# How many of those pairs each palette can actually MEASURE. Asserted exactly
+# rather than as a floor: a floor cannot tell a pair that vanished from a pair
+# that was never there.
+#
+# IMAGE resolves fewer, and the reason is worth naming rather than tolerating:
+# its window_bg and panel_bg are #AARRGGBB strings, which this flat-hex audit
+# cannot read. Gold text on a translucent ground is UNAUDITED here. That is a
+# gap in the audit, not a pass.
+#
+# IMAGE used to resolve 3, but one was a duplicate -- tab_pane_bg held the same
+# #1a1a1a as dialog_bg -- so deleting that key on 2026-08-28 removed a repeated
+# measurement rather than any coverage.
+RESOLVING = {"DARK": 3, "LIGHT": 3, "IMAGE": 2}
 
 
 @pytest.mark.parametrize("theme", sorted(PALETTES))
@@ -79,9 +92,10 @@ def test_the_audit_finds_something_to_audit(theme):
     measured = [1 for ink, ground in INK_PAIRS
                 if ink in palette and ground in palette
                 and _hex(palette[ink]) and _hex(palette[ground])]
-    assert len(measured) >= 3, (
-        f"{theme}: only {len(measured)} ink pairs resolved -- the pair list has "
-        f"gone stale against the palette")
+    assert len(measured) == RESOLVING[theme], (
+        f"{theme}: {len(measured)} ink pairs resolved, expected "
+        f"{RESOLVING[theme]} -- the pair list has gone stale against the "
+        f"palette")
 
 
 def test_no_accepted_entry_is_stale():

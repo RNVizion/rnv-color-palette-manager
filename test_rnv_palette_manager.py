@@ -374,7 +374,8 @@ class TestColorsModule(unittest.TestCase):
         "button_bg","button_text","button_hover_bg","button_hover_text",
         "button_pressed_bg","button_pressed_text","button_border_color",
         "accent","accent_dark","accent_text",
-        "tab_bg","tab_selected","tab_hover","tab_pane_bg",
+        "tab_bg","tab_selected_bg","tab_hover_bg",
+        "dialog_btn_hover_bg",
         "scroll_handle","dialog_bg","dialog_border",
         "success","warning",
     ]

@@ -123,11 +123,20 @@ def test_the_not_consumed_note_is_still_true():
         f"delete the NOT CONSUMED notes in ui/colors.py -- they are no longer "
         f"true.")
 
-    notes = len(re.findall(r"#\s*NOT CONSUMED",
-                           COLORS_PY.read_text(encoding="utf-8")))
-    assert notes == 3, (
+    # Counted BESIDE the key rather than across the whole file. A whole-file
+    # count measures every NOT CONSUMED note in ui/colors.py, so annotating any
+    # OTHER dead key -- which the tab block did on 2026-08-28 -- broke a test
+    # that was never about those keys. It measures what it claims now.
+    lines = COLORS_PY.read_text(encoding="utf-8").splitlines()
+    annotated = 0
+    for i, line in enumerate(lines):
+        if not line.strip().startswith("'text_secondary':"):
+            continue
+        if re.search(r"#\s*NOT CONSUMED", "\n".join(lines[max(0, i - 6):i])):
+            annotated += 1
+    assert annotated == 3, (
         f"expected a NOT CONSUMED note beside each of the three "
-        f"text_secondary values, found {notes}")
+        f"text_secondary values, found {annotated}")
 
 
 def test_the_dead_read_is_still_dead():
