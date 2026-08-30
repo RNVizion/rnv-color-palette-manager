@@ -275,11 +275,11 @@ DEFAULT_SLOT_COLOR_IMAGE_RGB: Final[tuple[int, int, int, int]] = (0, 0, 0, 171)
 DARK_THEME_COLORS: Final[ThemeDict] = {
     'name': 'Dark',
     # Base colors
-    'window_bg': '#000000',
-    'panel_bg': '#1a1a1a',
-    'scroll_bg': '#000000',
-    'card_bg': '#2a2a2a',
-    'input_bg': '#1a1a1a',
+    'window_bg': TRUE_BLACK,
+    'panel_bg': BRAND_BLACK,
+    'scroll_bg': TRUE_BLACK,
+    'card_bg': APP_CARD,
+    'input_bg': BRAND_BLACK,
     # Text
     'text_color': APP_TEXT,
     # NOT CONSUMED. Nothing paints this key -- ui/settings_dialog.py reads it
@@ -289,15 +289,15 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'text_secondary': '#888888',
     'text_disabled': '#555555',
     # Borders
-    'border_color': '#333333',
+    'border_color': APP_BORDER,
     'hover_color': '#444444',
     # Buttons
-    'button_bg': '#1a1a1a',
+    'button_bg': BRAND_BLACK,
     'button_text': APP_TEXT,
-    'button_hover_bg': '#333333',
+    'button_hover_bg': APP_BORDER,
     'button_hover_text': APP_TEXT,
     'button_pressed_bg': '#444444',
-    'button_pressed_text': '#000000',
+    'button_pressed_text': TRUE_BLACK,
     'button_border_color': 'transparent',
     # The About dialog's button hover plate. Spelled 'tab_hover' until
     # 2026-08-28, where it filled a QPushButton and not a tab.
@@ -324,23 +324,23 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     # RENAMED 2026-08-28 to the spelling those two apps use. `tab_hover` left
     # this block entirely: it was consumed, but to fill a QPushButton, and it
     # is now dialog_btn_hover_bg in the button section above.
-    'tab_bg': '#2a2a2a',
-    'tab_selected_bg': '#333333',
+    'tab_bg': APP_CARD,
+    'tab_selected_bg': APP_BORDER,
     'tab_hover_bg': '#3a3a3a',
     'scroll_handle': '#505050',
     # Accent (brand gold)
     'accent': BRAND_GOLD,
     'accent_dark': BRAND_GOLD_HOVER,
     'accent_ink': BRAND_GOLD,
-    'accent_text': '#000000',
+    'accent_text': TRUE_BLACK,
     # Scrollbar
-    'scrollbar_bg': '#1a1a1a',
+    'scrollbar_bg': BRAND_BLACK,
     'scrollbar_handle': '#505050',
     'scrollbar_handle_hover': '#606060',
-    'scrollbar_border': '#333333',
+    'scrollbar_border': APP_BORDER,
     # Dialog
-    'dialog_bg': '#1a1a1a',
-    'dialog_border': '#333333',
+    'dialog_bg': BRAND_BLACK,
+    'dialog_border': APP_BORDER,
     # Status
     'success': '#4caf50',
     'warning': '#ffc107',
@@ -428,23 +428,23 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'window_bg': '#ED000000',
     'panel_bg': '#ED1A1A1A',
     'scroll_bg': '#ED000000',
-    'card_bg': '#2a2a2a',
-    'input_bg': '#2a2a2a',
+    'card_bg': APP_CARD,
+    'input_bg': APP_CARD,
     # Text
     'text_color': APP_TEXT,
     # NOT CONSUMED -- see the note in the dark palette.
     'text_secondary': '#888888',
     'text_disabled': '#555555',
     # Borders
-    'border_color': '#333333',
+    'border_color': APP_BORDER,
     'hover_color': '#444444',
     # Buttons
-    'button_bg': '#1a1a1a',
+    'button_bg': BRAND_BLACK,
     'button_text': APP_TEXT,
-    'button_hover_bg': '#333333',
+    'button_hover_bg': APP_BORDER,
     'button_hover_text': APP_TEXT,
     'button_pressed_bg': '#444444',
-    'button_pressed_text': '#000000',
+    'button_pressed_text': TRUE_BLACK,
     'button_border_color': 'transparent',
     # The About dialog's button hover plate. Spelled 'tab_hover' until
     # 2026-08-28, where it filled a QPushButton and not a tab.
@@ -471,23 +471,23 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     # RENAMED 2026-08-28 to the spelling those two apps use. `tab_hover` left
     # this block entirely: it was consumed, but to fill a QPushButton, and it
     # is now dialog_btn_hover_bg in the button section above.
-    'tab_bg': '#2a2a2a',
-    'tab_selected_bg': '#333333',
+    'tab_bg': APP_CARD,
+    'tab_selected_bg': APP_BORDER,
     'tab_hover_bg': '#3a3a3a',
     'scroll_handle': '#505050',
     # Accent (brand gold)
     'accent': BRAND_GOLD,
     'accent_dark': BRAND_GOLD_HOVER,
     'accent_ink': BRAND_GOLD,
-    'accent_text': '#000000',
+    'accent_text': TRUE_BLACK,
     # Scrollbar -- uses rgba in CSS strings, not here
     'scrollbar_bg': 'transparent',
     'scrollbar_handle': 'rgba(80, 80, 80, 100)',
     'scrollbar_handle_hover': 'rgba(80, 80, 80, 120)',
     'scrollbar_border': 'rgba(51, 51, 51, 100)',
     # Dialog
-    'dialog_bg': '#1a1a1a',
-    'dialog_border': '#333333',
+    'dialog_bg': BRAND_BLACK,
+    'dialog_border': APP_BORDER,
     # Status
     'success': '#4caf50',
     'warning': '#ffc107',
