@@ -68,6 +68,8 @@ PINNED = {
     'APP_BORDER': '#333333',
     'APP_TEXT': '#dddddd',
     'APP_TEXT_DIM': '#aaaaaa',
+    'APP_PANEL_HOVER': '#3a3a3a',
+    'APP_HOVER_LIGHT': '#eeeeee',
 }
 
 #: Dark and image ink. These carry APP_TEXT and must reference it by name.
@@ -78,7 +80,7 @@ UNCONSUMED_TAB_KEYS = ('tab_bg', 'tab_selected_bg', 'tab_hover_bg')
 
 #: The About dialog's button hover plate, per mode. Unchanged values; only the
 #: name moved off `tab_hover`.
-DIALOG_BTN_HOVER = {'DARK': '#3a3a3a', 'LIGHT': '#d0d0d0', 'IMAGE': '#3a3a3a'}
+DIALOG_BTN_HOVER = {'DARK': '#3a3a3a', 'LIGHT': '#eeeeee', 'IMAGE': '#3a3a3a'}
 
 
 def grey(n: int) -> str:
@@ -323,27 +325,29 @@ def test_the_ink_clears_the_text_floor_on_every_dark_ground_it_touches():
 
 # ------------------------------------------------------- one defect, recorded
 
-@pytest.mark.xfail(
-    strict=True,
-    reason='KNOWN DEFECT, pre-existing and out of scope for the 2026-08-28 ink '
-           'pass. Light gold text on the dialog button hover plate is 3.60:1, '
-           'under the 4.5 floor. It surfaced only because naming the plate '
-           'brought it into an audit for the first time -- it has been wrong '
-           'as long as the plate has existed. Awaiting a ruling: either the '
-           'plate moves above #e8e8e8, or the hover label stops being gold. '
-           'Marked strict so fixing it FAILS this test and forces the note to '
-           'be updated rather than quietly outliving the defect.')
 def test_gold_text_clears_the_dialog_button_hover_plate():
     """The pairing is real: ui/about_dialog.py sets the hover ground from
     dialog_btn_hover_bg and the hover label from accent_ink, in the same rule.
 
-        DARK   #d2bc93 on #3a3a3a   6.15  passes
-        IMAGE  #d2bc93 on #3a3a3a   6.15  passes
-        LIGHT  #7e6529 on #d0d0d0   3.60  FAILS
+        DARK   #d2bc93 on #3a3a3a   6.1503  passes
+        IMAGE  #d2bc93 on #3a3a3a   6.1503  passes
+        LIGHT  #7e6529 on #eeeeee   4.7875  passes
 
-    rnv-brand publishes the reason: below #e8e8e8, gold does not carry text.
-    #d0d0d0 is well below it. That is a ruling, not a gap, so the plate is
-    what is wrong here rather than the floor.
+    FIXED 2026-08-30, AND THE XFAIL IS GONE. This carried a strict xfail from
+    the 2026-08-28 ink pass: the light plate was #d0d0d0 and the gold label
+    measured 3.6013:1 against a 4.5 floor. The note said it was awaiting a
+    ruling -- either the plate moves above #e8e8e8 or the label stops being
+    gold -- and marked the xfail strict so that fixing it would FAIL and force
+    this text to be rewritten rather than let the exemption outlive the defect.
+
+    That is what happened. rnv-brand retired #d0d0d0 as a light interaction
+    ground and registered APP["hover-light"], first as #e8e8e8 and then as
+    #eeeeee. The plate moved; the label did not.
+
+    WHY NOT #e8e8e8, WHICH ALSO CLEARS. It clears by 0.0334, and it is the
+    ground BRAND_DARK_GOLD_DEEP is derived against -- rev 24 registered it as
+    GOLD_TEXT_GROUND_FLOOR. A plate on that value would fail the moment the
+    gold moved by one step. #eeeeee clears by 0.2875 and is grey(14) exactly.
     """
     for mode, palette in PALETTES.items():
         ratio = _contrast(palette['accent_ink'], palette['dialog_btn_hover_bg'])

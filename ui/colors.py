@@ -132,6 +132,67 @@ the ink half moved. Contrast falls 0.21 to 0.45 and the floor afterwards is
 APP_TEXT_DIM: Final[str] = "#aaaaaa"
 """engine/brand.py APP["text-dim"]. grey(10)."""
 
+APP_PANEL_HOVER: Final[str] = "#3a3a3a"
+"""engine/brand.py APP["panel-hover"]. The n=+2 rung of the dark surface
+ladder, and the dark interaction plate.
+
+REGISTERED 2026-08-29 in rnv-brand rev 22, app-owned here until then.
+
+    BRAND_BLACK + n * 0x10,  n in -1..+2
+    #0a0a0a canvas   #1a1a1a panel   #2a2a2a card   #3a3a3a panel-hover
+
+The register had called the ladder "two-thirds specified" because APP_BORDER
+#333333 is not #3a3a3a and so looked like a missing rung. It is not a rung at
+all: #333333 is grey(3) on the INK grid, which governs inks and EDGES, and a
+border is an edge. The ladder was complete when the question was first asked.
+"""
+
+APP_HOVER_LIGHT: Final[str] = "#eeeeee"
+"""engine/brand.py APP["hover-light"]. grey(14). The light interaction plate.
+
+THIS ONE MOVES A PIXEL, and it is the only thing in this pass that does.
+
+The light dialog-button and tab hover plates were #d0d0d0. rnv-brand RETIRED
+that value as a light interaction ground: the About dialog draws the hover
+label in BRAND_DARK_GOLD_DEEP #7e6529, which measures 3.6013:1 on #d0d0d0
+against a 4.5 floor. The defect was pre-existing and had been marked with a
+strict xfail since the 2026-08-28 ink pass, awaiting exactly this ruling.
+
+    #d0d0d0   3.6013   fails      <- what shipped
+    #e0e0e0   4.2078   fails
+    #e8e8e8   4.5334   clears by 0.0334
+    #eeeeee   4.7875   clears by 0.2875   <- this value
+
+Registered 2026-08-29 as #e8e8e8 and moved to #eeeeee on 2026-08-30 in rev 23.
+#e8e8e8 is the ground BRAND_DARK_GOLD_DEEP is calibrated against -- rev 24
+registered it as GOLD_TEXT_GROUND_FLOOR for that reason -- so putting the hover
+plate on it would have pinned every hover to the one value the gold cannot
+afford to lose. A boundary is not a plate.
+"""
+
+IMAGE_OVERLAY_ALPHA: Final[str] = "ED"
+"""The alpha byte image mode composites its chrome at -- 0xED, about 93%.
+
+WHY THE OVERLAYS BELOW ARE WRITTEN OUT RATHER THAN COMPOSED. Qt wants the
+eight-digit #AARRGGBB form, and building it from the six-digit constant would
+make the palette entries resolve to an expression rather than a value, which
+this app's own before/after comparison cannot check. The relationship is
+asserted in tests/test_ladder_and_plate.py instead: each overlay's last six
+digits must BE the register value it claims, and its alpha byte must be this
+one. If the register moves a base, those tests fail and these move with it.
+
+THEY WERE INVISIBLE BEFORE. The 2026-08-29 wiring pass claimed no registered
+value was left spelled as a literal in a dark palette. That was true of
+six-digit spellings only: its sweep compared whole strings, so #ED000000 never
+matched #000000, and three of these sat in IMAGE_MODE_COLORS -- which is a DARK
+dict here -- while the test reported clean.
+"""
+
+APP_WINDOW_OVERLAY: Final[str] = "#ED000000"
+"""TRUE_BLACK, and APP["window"], at IMAGE_OVERLAY_ALPHA."""
+
+APP_PANEL_OVERLAY: Final[str] = "#ED1A1A1A"
+"""BRAND_BLACK, and APP["panel"], at IMAGE_OVERLAY_ALPHA."""
 APP_PROVENANCE: Final[dict[str, str]] = {
     "TRUE_BLACK": "register",
     "WHITE": "register",
@@ -140,6 +201,10 @@ APP_PROVENANCE: Final[dict[str, str]] = {
     "APP_BORDER": "register",
     "APP_TEXT": "register",
     "APP_TEXT_DIM": "register",
+    "APP_PANEL_HOVER": "register",
+    "APP_HOVER_LIGHT": "register",
+    "APP_WINDOW_OVERLAY": "register-overlay",
+    "APP_PANEL_OVERLAY": "register-overlay",
 }
 """Declarative, and read by tests/test_app_mirror.py, in the same shape as
 GOLD_PROVENANCE above. A classification that lives only in a test drifts from
@@ -306,7 +371,7 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     # scheme -- #333333 in both modes, with the label flipping -- while dialog
     # buttons take a softer plate carrying gold text and a gold border.
     # Flattening the two would lose a scheme. Same value it always had.
-    'dialog_btn_hover_bg': '#3a3a3a',
+    'dialog_btn_hover_bg': APP_PANEL_HOVER,
     # Dialog / tab widget colors
     #
     # NOT CONSUMED -- all three of these. This app paints its tabs from
@@ -326,7 +391,7 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     # is now dialog_btn_hover_bg in the button section above.
     'tab_bg': APP_CARD,
     'tab_selected_bg': APP_BORDER,
-    'tab_hover_bg': '#3a3a3a',
+    'tab_hover_bg': APP_PANEL_HOVER,
     'scroll_handle': '#505050',
     # Accent (brand gold)
     'accent': BRAND_GOLD,
@@ -379,7 +444,7 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     # scheme -- #333333 in both modes, with the label flipping -- while dialog
     # buttons take a softer plate carrying gold text and a gold border.
     # Flattening the two would lose a scheme. Same value it always had.
-    'dialog_btn_hover_bg': '#d0d0d0',
+    'dialog_btn_hover_bg': APP_HOVER_LIGHT,
     # Dialog / tab widget colors
     #
     # NOT CONSUMED -- all three of these. This app paints its tabs from
@@ -399,7 +464,7 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     # is now dialog_btn_hover_bg in the button section above.
     'tab_bg': '#e0e0e0',
     'tab_selected_bg': '#ffffff',
-    'tab_hover_bg': '#d0d0d0',
+    'tab_hover_bg': APP_HOVER_LIGHT,
     'scroll_handle': '#aaaaaa',
     # Accent (brand gold - darker variant for readability on light bg)
     'accent': BRAND_DARK_GOLD,
@@ -425,9 +490,9 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
 IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'name': 'Image',
     # Base colors -- alpha-prefixed hex for Qt stylesheet compatibility
-    'window_bg': '#ED000000',
-    'panel_bg': '#ED1A1A1A',
-    'scroll_bg': '#ED000000',
+    'window_bg': APP_WINDOW_OVERLAY,
+    'panel_bg': APP_PANEL_OVERLAY,
+    'scroll_bg': APP_WINDOW_OVERLAY,
     'card_bg': APP_CARD,
     'input_bg': APP_CARD,
     # Text
@@ -453,7 +518,7 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     # scheme -- #333333 in both modes, with the label flipping -- while dialog
     # buttons take a softer plate carrying gold text and a gold border.
     # Flattening the two would lose a scheme. Same value it always had.
-    'dialog_btn_hover_bg': '#3a3a3a',
+    'dialog_btn_hover_bg': APP_PANEL_HOVER,
     # Dialog / tab widget colors
     #
     # NOT CONSUMED -- all three of these. This app paints its tabs from
@@ -473,7 +538,7 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     # is now dialog_btn_hover_bg in the button section above.
     'tab_bg': APP_CARD,
     'tab_selected_bg': APP_BORDER,
-    'tab_hover_bg': '#3a3a3a',
+    'tab_hover_bg': APP_PANEL_HOVER,
     'scroll_handle': '#505050',
     # Accent (brand gold)
     'accent': BRAND_GOLD,
