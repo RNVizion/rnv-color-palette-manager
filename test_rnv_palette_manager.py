@@ -371,8 +371,8 @@ class TestColorsModule(unittest.TestCase):
         "window_bg","panel_bg","scroll_bg","card_bg","input_bg",
         "text_color","text_secondary","text_disabled",
         "border_color","hover_color",
-        "button_bg","button_text","button_hover_bg","button_hover_text",
-        "button_pressed_bg","button_pressed_text","button_border_color",
+        "main_btn_bg","main_btn_text","main_btn_hover_bg","main_btn_hover_text",
+        "main_btn_pressed_bg","main_btn_pressed_text","main_btn_border_color",
         "accent","accent_dark","accent_text",
         "tab_bg","tab_selected_bg","tab_hover_bg",
         "dialog_btn_hover_bg",
@@ -423,7 +423,7 @@ class TestColorsModule(unittest.TestCase):
         self.assertIn("rgba", SIZE_OVERLAY_BG.lower())
 
     def test_light_hover_dark_grey(self):
-        self.assertEqual(get_theme_colors("light")["button_hover_bg"].lower(),"#333333")
+        self.assertEqual(get_theme_colors("light")["main_btn_hover_bg"].lower(),"#333333")
 
     def test_dark_accent_is_light_gold(self):
         self.assertEqual(get_theme_colors("dark")["accent"].lower(), BRAND_GOLD.lower())

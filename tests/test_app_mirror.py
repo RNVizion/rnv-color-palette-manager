@@ -73,7 +73,7 @@ PINNED = {
 }
 
 #: Dark and image ink. These carry APP_TEXT and must reference it by name.
-INK_KEYS = ('text_color', 'button_text', 'button_hover_text')
+INK_KEYS = ('text_color', 'main_btn_text', 'main_btn_hover_text')
 
 #: Unconsumed here, live in the other two apps, values already agreed.
 UNCONSUMED_TAB_KEYS = ('tab_bg', 'tab_selected_bg', 'tab_hover_bg')
@@ -251,7 +251,7 @@ def test_the_dialog_button_hover_is_not_the_main_button_scheme():
     take a softer plate with gold text and border. Flattening the two would
     lose a scheme."""
     for mode, palette in PALETTES.items():
-        assert palette['dialog_btn_hover_bg'] != palette['button_hover_bg'], (
+        assert palette['dialog_btn_hover_bg'] != palette['main_btn_hover_bg'], (
             f'{mode}: the dialog button hover has been flattened onto the main '
             f'button hover')
 

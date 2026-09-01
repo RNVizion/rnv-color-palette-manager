@@ -762,20 +762,20 @@ class MainWindow(QMainWindow):
 
         self.theme_button.setStyleSheet(f"""
             QPushButton {{
-                background-color: {theme['button_bg']};
-                color: {theme['button_text']};
+                background-color: {theme['main_btn_bg']};
+                color: {theme['main_btn_text']};
                 border: 1px solid {theme['border_color']};
                 padding: 2px 6px;
                 border-radius: 4px;
                 font-weight: bold;
             }}
             QPushButton:hover {{
-                background-color: {theme['button_hover_bg']};
-                color: {theme.get('button_hover_text', theme['button_text'])};
+                background-color: {theme['main_btn_hover_bg']};
+                color: {theme.get('main_btn_hover_text', theme['main_btn_text'])};
             }}
             QPushButton:pressed {{
-                background-color: {theme['button_pressed_bg']};
-                color: {theme.get('button_pressed_text', theme['button_text'])};
+                background-color: {theme['main_btn_pressed_bg']};
+                color: {theme.get('main_btn_pressed_text', theme['main_btn_text'])};
             }}
         """)
 
@@ -844,7 +844,7 @@ class MainWindow(QMainWindow):
         # Applied at QApplication level because QMenu popups are top-level
         # windows that don't inherit QMainWindow stylesheets.
         # Note: QToolTip styling is handled by _ThemedToolTip class, not CSS.
-        card_bg = menu_theme.get('card_bg', menu_theme['button_bg'])
+        card_bg = menu_theme.get('card_bg', menu_theme['main_btn_bg'])
 
         # Brand gold constants from centralized colors module
         GOLD = BRAND_GOLD
@@ -856,7 +856,7 @@ class MainWindow(QMainWindow):
         is_light = (not is_image and self.theme_manager.current_theme == 'light')
 
         if is_light:
-            menu_hover_bg = menu_theme['button_bg']       # white stays
+            menu_hover_bg = menu_theme['main_btn_bg']       # white stays
             menu_hover_text = GOLD_DARK                    # dark gold
             menu_hover_border = GOLD_DARK
             menu_pressed_bg = GOLD_DARK                    # dark gold bg
@@ -865,7 +865,7 @@ class MainWindow(QMainWindow):
             accent = GOLD_DARK                             # for selection highlight
             accent_ink = DARK_GOLD_DEEP                    # gold AS text, on a light ground
         else:
-            menu_hover_bg = menu_theme['button_bg']       # black stays
+            menu_hover_bg = menu_theme['main_btn_bg']       # black stays
             menu_hover_text = GOLD                         # gold
             menu_hover_border = GOLD
             menu_pressed_bg = GOLD                         # gold bg
@@ -874,7 +874,7 @@ class MainWindow(QMainWindow):
             accent = GOLD                                  # for selection highlight
             accent_ink = GOLD                              # dark has headroom; ink is the accent
 
-        menu_bg = 'transparent' if is_image else menu_theme['button_bg']
+        menu_bg = 'transparent' if is_image else menu_theme['main_btn_bg']
 
         # Selection/highlight colors: gold bg with contrasting text
         sel_bg = accent
@@ -903,13 +903,13 @@ class MainWindow(QMainWindow):
 
             QMenu {{
                 background-color: {menu_bg};
-                color: {menu_theme['button_text']};
+                color: {menu_theme['main_btn_text']};
                 border: none;
                 padding: 0px;
             }}
             QMenu::item {{
                 background-color: transparent;
-                color: {menu_theme['button_text']};
+                color: {menu_theme['main_btn_text']};
                 padding: 6px 24px 6px 12px;
                 border: 1px solid transparent;
                 margin: 0px;
@@ -936,7 +936,7 @@ class MainWindow(QMainWindow):
             /* ---- QColorDialog buttons: match dialog button style (card_bg + gold) ---- */
             QColorDialog QPushButton {{
                 background-color: {theme['card_bg']};
-                color: {theme['button_text']};
+                color: {theme['main_btn_text']};
                 border: 1px solid {theme['border_color']};
                 border-radius: 4px;
                 padding: 4px 16px;
@@ -964,7 +964,7 @@ class MainWindow(QMainWindow):
              /* ---- QInputDialog buttons: match dialog button style (card_bg + gold) ---- */
             QInputDialog QPushButton {{
                 background-color: {theme['card_bg']};
-                color: {theme['button_text']};
+                color: {theme['main_btn_text']};
                 border: 1px solid {theme['border_color']};
                 border-radius: 4px;
                 padding: 4px 16px;

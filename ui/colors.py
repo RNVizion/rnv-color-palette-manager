@@ -357,21 +357,27 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'border_color': APP_BORDER,
     'hover_color': '#444444',
     # Buttons
-    'button_bg': BRAND_BLACK,
-    'button_text': APP_TEXT,
-    'button_hover_bg': APP_BORDER,
-    'button_hover_text': APP_TEXT,
-    'button_pressed_bg': '#444444',
-    'button_pressed_text': TRUE_BLACK,
-    'button_border_color': 'transparent',
+    'main_btn_bg': BRAND_BLACK,
+    'main_btn_text': APP_TEXT,
+    'main_btn_hover_bg': APP_BORDER,
+    'main_btn_hover_text': APP_TEXT,
+    'main_btn_pressed_bg': '#444444',
+    'main_btn_pressed_text': TRUE_BLACK,
+    'main_btn_border_color': 'transparent',
     # The About dialog's button hover plate. Spelled 'tab_hover' until
     # 2026-08-28, where it filled a QPushButton and not a tab.
     #
-    # Deliberately NOT button_hover_bg. That is the MAIN button's inverse
+    # Deliberately NOT main_btn_hover_bg. That is the MAIN button's inverse
     # scheme -- #333333 in both modes, with the label flipping -- while dialog
     # buttons take a softer plate carrying gold text and a gold border.
     # Flattening the two would lose a scheme. Same value it always had.
     'dialog_btn_hover_bg': APP_PANEL_HOVER,
+    # The plate and label a dialog button RESTS on. Added 2026-09-01,
+    # holding what these dialogs already painted -- before this they
+    # reached into the main family for both, which is why one name
+    # ended up describing two schemes.
+    'dialog_btn_bg': BRAND_BLACK,
+    'dialog_btn_text': APP_TEXT,
     # Dialog / tab widget colors
     #
     # NOT CONSUMED -- all three of these. This app paints its tabs from
@@ -430,21 +436,27 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     'border_color': '#cccccc',
     'hover_color': '#e0e0e0',
     # Buttons: white base, dark-grey hover/press, white text on press, no visible border
-    'button_bg': '#ffffff',
-    'button_text': '#000000',
-    'button_hover_bg': '#333333',
-    'button_hover_text': '#000000',
-    'button_pressed_bg': '#444444',
-    'button_pressed_text': '#ffffff',
-    'button_border_color': 'transparent',
+    'main_btn_bg': '#ffffff',
+    'main_btn_text': '#000000',
+    'main_btn_hover_bg': '#333333',
+    'main_btn_hover_text': '#000000',
+    'main_btn_pressed_bg': '#444444',
+    'main_btn_pressed_text': '#ffffff',
+    'main_btn_border_color': 'transparent',
     # The About dialog's button hover plate. Spelled 'tab_hover' until
     # 2026-08-28, where it filled a QPushButton and not a tab.
     #
-    # Deliberately NOT button_hover_bg. That is the MAIN button's inverse
+    # Deliberately NOT main_btn_hover_bg. That is the MAIN button's inverse
     # scheme -- #333333 in both modes, with the label flipping -- while dialog
     # buttons take a softer plate carrying gold text and a gold border.
     # Flattening the two would lose a scheme. Same value it always had.
     'dialog_btn_hover_bg': APP_HOVER_LIGHT,
+    # The plate and label a dialog button RESTS on. Added 2026-09-01,
+    # holding what these dialogs already painted -- before this they
+    # reached into the main family for both, which is why one name
+    # ended up describing two schemes.
+    'dialog_btn_bg': '#ffffff',
+    'dialog_btn_text': '#000000',
     # Dialog / tab widget colors
     #
     # NOT CONSUMED -- all three of these. This app paints its tabs from
@@ -504,21 +516,27 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'border_color': APP_BORDER,
     'hover_color': '#444444',
     # Buttons
-    'button_bg': BRAND_BLACK,
-    'button_text': APP_TEXT,
-    'button_hover_bg': APP_BORDER,
-    'button_hover_text': APP_TEXT,
-    'button_pressed_bg': '#444444',
-    'button_pressed_text': TRUE_BLACK,
-    'button_border_color': 'transparent',
+    'main_btn_bg': BRAND_BLACK,
+    'main_btn_text': APP_TEXT,
+    'main_btn_hover_bg': APP_BORDER,
+    'main_btn_hover_text': APP_TEXT,
+    'main_btn_pressed_bg': '#444444',
+    'main_btn_pressed_text': TRUE_BLACK,
+    'main_btn_border_color': 'transparent',
     # The About dialog's button hover plate. Spelled 'tab_hover' until
     # 2026-08-28, where it filled a QPushButton and not a tab.
     #
-    # Deliberately NOT button_hover_bg. That is the MAIN button's inverse
+    # Deliberately NOT main_btn_hover_bg. That is the MAIN button's inverse
     # scheme -- #333333 in both modes, with the label flipping -- while dialog
     # buttons take a softer plate carrying gold text and a gold border.
     # Flattening the two would lose a scheme. Same value it always had.
     'dialog_btn_hover_bg': APP_PANEL_HOVER,
+    # The plate and label a dialog button RESTS on. Added 2026-09-01,
+    # holding what these dialogs already painted -- before this they
+    # reached into the main family for both, which is why one name
+    # ended up describing two schemes.
+    'dialog_btn_bg': BRAND_BLACK,
+    'dialog_btn_text': APP_TEXT,
     # Dialog / tab widget colors
     #
     # NOT CONSUMED -- all three of these. This app paints its tabs from

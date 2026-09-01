@@ -43,8 +43,8 @@ def _make_main_window_with_real_theme():
     """Build a main_window stub using a REAL ThemeManager.
 
     Critical detail: ImageButton.apply_style() (called during ColorSlotWidget
-    construction) accesses theme['button_bg'], theme['button_text'],
-    theme['border_color'], theme['button_hover_bg'] as required keys, plus
+    construction) accesses theme['main_btn_bg'], theme['main_btn_text'],
+    theme['border_color'], theme['main_btn_hover_bg'] as required keys, plus
     several optional ones via .get(). Hand-rolling the dict is fragile —
     a real ThemeManager produces the full dict.
     """

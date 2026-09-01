@@ -252,9 +252,9 @@ class ColorHistoryPanel(QFrame):
         text_color = theme["text_color"]
         border_color = theme["border_color"]
         panel_bg = theme["panel_bg"]
-        btn_bg = theme["button_bg"]
-        btn_text = theme["button_text"]
-        btn_hover = theme["button_hover_bg"]
+        btn_bg = theme["main_btn_bg"]
+        btn_text = theme["main_btn_text"]
+        btn_hover = theme["main_btn_hover_bg"]
 
         self.setStyleSheet(f"""
             ColorHistoryPanel {{

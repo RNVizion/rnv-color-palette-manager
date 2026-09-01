@@ -804,7 +804,7 @@ class SettingsDialog(QDialog):
         DARK_GOLD_DEEP = BRAND_DARK_GOLD_DEEP
         GOLD_HOVER = BRAND_GOLD_HOVER
         card_bg = theme.get('card_bg', theme['panel_bg'])
-        input_bg = theme.get('input_bg', theme.get('card_bg', theme['button_bg']))
+        input_bg = theme.get('input_bg', theme.get('card_bg', theme['main_btn_bg']))
         text_secondary = theme.get('text_secondary', theme['text_color'])
         text_disabled = theme['text_disabled']
 
@@ -948,7 +948,7 @@ class SettingsDialog(QDialog):
             /* ---- Buttons ---- */
             QPushButton {{
                 background-color: {card_bg};
-                color: {theme['button_text']};
+                color: {theme['dialog_btn_text']};
                 border: 1px solid {theme['border_color']};
                 padding: 5px 14px;
                 border-radius: 4px;

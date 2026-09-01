@@ -206,20 +206,20 @@ class ImageButton(QPushButton):
             if theme:
                 self.setStyleSheet(f"""
                     QPushButton {{
-                        background-color: {theme['button_bg']};
-                        color: {theme['button_text']};
+                        background-color: {theme['main_btn_bg']};
+                        color: {theme['main_btn_text']};
                         border: 1px solid {theme['border_color']};
                         padding: 2px 8px;
                         border-radius: 4px;
                         font-weight: bold;
                     }}
                     QPushButton:hover {{
-                        background-color: {theme['button_hover_bg']};
-                        color: {theme.get('button_hover_text', theme['button_text'])};
+                        background-color: {theme['main_btn_hover_bg']};
+                        color: {theme.get('main_btn_hover_text', theme['main_btn_text'])};
                     }}
                     QPushButton:pressed {{
-                        background-color: {theme.get('button_pressed_bg', theme['button_hover_bg'])};
-                        color: {theme.get('button_pressed_text', theme['button_text'])};
+                        background-color: {theme.get('main_btn_pressed_bg', theme['main_btn_hover_bg'])};
+                        color: {theme.get('main_btn_pressed_text', theme['main_btn_text'])};
                     }}
                 """)
             return
@@ -238,19 +238,19 @@ class ImageButton(QPushButton):
 
         self.setStyleSheet(f"""
             QPushButton {{
-                background-color: {theme['button_bg']};
-                color: {theme['button_text']};
+                background-color: {theme['main_btn_bg']};
+                color: {theme['main_btn_text']};
                 border: 1px solid {theme['border_color']};
                 padding: 2px 8px;
                 border-radius: 4px;
                 font-weight: bold;
             }}
             QPushButton:hover {{
-                background-color: {theme['button_hover_bg']};
-                color: {theme.get('button_hover_text', theme['button_text'])};
+                background-color: {theme['main_btn_hover_bg']};
+                color: {theme.get('main_btn_hover_text', theme['main_btn_text'])};
             }}
             QPushButton:pressed {{
-                background-color: {theme.get('button_pressed_bg', theme['button_hover_bg'])};
-                color: {theme.get('button_pressed_text', theme['button_text'])};
+                background-color: {theme.get('main_btn_pressed_bg', theme['main_btn_hover_bg'])};
+                color: {theme.get('main_btn_pressed_text', theme['main_btn_text'])};
             }}
         """)

@@ -373,7 +373,7 @@ class BatchExportDialog(QDialog):
         panel = theme["panel_bg"]
         border = theme["border_color"]
         card_bg = theme["card_bg"]
-        btn_text = theme["button_text"]
+        btn_text = theme["dialog_btn_text"]
 
         # Brand accent (BRAND_GOLD on dark/image, BRAND_DARK_GOLD on light --
         # determined by the theme's own 'accent' key). Pressed text contrasts

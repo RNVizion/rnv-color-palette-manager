@@ -197,7 +197,7 @@ class DialogHelper:
         )
         dialog_bg = colors['dialog_bg']
         text = colors['text_color']
-        btn_bg = colors['button_bg']
+        btn_bg = colors['dialog_btn_bg']
         border = colors['border_color']
         accent_dark = colors['accent_dark']
         accent_ink = colors['accent_ink']

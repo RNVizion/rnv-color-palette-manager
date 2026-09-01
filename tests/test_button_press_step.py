@@ -41,15 +41,15 @@ def test_all_three_themes_are_present():
     it they would all pass while checking nothing."""
     assert set(THEMES) == {"DARK", "LIGHT", "IMAGE"}
     for name, theme in THEMES.items():
-        for key in ("button_bg", "button_hover_bg", "button_pressed_bg",
-                    "button_text", "button_pressed_text"):
+        for key in ("main_btn_bg", "main_btn_hover_bg", "main_btn_pressed_bg",
+                    "main_btn_text", "main_btn_pressed_text"):
             assert key in theme, f"{name} has no {key}"
 
 
 @pytest.mark.parametrize("name", sorted(THEMES))
 def test_the_plate_steps_on_press(name):
     theme = THEMES[name]
-    hover, pressed = theme["button_hover_bg"], theme["button_pressed_bg"]
+    hover, pressed = theme["main_btn_hover_bg"], theme["main_btn_pressed_bg"]
     assert hover != pressed, (
         f"{name}: pressed plate {pressed} is the hover plate. The press then "
         f"changes only the label, which is the behaviour this ruling retired.")
@@ -64,8 +64,8 @@ def test_the_plate_lifts_rather_than_darkens(name):
     both themes.
     """
     theme = THEMES[name]
-    rest, hover, pressed = (theme["button_bg"], theme["button_hover_bg"],
-                            theme["button_pressed_bg"])
+    rest, hover, pressed = (theme["main_btn_bg"], theme["main_btn_hover_bg"],
+                            theme["main_btn_pressed_bg"])
     if name == "LIGHT":
         # rest is the white card; hover drops to the dark plate deliberately.
         assert _lum(hover) < _lum(rest), f"{name}: hover should darken from rest"
@@ -81,7 +81,7 @@ def test_the_label_flips_on_press(name):
     moment, and that is what makes the press read as a press rather than as a
     hover that got brighter."""
     theme = THEMES[name]
-    resting, pressed = theme["button_text"], theme["button_pressed_text"]
+    resting, pressed = theme["main_btn_text"], theme["main_btn_pressed_text"]
     assert resting != pressed, f"{name}: the label does not change on press"
     assert (_lum(resting) > 0.5) != (_lum(pressed) > 0.5), (
         f"{name}: {resting} -> {pressed} is not an inversion")

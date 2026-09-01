@@ -494,7 +494,7 @@ Professional color palette creation for artists, designers, and developers<br>
         pane_bg      = theme.get('tab_pane_bg', theme['panel_bg'])
         scroll_bg    = theme['scroll_bg']
         scroll_handle = theme.get('scroll_handle', theme['scrollbar_handle'])
-        btn_bg       = theme['button_bg']
+        btn_bg       = theme['dialog_btn_bg']
         accent       = theme['accent']
         accent_ink   = theme['accent_ink']
 
