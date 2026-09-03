@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from core.color_math import ColorMath
 from core.palette_metadata import PaletteMetadata
 from utils.logger import Logger, get_logger_instance
-from ui.colors import SVG_EXPORT_BG, SVG_EXPORT_STROKE, SVG_EXPORT_TEXT_LIGHT, SVG_EXPORT_TEXT_DARK
+from ui.colors import SVG_EXPORT_BG, SVG_EXPORT_STROKE, contrast_ink
 
 # Type alias for color with weight
 type ColorWeight = tuple[tuple[int, int, int], int]
@@ -456,8 +456,9 @@ class PaletteFormats:
 
                 text_x = x + swatch_size // 2
                 text_y = y + swatch_size // 2
-                brightness = sum(color) / 3
-                text_color = SVG_EXPORT_TEXT_LIGHT if brightness < 128 else SVG_EXPORT_TEXT_DARK
+                # RNV-INK-RULE: was sum(color) / 3 < 128, which is not a
+                # contrast measurement and put white on pure green.
+                text_color = contrast_ink(color)
 
                 f.write(f'  <text x="{text_x}" y="{text_y}" ')
                 f.write(f'text-anchor="middle" dominant-baseline="central" ')
@@ -876,7 +877,7 @@ class PaletteFormats:
                                 l = float(parts[2]) / 100.0
                                 weight = int(parts[3]) if len(parts) > 3 else 50
                                 # hsl_to_rgb in this codebase expects
-                                # (h, l, s) — see ColorMath. 
+                                # (h, l, s) â€” see ColorMath. 
                                 # Passing (h, s, l) silently corrupts loaded HSL palettes.
                                 rgb = ColorMath.hsl_to_rgb((h, l, s))
                                 colors.append((rgb, weight))

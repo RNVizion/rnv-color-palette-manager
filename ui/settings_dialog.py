@@ -30,8 +30,8 @@ from utils.logger import Logger, get_logger_instance
 from utils.font_loader import get_font_family
 from ui.colors import (
     BRAND_GOLD, BRAND_DARK_GOLD, BRAND_DARK_GOLD_DEEP, BRAND_GOLD_HOVER,
-    ACCENT_PRESSED_TEXT_DARK, ACCENT_PRESSED_TEXT_LIGHT,
-    SESSION_FALLBACK_COLOR, IMAGE_PREVIEW_BORDER,
+    TRUE_BLACK, WHITE,
+    SESSION_FALLBACK_COLOR, GREY_66,
 )
 
 if TYPE_CHECKING:
@@ -763,7 +763,7 @@ class SettingsDialog(QDialog):
     def _update_color_preview(self) -> None:
         """Update the color preview swatch."""
         self.color_preview.setStyleSheet(
-            f"background-color: {self._default_color}; border: 1px solid {IMAGE_PREVIEW_BORDER};"
+            f"background-color: {self._default_color}; border: 1px solid {GREY_66};"
         )
 
     def _update_clipboard_preview(self, fmt: str = "") -> None:
@@ -801,7 +801,6 @@ class SettingsDialog(QDialog):
         # Brand gold constants from centralized colors module
         GOLD = BRAND_GOLD
         GOLD_DARK = BRAND_DARK_GOLD
-        DARK_GOLD_DEEP = BRAND_DARK_GOLD_DEEP
         GOLD_HOVER = BRAND_GOLD_HOVER
         card_bg = theme.get('card_bg', theme['panel_bg'])
         input_bg = theme.get('input_bg', theme.get('card_bg', theme['main_btn_bg']))
@@ -815,12 +814,12 @@ class SettingsDialog(QDialog):
         if is_light:
             accent = GOLD_DARK
             accent_dark = GOLD_DARK
-            accent_ink = DARK_GOLD_DEEP
+            accent_ink = BRAND_DARK_GOLD_DEEP
             btn_hover_bg = card_bg                         # white stays
             btn_hover_text = GOLD_DARK                     # dark gold
             btn_hover_border = GOLD_DARK                   # dark gold
             btn_pressed_bg = GOLD_DARK                     # dark gold bg
-            btn_pressed_text = ACCENT_PRESSED_TEXT_LIGHT   # white text
+            btn_pressed_text = WHITE   # white text
             btn_pressed_border = GOLD_DARK                 # unchanged
         else:
             accent = GOLD
@@ -830,7 +829,7 @@ class SettingsDialog(QDialog):
             btn_hover_text = GOLD                          # gold
             btn_hover_border = GOLD                        # gold
             btn_pressed_bg = GOLD                          # gold bg
-            btn_pressed_text = ACCENT_PRESSED_TEXT_DARK    # black text
+            btn_pressed_text = TRUE_BLACK    # black text
             btn_pressed_border = GOLD                      # unchanged
 
         font_family = get_font_family()
@@ -927,7 +926,7 @@ class SettingsDialog(QDialog):
                 padding: 4px 6px;
                 border-radius: 3px;
                 selection-background-color: {accent};
-                selection-color: {ACCENT_PRESSED_TEXT_LIGHT if is_light else ACCENT_PRESSED_TEXT_DARK};
+                selection-color: {WHITE if is_light else TRUE_BLACK};
             }}
             QSpinBox:focus, QDoubleSpinBox:focus, QComboBox:focus,
             QLineEdit:focus, QPlainTextEdit:focus {{
@@ -942,7 +941,7 @@ class SettingsDialog(QDialog):
                 color: {theme['text_color']};
                 border: 1px solid {theme['border_color']};
                 selection-background-color: {accent};
-                selection-color: {ACCENT_PRESSED_TEXT_LIGHT if is_light else ACCENT_PRESSED_TEXT_DARK};
+                selection-color: {WHITE if is_light else TRUE_BLACK};
             }}
 
             /* ---- Buttons ---- */
@@ -1021,11 +1020,11 @@ class SettingsDialog(QDialog):
             }}
             QListView::item:selected {{
                 background-color: {accent};
-                color: {ACCENT_PRESSED_TEXT_LIGHT if is_light else ACCENT_PRESSED_TEXT_DARK};
+                color: {WHITE if is_light else TRUE_BLACK};
             }}
             QListView::item:hover {{
                 background-color: {accent};
-                color: {ACCENT_PRESSED_TEXT_LIGHT if is_light else ACCENT_PRESSED_TEXT_DARK};
+                color: {WHITE if is_light else TRUE_BLACK};
             }}
         """
         for combo in (self.combo_format, self.combo_clipboard, self.combo_blindness,

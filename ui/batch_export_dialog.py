@@ -20,8 +20,8 @@ from utils.logger import Logger, get_logger_instance
 from ui.colors import (
     STATUS_ERROR_TEXT,
     STATUS_ERROR_TEXT_LIGHT,
-    ACCENT_PRESSED_TEXT_DARK,
-    ACCENT_PRESSED_TEXT_LIGHT,
+    TRUE_BLACK,
+    WHITE,
 )
 
 if TYPE_CHECKING:
@@ -380,7 +380,7 @@ class BatchExportDialog(QDialog):
         # with the gold background: white in light mode, black otherwise.
         accent = theme["accent"]
         is_light = (self._theme_manager.current_theme == 'light')
-        pressed_text = ACCENT_PRESSED_TEXT_LIGHT if is_light else ACCENT_PRESSED_TEXT_DARK
+        pressed_text = WHITE if is_light else TRUE_BLACK
 
         self.setStyleSheet(f"""
             QDialog {{

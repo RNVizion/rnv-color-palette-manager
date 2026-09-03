@@ -32,7 +32,7 @@ from PyQt6.QtWidgets import (
 from utils.config import APP_NAME, APP_VERSION, ICONS_DIR
 from utils.font_loader import get_font_family
 from utils.logger import Logger, get_logger_instance
-from ui.colors import BRAND_GOLD, ACCENT_PRESSED_TEXT_DARK, ACCENT_PRESSED_TEXT_LIGHT
+from ui.colors import BRAND_GOLD, TRUE_BLACK, WHITE
 
 logger: Logger = get_logger_instance("AboutDialog")
 
@@ -587,7 +587,7 @@ Professional color palette creation for artists, designers, and developers<br>
             }}
             QPushButton:pressed {{
                 background-color: {accent};
-                color: {ACCENT_PRESSED_TEXT_LIGHT if is_light else ACCENT_PRESSED_TEXT_DARK};
+                color: {WHITE if is_light else TRUE_BLACK};
             }}
         """)
 

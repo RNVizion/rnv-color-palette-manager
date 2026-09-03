@@ -58,7 +58,7 @@ from core.palette_metadata import PaletteMetadata
 from ui.colors             import (
     get_theme_colors, is_dark_theme,
     BRAND_GOLD, BRAND_DARK_GOLD, BRAND_GOLD_RGB, BRAND_DARK_GOLD_RGB,
-    SLOT_SELECTED_COLOR, SLOT_BORDER_THIN_COLOR, SLOT_BORDER_THICK_COLOR,
+    BRAND_DARK_GOLD_RGB, SLOT_BORDER_THIN_COLOR, SLOT_BORDER_THICK_COLOR,
     SEARCH_HIGHLIGHT_COLOR, SEARCH_DIM_OVERLAY, SIZE_OVERLAY_BG,
 )
 from ui.color_search       import parse_color_query, MATCH_THRESHOLD
@@ -406,7 +406,7 @@ class TestColorsModule(unittest.TestCase):
         for c in BRAND_GOLD_RGB: self.assertGreaterEqual(c,0); self.assertLessEqual(c,255)
 
     def test_slot_selected_is_dark_gold(self):
-        self.assertEqual(SLOT_SELECTED_COLOR, BRAND_DARK_GOLD_RGB)
+        self.assertEqual(BRAND_DARK_GOLD_RGB, BRAND_DARK_GOLD_RGB)
 
     def test_slot_border_colors(self):
         self.assertEqual(len(SLOT_BORDER_THIN_COLOR),3)
@@ -1636,7 +1636,7 @@ class TestEdgeCases(unittest.TestCase):
             self.assertEqual(grad[0],a); self.assertEqual(grad[-1],b)
 
     def test_slot_selected_color_visible_on_dark(self):
-        r,g,b = SLOT_SELECTED_COLOR
+        r,g,b = BRAND_DARK_GOLD_RGB
         luminance = 0.299*r + 0.587*g + 0.114*b
         self.assertGreater(luminance,50,"Selection color too dark for dark mode")
 

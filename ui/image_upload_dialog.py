@@ -15,7 +15,7 @@ from PyQt6.QtGui import QPixmap
 from PIL import Image
 
 from utils.logger import Logger, get_logger_instance
-from ui.colors import IMAGE_PREVIEW_BORDER, IMAGE_PREVIEW_BG
+from ui.colors import GREY_66, GREY_F0
 
 logger: Logger = get_logger_instance(__name__)
 
@@ -70,7 +70,7 @@ class ImageUploadDialog(QWidget):
             )
         preview_label.setPixmap(pixmap)
         preview_label.setStyleSheet(
-            f"border: 2px solid {IMAGE_PREVIEW_BORDER}; background-color: {IMAGE_PREVIEW_BG}; padding: 5px;"
+            f"border: 2px solid {GREY_66}; background-color: {GREY_F0}; padding: 5px;"
         )
         layout.addWidget(preview_label)
 

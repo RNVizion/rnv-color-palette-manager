@@ -1,7 +1,7 @@
 """Error text is theme-aware, and the Material red is gone.
 
     STATUS_ERROR             #dc3545   registered base, derived from only
-    STATUS_ERROR_TEXT        #ff6b6b   dark ground
+    STATUS_ERROR_TEXT        #e56b77   dark ground, = register error-text
     STATUS_ERROR_TEXT_LIGHT  #c82131   light ground, derived
 
 Before this pass a single #ff6b6b served both modes and read 2.5454 on the
@@ -91,10 +91,19 @@ def test_light_error_text_carries_to_the_published_boundary(ground):
         f"{colors.STATUS_ERROR_TEXT_LIGHT} on {ground} = {ratio:.4f}"
 
 
-def test_dark_error_text_was_left_alone_and_still_clears():
-    """Dark was never short. Asserted so a later pass cannot move it quietly
-    while everyone is looking at light."""
-    assert colors.STATUS_ERROR_TEXT == "#ff6b6b"
+def test_dark_error_text_mirrors_the_register_and_still_clears():
+    """Dark was never short, and this test existed to stop the value moving
+    quietly. It did its job: the move below is recorded rather than quiet.
+
+    RNV-STATUS-REGISTER (2026-09-02, ruled by Chris): #ff6b6b was this app's
+    own dark error text, left alone by the error-red pass on the argument
+    that a value already clearing the floor should not be replaced to buy
+    uniformity. The register has since published error-text #e56b77 for this
+    exact job, so the choice is no longer uniformity against headroom -- it
+    is one name against a fourth spelling.
+
+    The assertion stays exact for the same reason it was written exact."""
+    assert colors.STATUS_ERROR_TEXT == "#e56b77"
     for name in ("DARK", "IMAGE_MODE"):
         palette = getattr(colors, name + "_THEME_COLORS", None) or \
             getattr(colors, "IMAGE_MODE_COLORS")

@@ -54,8 +54,8 @@ from ui.batch_export_dialog import BatchExportDialog, BatchExportResult
 from core.color_math import ColorMath
 from ui.colors import (
     BRAND_GOLD, BRAND_DARK_GOLD, BRAND_DARK_GOLD_DEEP, BRAND_GOLD_HOVER, DARK_THEME_COLORS,
-    ACCENT_PRESSED_TEXT_DARK, ACCENT_PRESSED_TEXT_LIGHT,
-    SELECTION_OVERLAY_COLOR, SELECTION_OVERLAY_TEXT,
+    TRUE_BLACK, WHITE,
+    SELECTION_OVERLAY_COLOR, WHITE,
     SIZE_OVERLAY_BG, SESSION_FALLBACK_COLOR, TRANSPARENT_RGBA,
 )
 
@@ -821,7 +821,7 @@ class MainWindow(QMainWindow):
         is_light_theme = (not is_image and self.theme_manager.current_theme == 'light')
         gold      = QColor(BRAND_DARK_GOLD) if is_light_theme else QColor(BRAND_GOLD)
         gold_dark = QColor(BRAND_DARK_GOLD)
-        on_gold   = QColor(ACCENT_PRESSED_TEXT_DARK)
+        on_gold   = QColor(TRUE_BLACK)
 
         for group in (QPalette.ColorGroup.Active, QPalette.ColorGroup.Inactive,
                       QPalette.ColorGroup.Disabled):
@@ -849,7 +849,6 @@ class MainWindow(QMainWindow):
         # Brand gold constants from centralized colors module
         GOLD = BRAND_GOLD
         GOLD_DARK = BRAND_DARK_GOLD
-        DARK_GOLD_DEEP = BRAND_DARK_GOLD_DEEP
 
         # Dark/image hover: bg stays dark, gold text+border; press: gold bg, black text
         # Light hover: white bg, dark-gold text+border; press: dark-gold bg, white text
@@ -860,16 +859,16 @@ class MainWindow(QMainWindow):
             menu_hover_text = GOLD_DARK                    # dark gold
             menu_hover_border = GOLD_DARK
             menu_pressed_bg = GOLD_DARK                    # dark gold bg
-            menu_pressed_text = ACCENT_PRESSED_TEXT_LIGHT  # white text
+            menu_pressed_text = WHITE  # white text
             menu_pressed_border = GOLD_DARK
             accent = GOLD_DARK                             # for selection highlight
-            accent_ink = DARK_GOLD_DEEP                    # gold AS text, on a light ground
+            accent_ink = BRAND_DARK_GOLD_DEEP                    # gold AS text, on a light ground
         else:
             menu_hover_bg = menu_theme['main_btn_bg']       # black stays
             menu_hover_text = GOLD                         # gold
             menu_hover_border = GOLD
             menu_pressed_bg = GOLD                         # gold bg
-            menu_pressed_text = ACCENT_PRESSED_TEXT_DARK   # black text
+            menu_pressed_text = TRUE_BLACK   # black text
             menu_pressed_border = GOLD
             accent = GOLD                                  # for selection highlight
             accent_ink = GOLD                              # dark has headroom; ink is the accent
@@ -878,7 +877,7 @@ class MainWindow(QMainWindow):
 
         # Selection/highlight colors: gold bg with contrasting text
         sel_bg = accent
-        sel_text = ACCENT_PRESSED_TEXT_DARK if not is_light else ACCENT_PRESSED_TEXT_LIGHT
+        sel_text = TRUE_BLACK if not is_light else WHITE
 
         # Get the loaded font family for stylesheet propagation
         font_family = get_font_family()
@@ -950,7 +949,7 @@ class MainWindow(QMainWindow):
             }}
             QColorDialog QPushButton:pressed {{
                 background-color: {accent};
-                color: {ACCENT_PRESSED_TEXT_LIGHT if is_light else ACCENT_PRESSED_TEXT_DARK};
+                color: {WHITE if is_light else TRUE_BLACK};
                 border-color: {accent};
             }}
             QColorDialog QPushButton:default {{
@@ -978,7 +977,7 @@ class MainWindow(QMainWindow):
             }}
             QInputDialog QPushButton:pressed {{
                 background-color: {accent};
-                color: {ACCENT_PRESSED_TEXT_LIGHT if is_light else ACCENT_PRESSED_TEXT_DARK};
+                color: {WHITE if is_light else TRUE_BLACK};
                 border-color: {accent};
             }}
             QInputDialog QPushButton:default {{
@@ -1657,7 +1656,7 @@ class MainWindow(QMainWindow):
         # Visual hint: change status overlay
         self.size_overlay.setText("Click target slot")
         self.size_overlay.setStyleSheet(
-            f"background-color: {SELECTION_OVERLAY_COLOR}; color: {SELECTION_OVERLAY_TEXT}; "
+            f"background-color: {SELECTION_OVERLAY_COLOR}; color: {WHITE}; "
             "font-weight: bold; padding: 4px; border-radius: 4px;"
         )
 
@@ -1732,7 +1731,7 @@ class MainWindow(QMainWindow):
         self._contrast_source = source_widget
         self.size_overlay.setText("Click target slot")
         self.size_overlay.setStyleSheet(
-            f"background-color: {SELECTION_OVERLAY_COLOR}; color: {SELECTION_OVERLAY_TEXT}; "
+            f"background-color: {SELECTION_OVERLAY_COLOR}; color: {WHITE}; "
             "font-weight: bold; padding: 4px; border-radius: 4px;"
         )
         for w in self.slots_widgets:

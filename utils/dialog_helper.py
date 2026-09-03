@@ -133,8 +133,7 @@ class DialogHelper:
         # Lazy import to avoid circular dependency (utils -> ui -> utils)
         from ui.colors import (
             DARK_THEME_COLORS as colors,
-            ACCENT_PRESSED_TEXT_DARK,
-            TEXTEDIT_BG_DARK,
+            TRUE_BLACK,
         )
         dialog_bg = colors['dialog_bg']
         text = colors['text_color']
@@ -143,8 +142,8 @@ class DialogHelper:
         accent_dark = colors['accent_dark']
         accent_ink = colors['accent_ink']
         card_bg = colors['card_bg']
-        pressed_text = ACCENT_PRESSED_TEXT_DARK
-        textedit_bg = TEXTEDIT_BG_DARK
+        pressed_text = TRUE_BLACK
+        textedit_bg = TRUE_BLACK
 
         font_family = get_font_family()
 
@@ -192,8 +191,7 @@ class DialogHelper:
         """Get light theme dialog stylesheet."""
         from ui.colors import (
             LIGHT_THEME_COLORS as colors,
-            ACCENT_PRESSED_TEXT_LIGHT,
-            TEXTEDIT_BG_LIGHT,
+            WHITE,
         )
         dialog_bg = colors['dialog_bg']
         text = colors['text_color']
@@ -201,8 +199,8 @@ class DialogHelper:
         border = colors['border_color']
         accent_dark = colors['accent_dark']
         accent_ink = colors['accent_ink']
-        pressed_text = ACCENT_PRESSED_TEXT_LIGHT
-        textedit_bg = TEXTEDIT_BG_LIGHT
+        pressed_text = WHITE
+        textedit_bg = WHITE
 
         font_family = get_font_family()
 

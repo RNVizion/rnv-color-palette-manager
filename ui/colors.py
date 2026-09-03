@@ -213,10 +213,84 @@ the thing it classifies."""
 # ==================== Semantic UI Constants ====================
 # Used directly in code that cannot access a theme dict (e.g. paintEvent)
 SELECTION_OVERLAY_COLOR: Final[str] = "rgba(0,120,215,200)"
-"""Blue overlay used during gradient / contrast selection modes."""
 
-SELECTION_OVERLAY_TEXT: Final[str] = "#ffffff"
-"""Text color on the selection overlay."""
+# ── Neutral greys, named for what they are ──
+# RNV-INK-RULE (2026-09-02). These were GREY_66 and
+# GREY_F0 -- role names on values that four applications in the
+# fleet paint with. GREY_F0 in particular is used by the picker, the icon
+# builder and this app, and until now had a name in none of them.
+GREY_66: Final[str] = "#666666"
+GREY_F0: Final[str] = "#f0f0f0"
+
+
+# ── Which ink goes on this ground ──
+#
+# RNV-INK-RULE (2026-09-02, ruled by Chris). Across the fleet this question
+# was asked in ten places and answered three different ways, none of them a
+# contrast measurement. Here it was core/palette_formats.py, choosing the
+# label colour for an exported SVG swatch with sum(color) / 3 < 128.
+#
+# The mean is not a contrast measurement, and on saturated colour it is badly
+# wrong: pure green is 71% of the luminance of white, and the mean calls it
+# dark and writes WHITE on it at 1.37:1 where the right answer is black at
+# 15.30:1.
+#
+# One rule now, stated as a real comparison rather than a threshold --
+# whichever candidate has the higher contrast ratio against the ground wins.
+# The same maths as the surface ladder and the 4.5 floor. rnv-color-picker
+# and rnv-icon-builder carry the identical block.
+
+
+def _channel(value: float) -> float:
+    """One sRGB channel, 0-255, linearised."""
+    c = value / 255.0
+    return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+
+
+def _rgb(color: "str | tuple[int, int, int]") -> tuple[int, int, int]:
+    """Accept either shape. Callers hold hex strings and RGB triples both."""
+    if isinstance(color, str):
+        h = color.lstrip("#")
+        if len(h) == 3:
+            h = "".join(ch * 2 for ch in h)
+        return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
+    return (int(color[0]), int(color[1]), int(color[2]))
+
+
+def relative_luminance(color: "str | tuple[int, int, int]") -> float:
+    """WCAG 2.x relative luminance, 0.0 (black) to 1.0 (white)."""
+    r, g, b = _rgb(color)
+    return 0.2126 * _channel(r) + 0.7152 * _channel(g) + 0.0722 * _channel(b)
+
+
+def contrast_ratio(a: "str | tuple[int, int, int]",
+                   b: "str | tuple[int, int, int]") -> float:
+    """WCAG contrast ratio between two colours, 1.0 to 21.0."""
+    la, lb = relative_luminance(a), relative_luminance(b)
+    hi, lo = (la, lb) if la >= lb else (lb, la)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def better_on(background: "str | tuple[int, int, int]", *candidates: str) -> str:
+    """Whichever candidate reads best on this ground. Ties go to the first."""
+    return max(candidates, key=lambda c: contrast_ratio(background, c))
+
+
+def contrast_ink(background: "str | tuple[int, int, int]") -> str:
+    """Text colour for an arbitrary ground: WHITE or TRUE_BLACK.
+
+    For a colour the USER chose. Not for brand surfaces: what sits on a brand
+    gold is a ruling, not a measurement, and the two are 0.08 apart on
+    BRAND_DARK_GOLD.
+    """
+    return better_on(background, TRUE_BLACK, WHITE)
+
+
+def prefers_dark_ink(background: "str | tuple[int, int, int]") -> bool:
+    """True when TRUE_BLACK reads better on this ground than WHITE does."""
+    return contrast_ink(background) == TRUE_BLACK
+
+"""Blue overlay used during gradient / contrast selection modes."""
 
 SEARCH_HIGHLIGHT_COLOR: Final[tuple[int,int,int]] = (0, 255, 100)
 """Bright green border drawn on search-matching slots."""
@@ -230,23 +304,22 @@ SLOT_BORDER_THIN_COLOR: Final[tuple[int,int,int]] = (80, 80, 80)
 SLOT_BORDER_THICK_COLOR: Final[tuple[int,int,int]] = (60, 60, 60)
 """Border color for thick slot border style."""
 
-SLOT_SELECTED_COLOR: Final[tuple[int,int,int]] = BRAND_DARK_GOLD_RGB
-"""Gold selection highlight border drawn on the active slot.
-Uses dark gold so it is visible in both dark and light modes.
-"""
-
 SIZE_OVERLAY_BG: Final[str] = "rgba(0, 0, 0, 200)"
 """Background for the floating size/status overlay widget."""
 
-ACCENT_PRESSED_TEXT_DARK: Final[str] = "#000000"
-"""Text color when pressing a gold-accented button in dark/image themes.
-Black text on gold background for contrast."""
-
-ACCENT_PRESSED_TEXT_LIGHT: Final[str] = "#ffffff"
-"""Text color when pressing a gold-accented button in light theme.
-White text on dark-gold background for contrast."""
-
 # ==================== Status Colors ====================
+STATUS_SUCCESS: Final[str] = "#28a745"
+"""MIRRORS the register's STATUS["success"].
+
+RNV-STATUS-REGISTER (2026-09-02): the three palettes wrote #4caf50,
+Material's green, as a literal. Two applications held that value for one
+role while the other three used the register's. Named here so the value
+has one home, and collapsed onto the register so the fleet has one green."""
+
+STATUS_WARNING: Final[str] = "#ffc107"
+"""MIRRORS the register's STATUS["warning"]. Value unchanged -- it was
+already right, and merely written out three times instead of named once."""
+
 STATUS_ERROR: Final[str] = "#dc3545"
 """The registered error red. Not drawn by this app, which renders no error
 fill -- it is here so the light value below can be DERIVED from it rather
@@ -255,13 +328,22 @@ than written down.
 A written-down derivative orphans the moment its base moves. That is exactly
 what happened to #c4a458, a tint of a gold that was later retired."""
 
-STATUS_ERROR_TEXT: Final[str] = "#ff6b6b"
+STATUS_ERROR_TEXT: Final[str] = "#e56b77"
 """Inline error/warning label text on a DARK ground (e.g. batch export
-validation).
+validation). MIRRORS the register's STATUS["error-text"].
 
-7.5674 on this app's #000000 dialog background. Left alone by the error-red
-pass: dark values that already clear the floor are not replaced to buy
-uniformity."""
+RNV-STATUS-REGISTER (2026-09-02): was #ff6b6b, and being left alone was a
+RULING, not an oversight -- the error-red pass held that a dark value already
+clearing the floor should not be replaced to buy uniformity. That argument
+was right when the register had no name for this job. It now does, and a
+fourth spelling of a registered colour costs more than the headroom does.
+
+    #ff6b6b  7.5674 on #000000   5.1722 on #2a2a2a
+    #e56b77  6.7008 on #000000   4.5804 on #2a2a2a
+
+The register derived #e56b77 to land at 4.5 on the worst dark ground it
+meets, which is APP card #2a2a2a -- so this value is not merely adequate
+here, it was designed for this measurement."""
 
 STATUS_ERROR_TEXT_LIGHT: Final[str] = lighten(STATUS_ERROR, -20)  # -> #c82131
 """The same label on a LIGHT ground.
@@ -274,9 +356,6 @@ No red carries text at 4.5:1 on a real light panel, so light spends a
 derivative on TEXT for exactly the reason the gold does: the fill and text
 jobs occupy non-overlapping luminance bands. A uniform per-channel step holds
 hue at 354.25 degrees, identical to the base."""
-
-CHECKBOX_ACCENT: Final[str] = "#0078d4"
-"""Checkbox checked state and progress bar fill accent."""
 
 # ==================== Preview & History Borders ====================
 PREVIEW_GRID_BORDER: Final[tuple[int, int, int]] = (0, 0, 0)
@@ -295,12 +374,6 @@ SVG_EXPORT_BG: Final[str] = "#ffffff"
 SVG_EXPORT_STROKE: Final[str] = "#000000"
 """Swatch stroke color in exported SVG palette files."""
 
-SVG_EXPORT_TEXT_LIGHT: Final[str] = "#ffffff"
-"""Text color on dark swatches in exported SVG palette files."""
-
-SVG_EXPORT_TEXT_DARK: Final[str] = "#000000"
-"""Text color on light swatches in exported SVG palette files."""
-
 DATA_DEFAULT_COLOR: Final[str] = "#000000"
 """Default hex value for data records (e.g. color history entries)."""
 
@@ -312,18 +385,6 @@ SESSION_FALLBACK_COLOR_IMAGE: Final[str] = "#000000"
 
 TRANSPARENT_RGBA: Final[tuple[int, int, int, int]] = (0, 0, 0, 0)
 """Fully transparent RGBA - used for ghost pixmaps, palette clears, etc."""
-
-IMAGE_PREVIEW_BORDER: Final[str] = "#666666"
-"""Border color for the image preview frame in the upload dialog."""
-
-IMAGE_PREVIEW_BG: Final[str] = "#f0f0f0"
-"""Background color for the image preview frame in the upload dialog."""
-
-TEXTEDIT_BG_DARK: Final[str] = "#000000"
-"""QTextEdit background in dark-themed dialogs."""
-
-TEXTEDIT_BG_LIGHT: Final[str] = "#ffffff"
-"""QTextEdit background in light-themed dialogs."""
 
 # ==================== Default Slot Colors ====================
 DEFAULT_SLOT_COLOR: Final[str] = "#a9a9a9"
@@ -413,8 +474,8 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'dialog_bg': BRAND_BLACK,
     'dialog_border': APP_BORDER,
     # Status
-    'success': '#4caf50',
-    'warning': '#ffc107',
+    'success': STATUS_SUCCESS,
+    'warning': STATUS_WARNING,
 }
 
 
@@ -492,8 +553,8 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     'dialog_bg': '#f5f5f5',
     'dialog_border': '#cccccc',
     # Status
-    'success': '#4caf50',
-    'warning': '#ffc107',
+    'success': STATUS_SUCCESS,
+    'warning': STATUS_WARNING,
 }
 
 
@@ -572,8 +633,8 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'dialog_bg': BRAND_BLACK,
     'dialog_border': APP_BORDER,
     # Status
-    'success': '#4caf50',
-    'warning': '#ffc107',
+    'success': STATUS_SUCCESS,
+    'warning': STATUS_WARNING,
 }
 
 
@@ -627,6 +688,13 @@ __all__ = [
     "BRAND_DARK_GOLD",
     "BRAND_GOLD_RGB",
     "BRAND_DARK_GOLD_RGB",
+    "GREY_66",
+    "GREY_F0",
+    "relative_luminance",
+    "contrast_ratio",
+    "better_on",
+    "contrast_ink",
+    "prefers_dark_ink",
     # Slot defaults
     "DEFAULT_SLOT_COLOR",
     "DEFAULT_SLOT_COLOR_IMAGE",
@@ -637,37 +705,28 @@ __all__ = [
     "IMAGE_MODE_COLORS",
     # Semantic UI constants
     "SELECTION_OVERLAY_COLOR",
-    "SELECTION_OVERLAY_TEXT",
     "SEARCH_HIGHLIGHT_COLOR",
     "SEARCH_DIM_OVERLAY",
     "SLOT_BORDER_THIN_COLOR",
     "SLOT_BORDER_THICK_COLOR",
-    "SLOT_SELECTED_COLOR",
     "SIZE_OVERLAY_BG",
     # Accent pressed-text
-    "ACCENT_PRESSED_TEXT_DARK",
-    "ACCENT_PRESSED_TEXT_LIGHT",
     # Status colors
+    "STATUS_SUCCESS",
+    "STATUS_WARNING",
     "STATUS_ERROR",
     "STATUS_ERROR_TEXT",
     "STATUS_ERROR_TEXT_LIGHT",
-    "CHECKBOX_ACCENT",
     # Preview & history borders
     "PREVIEW_GRID_BORDER",
     "HISTORY_SWATCH_BORDER",
     # Structural / data colors
     "SVG_EXPORT_BG",
     "SVG_EXPORT_STROKE",
-    "SVG_EXPORT_TEXT_LIGHT",
-    "SVG_EXPORT_TEXT_DARK",
     "DATA_DEFAULT_COLOR",
     "SESSION_FALLBACK_COLOR",
     "SESSION_FALLBACK_COLOR_IMAGE",
     "TRANSPARENT_RGBA",
-    "IMAGE_PREVIEW_BORDER",
-    "IMAGE_PREVIEW_BG",
-    "TEXTEDIT_BG_DARK",
-    "TEXTEDIT_BG_LIGHT",
     # Functions
     "get_theme_colors",
     "is_dark_theme",
