@@ -1,45 +1,83 @@
 #!/usr/bin/env python3
 """
-RNV-BUTTON-NAMING-TOOL-DO-NOT-SWEEP
+RNV-NAMING-TOOL-DO-NOT-SWEEP
 
-Replace tests/test_button_key_names.py. One test in it was wrong.
+Constants name colours. Roles go back to being roles, the dead ones go, and
+the ink question gets one answer.
 
-    python up.py             # replace the guard, then verify
-    python up.py --check     # rehearse, write nothing
+    python up.py             # apply, then verify
+    python up.py --check     # rehearse every edit in memory, write nothing
     python up.py --verify    # run the suites only, change nothing
     python up.py --finish    # delete this file
 
-THE RENAME IS FINE. THE GUARD WAS NOT.
+WHY
 
-test_the_marker_exemption_covers_only_the_two_tools counted the files carrying
-a DO-NOT-SWEEP marker and allowed two: the guard itself, and the delivery
-script. A working tree holding a second copy of that script -- an old up.py
-kept around, a renamed spare, the file saved twice -- puts a third marked file
-in the repository and the count fails. Nothing about the application is wrong
-when that happens, and a guard that fails on the state of somebody's checkout
-is failing on the wrong thing. It did exactly that in rnv-text-transformer.
+Chris, reading the colour tree on 2026-09-02:
 
-WHAT IT SHOULD HAVE ASSERTED
+    "_DRAG_HIGHLIGHT_GOLD reads as a constant but it should read as a key --
+     the constant should denote the colour, as that is what will change to
+     affect the rest of the app elements, not the keys."
 
-Not how many files are exempt, but WHICH. The sweep skips marked files so a
-guard that lists the old names in order to forbid them does not report itself.
-The risk that creates is an application file gaining a marker and going quiet.
-So the test now checks that every marked file other than the guard is a
-delivery script, identified by the tool marker in its own header. Any number
-of those may be lying in the tree; none of them is application source.
+That is the naming half of rule 1: a constant names a COLOUR, a key names a
+ROLE. This application held eleven names that answered both questions at once
+and two that answered neither, because nothing used them.
 
-Verified in both directions before shipping: with three tool copies present it
-passes, and with a marker planted in an application file it still fails.
+WHAT THE ROLE NAMES ACTUALLY WERE
 
-This is the ninth use-versus-mention failure this programme has recorded, and
-the first where the fix was to stop counting and start naming.
+    ACCENT_PRESSED_TEXT_DARK   ->  TRUE_BLACK
+    ACCENT_PRESSED_TEXT_LIGHT  ->  WHITE
+    TEXTEDIT_BG_DARK           ->  TRUE_BLACK
+    TEXTEDIT_BG_LIGHT          ->  WHITE
+    SELECTION_OVERLAY_TEXT     ->  WHITE
+    IMAGE_PREVIEW_BORDER       ->  GREY_66
+    IMAGE_PREVIEW_BG           ->  GREY_F0
+    DARK_GOLD_DEEP             ->  BRAND_DARK_GOLD_DEEP
+    SLOT_SELECTED_COLOR        ->  BRAND_DARK_GOLD_RGB
 
-WHAT THIS SCRIPT DOES
+Every one of these was a second name for a value the palette module already
+had. The survey proposed turning the _DARK / _LIGHT pairs into palette keys;
+reading the call sites showed that was wrong. They are not palette entries,
+they are inline branches -- `X if is_light else Y` -- and the two arms are
+just black and white. So the pairs collapse to the register constants at the
+use site and the branch keeps saying which mode it is in, which is the part
+that was carrying the meaning all along.
 
-Rewrites tests/test_button_key_names.py and nothing else. It refuses to run
-unless the rename already landed, so it cannot be mistaken for the pass itself.
-If your guard is currently passing, this still replaces it -- the old test
-passes by luck of what is in your working tree, not by being right.
+TWO THAT WERE SIMPLY DEAD
+
+    CHECKBOX_ACCENT "#0078d4"   Windows blue. Defined, exported, and used by
+                                nothing. Chris read it and said it should be
+                                a brand gold by mode -- and it already is:
+                                the checked checkbox is painted at
+                                ui/settings_dialog.py with
+                                `background-color: {accent};`, the
+                                mode-selected gold. The behaviour he expected
+                                is the behaviour that ships. So this is a
+                                delete, not a repoint, and no pixel moves.
+
+    SVG_EXPORT_TEXT_DARK/_LIGHT the two arms of the export's own brightness
+                                branch. Replaced by the rule, below.
+
+ONE RULE FOR THE INK
+
+core/palette_formats.py chose an exported swatch's label colour with
+sum(color) / 3 < 128. That is not a contrast measurement, and it is the fifth
+copy of the question found in the fleet, on the third different rule. Ruled by
+Chris after seeing them rendered side by side: unify on WCAG relative
+luminance. rnv-color-picker and rnv-icon-builder carry the identical block.
+
+WHAT MOVES
+
+The label on an exported SVG swatch, and only where the mean was wrong: mid
+greys and saturated colour. Nothing in any palette. Nothing on screen.
+
+ALSO HERE
+
+core/palette_formats.py is not valid UTF-8 -- it carries cp1252 em-dashes.
+CPython tolerates them because they sit in comments, so the app has always
+run; tooling does not. An audit script of mine read it with plain UTF-8,
+caught the decode error, skipped the file, and reported four live constants
+as dead. The picker's copy of this same file had the same bytes. Normalised
+here, with a guard that every source file decodes.
 """
 from __future__ import annotations
 
@@ -52,268 +90,460 @@ import tempfile
 from pathlib import Path
 
 REPO = "rnv-color-palette-manager"
-DESCRIPTION = "replace the button-naming guard's exemption test"
-GUARD = "tests/test_button_key_names.py"
-SENTINEL_FILE = GUARD
-SENTINEL = "test_no_application_file_is_exempt_from_the_sweep"
+DESCRIPTION = "constants name colours, the dead go, one ink rule"
+SENTINEL_FILE = "ui/colors.py"
+SENTINEL = "RNV-INK-RULE"
+GUARD = "tests/test_constant_names.py"
 SHADOWS = {"colors.py", "config.py", "conftest.py", "run_tests.py"}
 
-PALETTE = "ui/colors.py"
-PROOF = "'dialog_btn_bg'"
-
-MISSING_HELP = """\
-tests/test_button_key_names.py is not here, so the button key rename has not
-run in this checkout yet.
-
-This script only replaces that guard. Run the rename script first -- the one
-whose header begins "Rename the main-window button keys to main_btn_*, and give the dialogs the two keys they were borrowing" -- and then run this one. There is no filename
-to look for: every script arrives as an attachment and is saved as up.py.
-"""
-
 SUITES = [
-    ('run_tests.py (unittest + pytest)',
-     [sys.executable, "run_tests.py"]),
+    ('run_tests.py (unittest + pytest)', [sys.executable, "run_tests.py"]),
 ]
 
-#: The tests the shipped guard already carries. This pass replaces ONE of them;
-#: a replacement that quietly dropped the others would be a regression wearing
-#: the shape of a fix.
-KEEP = (
-    'test_no_old_button_key_name_survives',
-    'test_all_three_palettes_carry_both_families',
-    'test_the_rename_moved_no_value',
-    'test_the_dialog_family_holds_what_the_dialogs_already_painted',
-    'test_dialogs_read_the_dialog_family_and_not_the_main_one',
-    'test_the_settings_dialog_surface_fallback_is_still_a_surface_fallback',
-    'test_the_two_schemes_are_still_different',
-)
+RENAMES = [('ACCENT_PRESSED_TEXT_DARK', 'TRUE_BLACK'), ('ACCENT_PRESSED_TEXT_LIGHT', 'WHITE'), ('TEXTEDIT_BG_DARK', 'TRUE_BLACK'), ('TEXTEDIT_BG_LIGHT', 'WHITE'), ('SELECTION_OVERLAY_TEXT', 'WHITE'), ('IMAGE_PREVIEW_BORDER', 'GREY_66'), ('IMAGE_PREVIEW_BG', 'GREY_F0'), ('DARK_GOLD_DEEP', 'BRAND_DARK_GOLD_DEEP'), ('SLOT_SELECTED_COLOR', 'BRAND_DARK_GOLD_RGB')]
+SWEEP = ('ui/colors.py', 'RNV_Color_Palette_Manager.py', 'ui/about_dialog.py', 'ui/settings_dialog.py', 'ui/batch_export_dialog.py', 'ui/image_upload_dialog.py', 'utils/dialog_helper.py', 'test_rnv_palette_manager.py')
+DROP_DEFS = [('ui/colors.py', 'ACCENT_PRESSED_TEXT_DARK'), ('ui/colors.py', 'ACCENT_PRESSED_TEXT_LIGHT'), ('ui/colors.py', 'TEXTEDIT_BG_DARK'), ('ui/colors.py', 'TEXTEDIT_BG_LIGHT'), ('ui/colors.py', 'SELECTION_OVERLAY_TEXT'), ('ui/colors.py', 'IMAGE_PREVIEW_BORDER'), ('ui/colors.py', 'IMAGE_PREVIEW_BG'), ('ui/colors.py', 'SLOT_SELECTED_COLOR'), ('ui/colors.py', 'CHECKBOX_ACCENT'), ('ui/colors.py', 'SVG_EXPORT_TEXT_DARK'), ('ui/colors.py', 'SVG_EXPORT_TEXT_LIGHT')]
+RETIRED = ('ACCENT_PRESSED_TEXT_DARK', 'ACCENT_PRESSED_TEXT_LIGHT', 'TEXTEDIT_BG_DARK', 'TEXTEDIT_BG_LIGHT', 'SELECTION_OVERLAY_TEXT', 'IMAGE_PREVIEW_BORDER', 'IMAGE_PREVIEW_BG', 'DARK_GOLD_DEEP', 'SLOT_SELECTED_COLOR', 'CHECKBOX_ACCENT', 'SVG_EXPORT_TEXT_DARK', 'SVG_EXPORT_TEXT_LIGHT')
+
+BAD_BYTES_FILE = "core/palette_formats.py"
+ANCHOR = 'SELECTION_OVERLAY_COLOR: Final[str] = "rgba(0,120,215,200)"\n'
+
+
+def _token_sub(text: str) -> tuple[str, int]:
+    """One pass, longest name first, whole tokens only.
+
+    Sequential passes break the moment one new name contains an old one, and
+    word boundaries make the quoted forms in __all__ rename themselves.
+    """
+    pairs = sorted(RENAMES, key=lambda p: -len(p[0]))
+    lookup = dict(pairs)
+    pattern = re.compile(r"\b(%s)\b" % "|".join(re.escape(o) for o, _ in pairs))
+    n = 0
+
+    def swap(m):
+        nonlocal n
+        n += 1
+        return lookup[m.group(1)]
+
+    return pattern.sub(swap, text), n
+
+
+def _dedupe_imports(text: str) -> str:
+    """Two role names that were the same colour become the same name twice.
+
+    utils/dialog_helper.py imported ACCENT_PRESSED_TEXT_DARK and
+    TEXTEDIT_BG_DARK together; both are TRUE_BLACK. Python accepts the
+    duplicate, but it reads as a mistake, so collapse it.
+    """
+    def fix(m):
+        head, body, tail = m.group(1), m.group(2), m.group(3)
+        seen, keep = set(), []
+        for line in body.splitlines(True):
+            name = line.strip().rstrip(",").strip()
+            if name and name not in seen:
+                seen.add(name)
+                keep.append(line)
+            elif not name:
+                keep.append(line)
+        return head + "".join(keep) + tail
+
+    return re.sub(r"(from ui\.colors import \(\n)((?:[ \t]+[^\n]*\n)+?)([ \t]*\)\n)",
+                  fix, text)
+
+
+def _drop_definition(text: str, name: str) -> str:
+    """Remove a module-level assignment, its docstring, and its __all__ entry.
+
+    Anchored on the assignment line and everything up to the next blank line
+    that is followed by something at column zero -- which is how every
+    constant in this file is written."""
+    pat = re.compile(
+        r"^%s\s*:[^\n]*\n(?:\"\"\"(?:[^\"]|\"(?!\"\"))*\"\"\"\n)?(?:\n)?"
+        % re.escape(name), re.M)
+    text, n = pat.subn("", text)
+    if n != 1:
+        raise SystemExit(f"expected 1 definition of {name}, removed {n}")
+    text, n = re.subn(r'^[ \t]*"%s",\n' % re.escape(name), "", text, flags=re.M)
+    if n > 1:
+        raise SystemExit(f"{name} appears {n} times in __all__")
+    return text
 
 
 def edits(tree) -> None:
-    if PROOF not in tree.read(PALETTE):
-        raise SystemExit(
-            f"{PALETTE} does not carry {PROOF}, so the rename has not "
-            f"landed. This script replaces the guard only; run the rename "
-            f"first.")
-    if "test_the_marker_exemption_covers_only_the_two_tools" not in tree.read(GUARD):
-        raise SystemExit(
-            "the guard in this checkout is not the one this script fixes -- it "
-            "does not contain test_the_marker_exemption_covers_only_the_two_"
-            "tools. Nothing was written.")
-    print("  rename confirmed present; replacing the guard")
+    # FIRST, before anything reads it. The harness reads UTF-8 and this file
+    # is not UTF-8, so any earlier tree.read() of it raises rather than edits.
+    raw = (Path(tree.root) / BAD_BYTES_FILE).read_bytes()
+    hits = raw.count(b"\x97")
+    if hits < 1:
+        raise SystemExit(f"expected cp1252 dashes in {BAD_BYTES_FILE}, found none")
+    tree.write(BAD_BYTES_FILE, raw.decode("cp1252"))
+    print(f"  {BAD_BYTES_FILE}: {hits} cp1252 byte(s) normalised to UTF-8")
+
+    tree.sub(BAD_BYTES_FILE, OLD_PF_IMP, NEW_PF_IMP, 1)
+    tree.sub(BAD_BYTES_FILE, OLD_PF_USE, NEW_PF_USE, 1)
+    print("  the export's brightness branch now asks the rule")
+
+    # The definitions go before the sweep, so the sweep does not rename a
+    # line that is about to be deleted and then fail to find it.
+    src = tree.read(SENTINEL_FILE)
+    for _, name in DROP_DEFS:
+        src = _drop_definition(src, name)
+    tree.write(SENTINEL_FILE, src)
+    print(f"  {len(DROP_DEFS)} definition(s) removed from {SENTINEL_FILE}")
+
+    # The two local aliases go BEFORE the sweep. Renaming them instead would
+    # have produced `BRAND_DARK_GOLD_DEEP = BRAND_DARK_GOLD_DEEP` inside a
+    # method, which Python reads as a local assignment shadowing the global
+    # -- an UnboundLocalError on the same line. Caught by the suite.
+    for rel in ("RNV_Color_Palette_Manager.py", "ui/settings_dialog.py"):
+        tree.sub(rel, "        DARK_GOLD_DEEP = BRAND_DARK_GOLD_DEEP\n", "", 1)
+    print("  2 local alias(es) of a register name deleted")
+
+    tree.sub(SENTINEL_FILE, ANCHOR, ANCHOR + "\n" + NEW_CONSTS, 1)
+    tree.sub(SENTINEL_FILE, '    "BRAND_DARK_GOLD_RGB",\n',
+             '    "BRAND_DARK_GOLD_RGB",\n' + NEW_ALL, 1)
+
+    _regenerate_snapshot(tree)
+
+    total = 0
+    for rel in SWEEP:
+        text = tree.read(rel)
+        new, n = _token_sub(text)
+        if n:
+            tree.write(rel, _dedupe_imports(new))
+        total += n
+        print(f"  {rel}: {n} occurrence(s) renamed")
+    print(f"  {total} occurrence(s) across {len(SWEEP)} file(s)")
+
+
+SNAPSHOT = "snapshots/canonical.svg"
+
+
+def _luminance(hexv: str) -> float:
+    """The rule, restated here so the snapshot is recomputed rather than
+    accepted. Running the exporter to regenerate would prove only that the
+    exporter agrees with itself."""
+    h = hexv.lstrip("#")
+    out = 0.0
+    for i, w in ((0, 0.2126), (2, 0.7152), (4, 0.0722)):
+        c = int(h[i:i + 2], 16) / 255.0
+        out += w * (c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4)
+    return out
+
+
+def _regenerate_snapshot(tree) -> None:
+    """The exported SVG's swatch labels move where the mean was wrong.
+
+    snapshots/canonical.svg pins the export byte for byte, so it has to be
+    re-derived, not blessed. Each label's colour is recomputed from the
+    swatch it sits on, and the count of labels that actually change is
+    asserted -- a regeneration that moved every label, or none, would be a
+    bug wearing a passing test.
+    """
+    text = tree.read(SNAPSHOT)
+    pattern = re.compile(
+        r'(?P<head><rect x="\d+"[^>]*fill="(?P<ground>#[0-9a-fA-F]{6})"[^>]*/>\n'
+        r'\s*<text[^>]*fill=")(?P<ink>#[0-9a-fA-F]{6})(?P<tail>">)')
+    moved = []
+
+    def fix(m):
+        ground = m.group("ground")
+        # black wins above the crossover; the ratios are equal at 0.1791287
+        want = "#000000" if _luminance(ground) > 0.1791287 else "#ffffff"
+        if want != m.group("ink").lower():
+            moved.append(f"{ground} {m.group('ink')} -> {want}")
+        return m.group("head") + want + m.group("tail")
+
+    new, n = pattern.subn(fix, text)
+    if n != 5:
+        raise SystemExit(f"expected 5 swatch labels in {SNAPSHOT}, found {n}")
+    if len(moved) != 2:
+        raise SystemExit(f"expected exactly 2 labels to move (pure red and "
+                         f"pure green), got {len(moved)}: {moved}")
+    tree.write(SNAPSHOT, new)
+    print(f"  {SNAPSHOT}: {len(moved)} label(s) re-derived -- " + "; ".join(moved))
 
 
 def checks(tree) -> None:
-    new = tree.read(GUARD)
-    if "test_the_marker_exemption_covers_only_the_two_tools" in new:
-        raise SystemExit("the old exemption test survived the replacement")
-    if SENTINEL not in new:
-        raise SystemExit("the replacement guard is missing its new test")
-    missing = [name for name in KEEP if name not in new]
-    if missing:
-        raise SystemExit(
-            f"these tests are gone from the replacement: {missing}. This "
-            f"pass replaces one test and keeps the rest.")
-    print(f"  guards: the {len(KEEP)} passing tests are still there, the "
-          f"failing one is replaced")
+    src = tree.read(SENTINEL_FILE)
+    if SENTINEL not in src:
+        raise SystemExit("the ruling note did not land")
+
+    root = Path(tree.root)
+    strays = []
+    for path in sorted(root.rglob("*.py")):
+        if any(p in {".git", "build", "dist", ".venv", "__pycache__"}
+               for p in path.parts):
+            continue
+        if path.name in ("up.py", "up1.py", "up2.py"):
+            continue
+        rel = str(path.relative_to(root))
+        text = tree.files.get(rel)
+        if text is None:
+            text = path.read_bytes().decode("utf-8-sig", errors="replace")
+        if "RNV-NAMING-TOOL-DO-NOT-SWEEP" in text or "RNV-NAME-GUARD" in text:
+            continue
+        for old in RETIRED:
+            if re.search(r"\b%s\b" % re.escape(old), text):
+                strays.append(f"{rel}: {old}")
+    if strays:
+        raise SystemExit("retired names survived:\n  " + "\n  ".join(strays))
+
+    for name in ("GREY_66", "GREY_F0", "contrast_ink", "prefers_dark_ink",
+                 "relative_luminance", "contrast_ratio", "better_on"):
+        if f'"{name}",' not in src:
+            raise SystemExit(f"{name} is not exported from {SENTINEL_FILE}")
+
+    tree.read(BAD_BYTES_FILE).encode("utf-8")
+    print(f"  guards: {len(RETIRED)} names retired, ink rule stated once, "
+          f"{BAD_BYTES_FILE} is UTF-8")
 
 
-GUARD_SOURCE = r'''"""The button keys say where the button lives.
+NEW_CONSTS = '''# ── Neutral greys, named for what they are ──
+# RNV-INK-RULE (2026-09-02). These were IMAGE_PREVIEW_BORDER and
+# IMAGE_PREVIEW_BG -- role names on values that four applications in the
+# fleet paint with. GREY_F0 in particular is used by the picker, the icon
+# builder and this app, and until now had a name in none of them.
+GREY_66: Final[str] = "#666666"
+GREY_F0: Final[str] = "#f0f0f0"
 
-RNV-BUTTON-NAMING-GUARD
 
-main_btn_* is the main window at launch. dialog_btn_* is anything that opens
-later. Before this pass the main family here was called button_* -- the same
-name that holds the GOLD DIALOG scheme in rnv-color-picker and
-rnv-icon-builder. One name, two schemes, decided by which repository you had
-open. These tests are what stop it drifting back.
+# ── Which ink goes on this ground ──
+#
+# RNV-INK-RULE (2026-09-02, ruled by Chris). Across the fleet this question
+# was asked in ten places and answered three different ways, none of them a
+# contrast measurement. Here it was core/palette_formats.py, choosing the
+# label colour for an exported SVG swatch with sum(color) / 3 < 128.
+#
+# The mean is not a contrast measurement, and on saturated colour it is badly
+# wrong: pure green is 71% of the luminance of white, and the mean calls it
+# dark and writes WHITE on it at 1.37:1 where the right answer is black at
+# 15.30:1.
+#
+# One rule now, stated as a real comparison rather than a threshold --
+# whichever candidate has the higher contrast ratio against the ground wins.
+# The same maths as the surface ladder and the 4.5 floor. rnv-color-picker
+# and rnv-icon-builder carry the identical block.
 
-This application's dialogs already had their own hover plate
-(dialog_btn_hover_bg) and take their pressed state from accent. What they did
-not have was a name for the plate and label they rest on -- they reached into
-the main family for those. dialog_btn_bg and dialog_btn_text close that, with
-the values those dialogs already painted.
+
+def _channel(value: float) -> float:
+    """One sRGB channel, 0-255, linearised."""
+    c = value / 255.0
+    return c / 12.92 if c <= 0.03928 else ((c + 0.055) / 1.055) ** 2.4
+
+
+def _rgb(color: "str | tuple[int, int, int]") -> tuple[int, int, int]:
+    """Accept either shape. Callers hold hex strings and RGB triples both."""
+    if isinstance(color, str):
+        h = color.lstrip("#")
+        if len(h) == 3:
+            h = "".join(ch * 2 for ch in h)
+        return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16))
+    return (int(color[0]), int(color[1]), int(color[2]))
+
+
+def relative_luminance(color: "str | tuple[int, int, int]") -> float:
+    """WCAG 2.x relative luminance, 0.0 (black) to 1.0 (white)."""
+    r, g, b = _rgb(color)
+    return 0.2126 * _channel(r) + 0.7152 * _channel(g) + 0.0722 * _channel(b)
+
+
+def contrast_ratio(a: "str | tuple[int, int, int]",
+                   b: "str | tuple[int, int, int]") -> float:
+    """WCAG contrast ratio between two colours, 1.0 to 21.0."""
+    la, lb = relative_luminance(a), relative_luminance(b)
+    hi, lo = (la, lb) if la >= lb else (lb, la)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def better_on(background: "str | tuple[int, int, int]", *candidates: str) -> str:
+    """Whichever candidate reads best on this ground. Ties go to the first."""
+    return max(candidates, key=lambda c: contrast_ratio(background, c))
+
+
+def contrast_ink(background: "str | tuple[int, int, int]") -> str:
+    """Text colour for an arbitrary ground: WHITE or TRUE_BLACK.
+
+    For a colour the USER chose. Not for brand surfaces: what sits on a brand
+    gold is a ruling, not a measurement, and the two are 0.08 apart on
+    BRAND_DARK_GOLD.
+    """
+    return better_on(background, TRUE_BLACK, WHITE)
+
+
+def prefers_dark_ink(background: "str | tuple[int, int, int]") -> bool:
+    """True when TRUE_BLACK reads better on this ground than WHITE does."""
+    return contrast_ink(background) == TRUE_BLACK
+
+'''
+
+NEW_ALL = '''    "GREY_66",
+    "GREY_F0",
+    "relative_luminance",
+    "contrast_ratio",
+    "better_on",
+    "contrast_ink",
+    "prefers_dark_ink",
+'''
+
+OLD_PF_IMP = 'from ui.colors import SVG_EXPORT_BG, SVG_EXPORT_STROKE, SVG_EXPORT_TEXT_LIGHT, SVG_EXPORT_TEXT_DARK\n'
+NEW_PF_IMP = 'from ui.colors import SVG_EXPORT_BG, SVG_EXPORT_STROKE, contrast_ink\n'
+OLD_PF_USE = '                brightness = sum(color) / 3\n                text_color = SVG_EXPORT_TEXT_LIGHT if brightness < 128 else SVG_EXPORT_TEXT_DARK\n'
+NEW_PF_USE = '                # RNV-INK-RULE: was sum(color) / 3 < 128, which is not a\n                # contrast measurement and put white on pure green.\n                text_color = contrast_ink(color)\n'
+
+GUARD_SOURCE = r'''"""A constant names a colour, not a role. RNV-NAME-GUARD
+
+Ruled by Chris on 2026-09-02. Eleven names in this application answered both
+questions at once -- what colour is this, and what is it painting -- and two
+answered neither, because nothing used them.
+
+The pairs that looked like palette keys were not: they were inline
+`X if is_light else Y` branches whose two arms were black and white. The
+branch was carrying the mode all along; only the arms needed naming honestly.
 """
 from __future__ import annotations
 
+import io
 import re
+import tokenize
 from pathlib import Path
 
+from ui import colors
+
 ROOT = Path(__file__).resolve().parent.parent
-
-OLD = ("button_bg", "button_text", "button_hover_bg", "button_hover_text",
-       "button_pressed_bg", "button_pressed_text", "button_border_color")
-NEW = tuple("main_" + n.replace("button_", "btn_") for n in OLD)
-DIALOG = ("dialog_btn_bg", "dialog_btn_text", "dialog_btn_hover_bg")
-
-PINNED_MAIN = {
-    "dark": {"main_btn_bg": "#1a1a1a", "main_btn_text": "#dddddd",
-             "main_btn_hover_bg": "#333333", "main_btn_hover_text": "#dddddd",
-             "main_btn_pressed_bg": "#444444", "main_btn_pressed_text": "#000000",
-             "main_btn_border_color": "transparent"},
-    "light": {"main_btn_bg": "#ffffff", "main_btn_text": "#000000",
-              "main_btn_hover_bg": "#333333", "main_btn_hover_text": "#000000",
-              "main_btn_pressed_bg": "#444444", "main_btn_pressed_text": "#ffffff",
-              "main_btn_border_color": "transparent"},
-    "image": {"main_btn_bg": "#1a1a1a", "main_btn_text": "#dddddd",
-              "main_btn_hover_bg": "#333333", "main_btn_hover_text": "#dddddd",
-              "main_btn_pressed_bg": "#444444", "main_btn_pressed_text": "#000000",
-              "main_btn_border_color": "transparent"},
-}
-
-#: The dialog family holds exactly what those dialogs painted before the
-#: rename. If one of these ever stops matching its main counterpart that is
-#: fine -- it means a dialog scheme was ruled on. What must not happen is a
-#: value moving during a rename.
-PINNED_DIALOG = {
-    "dark": {"dialog_btn_bg": "#1a1a1a", "dialog_btn_text": "#dddddd",
-             "dialog_btn_hover_bg": "#3a3a3a"},
-    "light": {"dialog_btn_bg": "#ffffff", "dialog_btn_text": "#000000",
-              "dialog_btn_hover_bg": "#eeeeee"},
-    "image": {"dialog_btn_bg": "#1a1a1a", "dialog_btn_text": "#dddddd",
-              "dialog_btn_hover_bg": "#3a3a3a"},
-}
-
+RETIRED = ('ACCENT_PRESSED_TEXT_DARK', 'ACCENT_PRESSED_TEXT_LIGHT', 'TEXTEDIT_BG_DARK', 'TEXTEDIT_BG_LIGHT', 'SELECTION_OVERLAY_TEXT', 'IMAGE_PREVIEW_BORDER', 'IMAGE_PREVIEW_BG', 'DARK_GOLD_DEEP', 'SLOT_SELECTED_COLOR', 'CHECKBOX_ACCENT', 'SVG_EXPORT_TEXT_DARK', 'SVG_EXPORT_TEXT_LIGHT')
 SKIP = {".git", "build", "dist", ".venv", "__pycache__"}
 
-#: A sweep for a name cannot tell a USE from a MENTION, and the two files
-#: certain to mention the old names are this guard -- which lists them in order
-#: to forbid them -- and the delivery script that performs the rename. Skipped
-#: by marker rather than by filename: the script arrives under whatever name it
-#: is saved as.
-MARKERS = ("RNV-BUTTON-NAMING-GUARD", "RNV-BUTTON-NAMING-TOOL-DO-NOT-SWEEP")
 
-#: Dialogs, and the family each is allowed to read.
-DIALOG_FILES = ("ui/about_dialog.py", "ui/batch_export_dialog.py",
-                "utils/dialog_helper.py")
+def _code_only(text: str) -> str:
+    """The file with every comment and string literal removed.
 
-
-def _palettes():
-    from ui.colors import (DARK_THEME_COLORS, LIGHT_THEME_COLORS,
-                           IMAGE_MODE_COLORS)
-    return {"dark": DARK_THEME_COLORS, "light": LIGHT_THEME_COLORS,
-            "image": IMAGE_MODE_COLORS}
+    A guard that sweeps for the thing it forbids must tell a use from a
+    mention. Doing that by excluding files stops working the moment a third
+    file has a legitimate reason to say the word; tokenising needs no list.
+    """
+    out = []
+    try:
+        for tok in tokenize.generate_tokens(io.StringIO(text).readline):
+            if tok.type in (tokenize.COMMENT, tokenize.STRING):
+                continue
+            out.append(tok.string)
+    except (tokenize.TokenError, IndentationError, SyntaxError):
+        return text
+    return " ".join(out)
 
 
 def _sources():
-    for path in sorted(ROOT.rglob("*")):
-        # Prose is not swept: docs are updated in one pass after alignment
-        # settles, so they name the old keys until then, and failing on that
-        # would be failing on a decision rather than on a defect.
-        if path.is_dir() or path.suffix != ".py":
+    for path in sorted(ROOT.rglob("*.py")):
+        if any(p in SKIP for p in path.parts):
             continue
-        if any(part in SKIP for part in path.parts):
-            continue
-        text = path.read_text(encoding="utf-8-sig", errors="replace")
-        if any(marker in text for marker in MARKERS):
+        text = path.read_bytes().decode("utf-8-sig", errors="replace")
+        if "RNV-NAME-GUARD" in text or "RNV-NAMING-TOOL-DO-NOT-SWEEP" in text:
             continue
         yield path, text
 
 
-def test_no_old_button_key_name_survives():
-    offenders = []
-    for path, text in _sources():
-        for old in OLD:
-            if re.search(r"(['\"])" + old + r"\1", text):
-                offenders.append(f"{path.relative_to(ROOT)}: {old}")
-    assert not offenders, (
-        "these are main-window button keys and must be named main_btn_*:\n  "
-        + "\n  ".join(offenders))
-
-
-TOOL_MARKER = "RNV-BUTTON-NAMING-TOOL-DO-NOT-SWEEP"
-
-
-def test_no_application_file_is_exempt_from_the_sweep():
-    """The exemption is by marker, and the marker is how a file could hide.
-
-    An earlier version of this counted marked files and allowed two. That
-    failed in a working tree holding a second copy of the delivery script --
-    a guard failing on the state of somebody's checkout rather than on a
-    defect in the application, which is the wrong thing to fail on.
-
-    What actually matters is that no APPLICATION file is exempt. This guard
-    may carry a marker; it lists the old names in order to forbid them.
-    Everything else must be a delivery script, identified by the tool marker
-    in its own header -- those arrive under whatever name they are saved as,
-    there can be several of them lying around, and none is application source.
-    """
-    here = Path(__file__).resolve()
+def test_the_retired_names_are_gone():
     strays = []
-    for path in sorted(ROOT.rglob("*.py")):
-        if any(part in SKIP for part in path.parts):
-            continue
-        text = path.read_text(encoding="utf-8-sig", errors="replace")
-        if not any(marker in text for marker in MARKERS):
-            continue
-        if path.resolve() == here or TOOL_MARKER in text:
-            continue
-        strays.append(str(path.relative_to(ROOT)))
-    assert not strays, (
-        "these files are skipped by the name sweep but are not a delivery "
-        f"script: {strays}")
-    assert MARKERS[0] in here.read_text(encoding="utf-8-sig"), (
-        "this guard lost its own marker and is now sweeping itself")
+    for path, text in _sources():
+        for old in RETIRED:
+            if re.search(r"\b%s\b" % re.escape(old), text):
+                strays.append(f"{path.relative_to(ROOT)}: {old}")
+    assert not strays, "retired names are still in use:\n  " + "\n  ".join(strays)
 
 
-def test_all_three_palettes_carry_both_families():
-    for mode, palette in _palettes().items():
-        missing = [n for n in NEW + DIALOG if n not in palette]
-        assert not missing, f"{mode} palette missing {missing}"
+def test_the_values_they_named_are_still_here():
+    """A rename that loses a value is not a rename. These are the colours the
+    eleven role names were standing in front of."""
+    assert colors.TRUE_BLACK == "#000000"
+    assert colors.WHITE == "#ffffff"
+    assert colors.GREY_66 == "#666666"
+    assert colors.GREY_F0 == "#f0f0f0"
+    assert colors.BRAND_DARK_GOLD_DEEP == "#7e6529"
 
 
-def test_the_rename_moved_no_value():
-    for mode, pins in PINNED_MAIN.items():
-        palette = _palettes()[mode]
-        actual = {k: palette.get(k) for k in pins}
-        assert actual == pins, (
-            f"the {mode} main button values changed.\n"
-            f"  wanted {pins}\n  found  {actual}\n"
-            "A rename that changes a value is not a rename.")
-
-
-def test_the_dialog_family_holds_what_the_dialogs_already_painted():
-    for mode, pins in PINNED_DIALOG.items():
-        palette = _palettes()[mode]
-        actual = {k: palette.get(k) for k in pins}
-        assert actual == pins, (
-            f"the {mode} dialog button values are not what those dialogs "
-            f"painted before the rename.\n  wanted {pins}\n  found  {actual}")
-
-
-def test_dialogs_read_the_dialog_family_and_not_the_main_one():
-    for rel in DIALOG_FILES:
-        src = (ROOT / rel).read_text(encoding="utf-8-sig")
-        assert "dialog_btn_" in src, f"{rel} no longer reads the dialog family"
-        assert not re.search(r"(['\"])main_btn_", src), (
-            f"{rel} reads the main family. Dialogs open later and rest on the "
-            f"dialog plate; wiring one to main_btn_* refuses the distinction "
-            f"this rename exists to make.")
-
-
-def test_the_settings_dialog_surface_fallback_is_still_a_surface_fallback():
-    """One read of the main plate inside a dialog is deliberate and stays.
-
-    ui/settings_dialog.py resolves an INPUT background through
-    input_bg -> card_bg -> main_btn_bg. The last step is a surface fallback,
-    not a button, and pointing it at dialog_btn_bg would be renaming by
-    proximity. Asserted so it is not tidied away by the next reader.
-    """
+def test_the_checkbox_still_uses_the_mode_selected_gold():
+    """CHECKBOX_ACCENT was Windows blue, exported, and used by nothing. The
+    checked checkbox has always been painted with the accent. Deleting the
+    dead constant must not have disturbed the live one."""
     src = (ROOT / "ui" / "settings_dialog.py").read_text(encoding="utf-8-sig")
-    assert "theme.get('card_bg', theme['main_btn_bg'])" in src, (
-        "the settings dialog's input-background fallback chain changed shape")
-    assert "theme['dialog_btn_text']" in src, (
-        "the settings dialog's button label should read the dialog family")
+    checked = re.search(
+        r"QCheckBox::indicator:checked \{\{(?P<body>.*?)\}\}", src, re.S)
+    assert checked, "the checked-checkbox rule is gone from the stylesheet"
+    body = checked.group("body")
+    assert "background-color: {accent}" in body, (
+        "the checked checkbox no longer fills with the mode-selected accent")
+    assert "border-color: {accent_dark}" in body
+    for palette in (colors.DARK_THEME_COLORS, colors.LIGHT_THEME_COLORS):
+        assert palette["accent"] in (colors.BRAND_GOLD, colors.BRAND_DARK_GOLD)
 
 
-def test_the_two_schemes_are_still_different():
-    """The dialog hover is a softer plate carrying gold; the main hover is the
-    inverse scheme. They were separate before this pass and stay separate."""
-    for mode, palette in _palettes().items():
-        assert palette["dialog_btn_hover_bg"] != palette["main_btn_hover_bg"], (
-            f"{mode}: the dialog hover plate and the main hover plate now hold "
-            f"the same value ({palette['main_btn_hover_bg']}). Flattening the "
-            f"two loses a scheme.")
+def test_no_windows_blue_anywhere():
+    """The value it held is on no ladder, no grid and no brand."""
+    strays = []
+    for path, text in _sources():
+        if re.search(r"""['"]#0078d4['"]""", text, re.I):
+            strays.append(str(path.relative_to(ROOT)))
+    assert not strays, f"#0078d4 is back in: {strays}"
+
+
+def test_the_ink_rule_is_a_real_contrast_measurement():
+    assert colors.contrast_ink("#ffffff") == colors.TRUE_BLACK
+    assert colors.contrast_ink("#000000") == colors.WHITE
+    assert round(colors.contrast_ratio("#ffffff", "#000000"), 2) == 21.0
+
+
+def test_the_exported_svg_labels_follow_the_rule():
+    """snapshots/canonical.svg pins the export byte for byte. Pure red and
+    pure green used to carry white labels at 4.00:1 and 1.37:1, because the
+    mean of the channels called them dark. They carry black now."""
+    svg = (ROOT / "snapshots" / "canonical.svg").read_text(encoding="utf-8")
+    pairs = re.findall(
+        r'<rect x="\d+"[^>]*fill="(#[0-9a-fA-F]{6})"[^>]*/>\s*'
+        r'<text[^>]*fill="(#[0-9a-fA-F]{6})"', svg)
+    assert len(pairs) == 5, f"expected 5 swatches in the snapshot, found {len(pairs)}"
+    for ground, ink in pairs:
+        assert ink.lower() == colors.contrast_ink(ground), (
+            f"the snapshot writes {ink} on {ground}; the rule says "
+            f"{colors.contrast_ink(ground)}")
+
+
+def test_the_ink_rule_gets_saturated_colour_right():
+    """The case sum(color) / 3 got wrong. Pure green is a LIGHT ground."""
+    assert colors.contrast_ink((0, 255, 0)) == colors.TRUE_BLACK
+    assert colors.contrast_ratio((0, 255, 0), colors.TRUE_BLACK) > 15
+    assert sum((0, 255, 0)) / 3 < 128       # what the old rule saw
+
+
+def test_no_call_site_measures_brightness_by_hand():
+    """Reads code with comments and strings removed, so the note above the
+    replaced call site -- which names the arithmetic it retired -- does not
+    fail the sweep that forbids it."""
+    mean = re.compile(r"sum \( colou?r \) / 3|\( r \+ g \+ b \) / 3")
+    luma = re.compile(r"\* 299\b|\* 587\b|\* 114\b")
+    strays = []
+    for path, text in _sources():
+        code = _code_only(text)
+        if mean.search(code) or luma.search(code):
+            strays.append(str(path.relative_to(ROOT)))
+    assert not strays, f"hand-rolled brightness rules are back in: {strays}"
+
+
+def test_every_source_file_is_utf8():
+    """core/palette_formats.py carried cp1252 em-dashes. CPython let it run
+    because they sat in comments; an audit script read it with plain UTF-8,
+    swallowed the decode error, skipped the file, and reported four live
+    constants as dead. A sweep that cannot read a file is worse than one that
+    fails."""
+    bad = []
+    for path in sorted(ROOT.rglob("*.py")):
+        if any(p in SKIP for p in path.parts):
+            continue
+        try:
+            path.read_bytes().decode("utf-8-sig")
+        except UnicodeDecodeError as exc:
+            bad.append(f"{path.relative_to(ROOT)}: {exc}")
+    assert not bad, "not valid UTF-8:\n  " + "\n  ".join(bad)
 '''
 
 
@@ -355,12 +585,18 @@ class Tree:
         self.write(rel, src.replace(old, new, times))
 
     def flush(self) -> list[str]:
+        """Compare and write BYTES, not decoded text.
+
+        read_text('utf-8') here raised on a file that was not valid UTF-8 --
+        which is precisely the file some scripts exist to fix. Bytes compare
+        identically for everything else and cannot refuse to look."""
         touched = []
         for rel, text in self.files.items():
             p = self.root / rel
             p.parent.mkdir(parents=True, exist_ok=True)
-            if not p.exists() or p.read_text(encoding="utf-8") != text:
-                p.write_text(text, encoding="utf-8")
+            data = text.encode("utf-8")
+            if not p.exists() or p.read_bytes() != data:
+                p.write_bytes(data)
                 touched.append(rel)
         return touched
 
