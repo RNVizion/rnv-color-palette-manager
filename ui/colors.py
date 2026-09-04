@@ -133,6 +133,13 @@ APP_TEXT_DIM: Final[str] = "#aaaaaa"
 """engine/brand.py APP["text-dim"]. grey(10)."""
 
 APP_PANEL_HOVER: Final[str] = "#3a3a3a"
+
+# grey(4) on the ink grid. The main button's pressed plate (ruled 2026-08-26)
+# and, from 2026-09-02, the scrollbar handle -- RNV-COLLAPSE-505050: this app
+# held #505050 for its handle where the other four already used #444444, and
+# #505050 was on neither the ladder nor the grid. Named here for the first
+# time in this app; rnv-text-transformer already calls it GREY_44.
+GREY_44: Final[str] = "#444444"
 """engine/brand.py APP["panel-hover"]. The n=+2 rung of the dark surface
 ladder, and the dark interaction plate.
 
@@ -416,13 +423,13 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'text_disabled': '#555555',
     # Borders
     'border_color': APP_BORDER,
-    'hover_color': '#444444',
+    'hover_color': GREY_44,
     # Buttons
     'main_btn_bg': BRAND_BLACK,
     'main_btn_text': APP_TEXT,
     'main_btn_hover_bg': APP_BORDER,
     'main_btn_hover_text': APP_TEXT,
-    'main_btn_pressed_bg': '#444444',
+    'main_btn_pressed_bg': GREY_44,
     'main_btn_pressed_text': TRUE_BLACK,
     'main_btn_border_color': 'transparent',
     # The About dialog's button hover plate. Spelled 'tab_hover' until
@@ -459,7 +466,7 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'tab_bg': APP_CARD,
     'tab_selected_bg': APP_BORDER,
     'tab_hover_bg': APP_PANEL_HOVER,
-    'scroll_handle': '#505050',
+    'scroll_handle': GREY_44,   # was #505050, see GREY_44
     # Accent (brand gold)
     'accent': BRAND_GOLD,
     'accent_dark': BRAND_GOLD_HOVER,
@@ -467,7 +474,7 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'accent_text': TRUE_BLACK,
     # Scrollbar
     'scrollbar_bg': BRAND_BLACK,
-    'scrollbar_handle': '#505050',
+    'scrollbar_handle': GREY_44,   # was #505050, see GREY_44
     'scrollbar_handle_hover': '#606060',
     'scrollbar_border': APP_BORDER,
     # Dialog
@@ -501,7 +508,7 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     'main_btn_text': '#000000',
     'main_btn_hover_bg': '#333333',
     'main_btn_hover_text': '#000000',
-    'main_btn_pressed_bg': '#444444',
+    'main_btn_pressed_bg': GREY_44,
     'main_btn_pressed_text': '#ffffff',
     'main_btn_border_color': 'transparent',
     # The About dialog's button hover plate. Spelled 'tab_hover' until
@@ -575,13 +582,13 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'text_disabled': '#555555',
     # Borders
     'border_color': APP_BORDER,
-    'hover_color': '#444444',
+    'hover_color': GREY_44,
     # Buttons
     'main_btn_bg': BRAND_BLACK,
     'main_btn_text': APP_TEXT,
     'main_btn_hover_bg': APP_BORDER,
     'main_btn_hover_text': APP_TEXT,
-    'main_btn_pressed_bg': '#444444',
+    'main_btn_pressed_bg': GREY_44,
     'main_btn_pressed_text': TRUE_BLACK,
     'main_btn_border_color': 'transparent',
     # The About dialog's button hover plate. Spelled 'tab_hover' until
@@ -618,7 +625,7 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'tab_bg': APP_CARD,
     'tab_selected_bg': APP_BORDER,
     'tab_hover_bg': APP_PANEL_HOVER,
-    'scroll_handle': '#505050',
+    'scroll_handle': GREY_44,   # was #505050, see GREY_44
     # Accent (brand gold)
     'accent': BRAND_GOLD,
     'accent_dark': BRAND_GOLD_HOVER,
