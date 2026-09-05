@@ -40,7 +40,15 @@ def _contrast(a, b):
     return (hi + 0.05) / (lo + 0.05)
 
 
-STRAYS = {"#4caf50", "#ff6b6b"}
+STRAYS = {
+    "#4caf50",   # Material green, ruled out 2026-09-02
+    "#ff6b6b",   # this app's own dark error text, ruled out 2026-09-02
+    # RNV-STATUS-FAMILY (2026-09-03), the Bootstrap family and its
+    # two orphans. #e56b77 and #c82131 were derived from #dc3545;
+    # with the base retired they are values derived from something
+    # no longer in the palette, which is the #c4a458 failure.
+    "#28a745", "#ffc107", "#dc3545", "#e56b77", "#c82131",
+}
 
 
 def test_the_strays_are_gone_from_every_palette():
@@ -53,10 +61,18 @@ def test_the_strays_are_gone_from_every_palette():
 def test_the_three_ruled_values_are_the_register_s():
     """Not "some green" -- THE green. An app that picks its own status colour
     has an opinion about what success means, which is the register's job."""
-    assert colors.STATUS_SUCCESS == "#28a745"
-    assert colors.STATUS_WARNING == "#ffc107"
-    assert colors.STATUS_ERROR == "#dc3545"
-    assert colors.STATUS_ERROR_TEXT == "#e56b77"
+    # RNV-STATUS-FAMILY (2026-09-03): the register replaced all
+    # three. The green and the red were one olive under
+    # deuteranopia at about 4 apart; the amber read 1.63 on
+    # #ffffff against a 3:1 fill floor. Still pinned by value --
+    # an app that picks its own status colour has an opinion
+    # about what success means, which is the register's job.
+    assert colors.STATUS_SUCCESS == "#926c89"
+    assert colors.STATUS_WARNING == "#a2703c"
+    assert colors.STATUS_ERROR == "#c75b64"
+    # #e56b77 was derived from #dc3545 and orphaned when the
+    # base was retired, so it moves with it.
+    assert colors.STATUS_ERROR_TEXT == "#dd6f77"
 
 
 def test_the_palettes_are_wired_through_the_constants_not_rewritten():
@@ -69,8 +85,12 @@ def test_the_palettes_are_wired_through_the_constants_not_rewritten():
 
 
 def test_the_dark_error_text_still_clears_on_every_dark_ground():
-    """The move costs 0.87 of headroom. This is the check that says it could
-    afford it, on the grounds this app actually paints."""
+    """The 2026-09-02 move cost 0.87 of headroom and this is the
+    check that said it could afford it. RNV-STATUS-FAMILY
+    (2026-09-03) takes a little more: #dd6f77 reads 4.5210 on
+    APP card against #e56b77's 4.5801 -- still above the floor,
+    on the grounds this app
+    actually paints."""
     for ground in ("#000000", "#1a1a1a", "#2a2a2a"):
         assert _contrast(colors.STATUS_ERROR_TEXT, ground) >= 4.5, (
             f"error text {colors.STATUS_ERROR_TEXT} on {ground} is short")

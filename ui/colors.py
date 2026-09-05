@@ -315,54 +315,93 @@ SIZE_OVERLAY_BG: Final[str] = "rgba(0, 0, 0, 200)"
 """Background for the floating size/status overlay widget."""
 
 # ==================== Status Colors ====================
-STATUS_SUCCESS: Final[str] = "#28a745"
-"""MIRRORS the register's STATUS["success"].
+STATUS_SUCCESS: Final[str] = "#926c89"
+"""MIRRORS the register's STATUS["success"]. A FILL.
+
+RNV-STATUS-FAMILY (2026-09-03): was #28a745, Bootstrap's green. Retired
+because it and Bootstrap's red collapsed to one olive under deuteranopia at
+about 4 apart -- roughly 8% of men could not tell success from error, which
+are the two most consequential colours in an interface.
+
+It is a FILL and cannot carry text: 3.92 on #1a1a1a, 3.23 on #2a2a2a. That is
+the fill band, not a shortcoming -- a value that clears 3:1 on a dark AND a
+light ground sits at L* 48-59 by arithmetic, and a mid-tone reaches 4.5:1 on
+neither side. This application already knew that for the red and spent two
+values on it; the register has now generalised it to all three roles.
 
 RNV-STATUS-REGISTER (2026-09-02): the three palettes wrote #4caf50,
 Material's green, as a literal. Two applications held that value for one
 role while the other three used the register's. Named here so the value
 has one home, and collapsed onto the register so the fleet has one green."""
 
-STATUS_WARNING: Final[str] = "#ffc107"
-"""MIRRORS the register's STATUS["warning"]. Value unchanged -- it was
-already right, and merely written out three times instead of named once."""
+STATUS_WARNING: Final[str] = "#a2703c"
+"""MIRRORS the register's STATUS["warning"]. A FILL.
 
-STATUS_ERROR: Final[str] = "#dc3545"
+RNV-STATUS-FAMILY (2026-09-03): was #ffc107, retired on arithmetic rather
+than taste -- 1.63 on #ffffff and 1.49 on #f5f5f5 against a 3:1 fill floor.
+It could not legally carry a boundary on a light ground at all."""
+
+STATUS_ERROR: Final[str] = "#c75b64"
 """The registered error red. Not drawn by this app, which renders no error
-fill -- it is here so the light value below can be DERIVED from it rather
-than written down.
+fill -- it is here so the family has its base and so the two text values
+below are visibly siblings of it rather than free-standing reds.
 
-A written-down derivative orphans the moment its base moves. That is exactly
-what happened to #c4a458, a tint of a gold that was later retired."""
+RNV-STATUS-FAMILY (2026-09-03): was #dc3545, Bootstrap's. IT IS NO LONGER
+WHAT THE LIGHT VALUE IS DERIVED FROM -- see STATUS_ERROR_TEXT_LIGHT."""
 
-STATUS_ERROR_TEXT: Final[str] = "#e56b77"
+STATUS_ERROR_TEXT: Final[str] = "#dd6f77"
 """Inline error/warning label text on a DARK ground (e.g. batch export
 validation). MIRRORS the register's STATUS["error-text"].
 
-RNV-STATUS-REGISTER (2026-09-02): was #ff6b6b, and being left alone was a
-RULING, not an oversight -- the error-red pass held that a dark value already
-clearing the floor should not be replaced to buy uniformity. That argument
-was right when the register had no name for this job. It now does, and a
-fourth spelling of a registered colour costs more than the headroom does.
+RNV-STATUS-FAMILY (2026-09-03): was #e56b77, which was derived from the
+retired #dc3545. With that base gone it is an ORPHAN -- a value derived from
+something no longer in the palette -- which is precisely the #c4a458 failure
+this file's own docstrings warn about twice. It moves with its base.
 
-    #ff6b6b  7.5674 on #000000   5.1722 on #2a2a2a
-    #e56b77  6.7008 on #000000   4.5804 on #2a2a2a
+    #e56b77  6.7011 on #000000   4.5801 on #2a2a2a
+    #dd6f77  6.6146 on #000000   4.5210 on #2a2a2a
 
-The register derived #e56b77 to land at 4.5 on the worst dark ground it
-meets, which is APP card #2a2a2a -- so this value is not merely adequate
-here, it was designed for this measurement."""
+Slightly LESS headroom than the value it replaces -- 4.5210 against
+4.5801 on the card -- and still above the floor. The gamut correction of
+2026-09-04 moved the whole red family a byte or so; the direction of that
+half-point is worth stating rather than rounding away.
 
-STATUS_ERROR_TEXT_LIGHT: Final[str] = lighten(STATUS_ERROR, -20)  # -> #c82131
-"""The same label on a LIGHT ground.
+RNV-STATUS-REGISTER (2026-09-02): before #e56b77 this was #ff6b6b, and being
+left alone was a RULING rather than an oversight -- the error-red pass held
+that a dark value already clearing the floor should not be replaced to buy
+uniformity. That argument was right when the register had no name for this
+job. It now does, and a fourth spelling of a registered colour costs more
+than the headroom does."""
 
-STATUS_ERROR_TEXT reads 2.5454 on #f5f5f5 -- below the 4.5 text floor and
-below even the 3.0 UI floor. This reads 5.1811, and clears 4.5:1 down to
-#e8e8e8, the same coverage boundary BRAND_DARK_GOLD_DEEP publishes.
+STATUS_ERROR_TEXT_LIGHT: Final[str] = "#b84e58"
+"""The same label on a LIGHT ground. MIRRORS STATUS["error-text-light"].
 
-No red carries text at 4.5:1 on a real light panel, so light spends a
-derivative on TEXT for exactly the reason the gold does: the fill and text
-jobs occupy non-overlapping luminance bands. A uniform per-channel step holds
-hue at 354.25 degrees, identical to the base."""
+STATUS_ERROR_TEXT reads 2.8367 on #f5f5f5 -- below the 4.5 text floor and
+below even the 3.0 UI floor. This reads 4.5123. No red carries text at 4.5:1
+on a real light panel, so light spends a value on TEXT for exactly the reason
+the gold does: the fill and text jobs occupy non-overlapping luminance bands.
+
+WRITTEN DOWN, NOT DERIVED, AND THAT IS A CHANGE. This was
+lighten(STATUS_ERROR, -20), and the test beside it argued -- correctly -- that
+a written-down derivative orphans the moment its base moves. That argument is
+why the value is not silently kept: against the new base the formula yields
+#b44753, which is neither the old #c82131 nor the registered #b84e58. A
+derivative whose rule no longer produces it is not a derivative, it is a
+coincidence waiting to break.
+
+The register's family derivation is a different rule -- hold hue and chroma,
+move lightness only, take the first step that clears 4.5 on the worst ground
+-- and it publishes the RESULT with the walk as provenance, so that retuning
+the rule cannot silently change what an error looks like in five
+applications. Same call the register made for BRAND_STANDBY_GOLD.
+
+RNV-STATUS-LIGHT-FLOOR: this value does NOT reach the coverage boundary its
+predecessor did. #c82131 read 4.6100 on #e8e8e8; #b84e58 reads 4.0150 there
+and 4.2401 on APP hover-light #eeeeee. The register walks its light variants
+against #f5f5f5 as "the worst light ground", and rev 27 put three registered
+rungs below it. The question is open with the brand chat; if it re-walks
+against #e8e8e8 the answer here is #ae4650, moving 3.1 -- well inside the
+register's own 8.40 threshold, so it would stay the same red."""
 
 # ==================== Preview & History Borders ====================
 PREVIEW_GRID_BORDER: Final[tuple[int, int, int]] = (0, 0, 0)
