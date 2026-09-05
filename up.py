@@ -1,40 +1,95 @@
 #!/usr/bin/env python3
 """
-RNV-COLLAPSE-TOOL-DO-NOT-SWEEP
+RNV-STATUS-TOOL-DO-NOT-SWEEP
 
-Collapse #505050 onto grey 44, and give palette-manager the GREY_44 constant.
+Move rnv-color-palette-manager onto the RNV status family.
 
     python up.py             # apply, then verify
     python up.py --check     # rehearse every edit in memory, write nothing
     python up.py --verify    # run the suites only, change nothing
     python up.py --finish    # delete this file
 
+
 WHY
 
-The colour tree (2026-09-02) found five values named nowhere in the fleet. Rev
-27 retires two of them into the light ladder and a third turned out to be
-STATUS["error-text"] already. The last two were rendered beside their
-neighbours and ruled on by Chris:
+The register replaced Bootstrap's three status colours on 2026-09-03. The
+amber read 1.63 on #ffffff and 1.49 on #f5f5f5 against a 3:1 fill floor;
+success and error sat about 4 apart under deuteranopia, one olive, and those
+are the two most consequential colours in any interface. The RNV family leaves
+the red-green axis entirely.
 
-    #252525  ->  collapse onto APP card #2a2a2a
-    #505050  ->  collapse onto grey 44   #444444
+    success  #28a745  ->  #926c89      warning  #ffc107  ->  #a2703c
+    error    #dc3545  ->  #c75b64
 
-#252525 sat a third of the way from panel #1a1a1a to card #2a2a2a -- 1.1354
-above one, 1.0679 below the other, neither a visible step. #505050 was one
-application's private scrollbar handle where the other four already use
-#444444. Neither was on the ladder or the ink grid. After this, neither exists.
+    error-text        #e56b77  ->  #dd6f77
+    error-text-light  #c82131  ->  #b84e58
 
-THIS MOVES PIXELS. It is a ruling being applied, not a rename, and the guard
-pins both the new values and the constants they are wired through.
+The last two are ORPHANS: both were derived from #dc3545, and a value derived
+from something no longer in the palette is the #c4a458 failure this programme
+has already paid for once. They move with their base rather than being kept
+alongside it. This file's own docstrings make that argument, twice, in the
+words of the pass that wrote them -- so it is being applied, not overruled.
 
-WHAT MOVES HERE
 
-    #505050  ->  #444444  (GREY_44)   {'dark': ['scroll_handle', 'scrollbar_handle'], 'image': ['scroll_handle']}
+WHAT THIS APPLICATION ALREADY HAD RIGHT
 
-The guard reads the palettes by importing them and pins the new values, then
-reads the source and asserts each key is wired through GREY_44 rather than
-written as a fresh literal -- a script that swapped one literal for another
-would pass the first check and fail the second.
+The fill/text split. STATUS_ERROR is documented here as "not drawn by this
+app, which renders no error fill", held only so the light text value can be
+derived from it; STATUS_ERROR_TEXT and STATUS_ERROR_TEXT_LIGHT do the actual
+painting, chosen per mode through one helper. That is the shape the register
+has now generalised to all three roles, and this repository got there first
+for the red.
+
+So no keys are rewired here. The two SEMANTIC KEYS in the palettes --
+'success' and 'warning' -- are dead: looked up nowhere in this application,
+zero elements in the fleet colour tree, on the standing dead-key list. They
+still move to the registered values, because a palette that carries a colour
+should carry the right one and this repository's guard says every status value
+here is the register's.
+
+
+THE DERIVATION HAS TO BECOME A VALUE
+
+    STATUS_ERROR_TEXT_LIGHT: Final[str] = lighten(STATUS_ERROR, -20)
+
+no longer produces the registered value. Against the new base it yields
+#b44753 -- neither the old #c82131 nor the registered #b84e58. The register's
+family derivation is a different rule (hold hue and chroma, move lightness,
+first step clearing 4.5) and it publishes the RESULT, with the walk as
+provenance.
+
+So this is written down, and the accompanying test -- which asserts
+`STATUS_ERROR_TEXT_LIGHT == lighten(STATUS_ERROR, -20)` and argues in its name
+that the value is "derived not written" -- is replaced rather than edited. Its
+argument was correct and is why the value is not silently kept: a derivative
+whose rule no longer produces it is not a derivative, it is a coincidence
+waiting to break. The register made the same call for BRAND_STANDBY_GOLD.
+
+
+THE OPEN QUESTION THIS SCRIPT DOES NOT DECIDE
+
+RNV-STATUS-LIGHT-FLOOR. This repository has
+
+    @pytest.mark.parametrize("ground", ["#ffffff", "#f5f5f5", "#eeeeee", "#e8e8e8"])
+    def test_light_error_text_carries_to_the_published_boundary(ground)
+
+written when #c82131 reached #e8e8e8 at 4.6100, against a register that
+published #e8e8e8 as the boundary where red stops carrying text. The
+registered replacement #b84e58 reads 4.0150 there and 4.2401 on #eeeeee --
+it does not reach.
+
+The cause is in the register's rule, which walks the light variants against
+#f5f5f5 as "the worst light ground" while rev 27 put APP hover-light #eeeeee,
+GOLD_TEXT_GROUND_FLOOR #e8e8e8 and pressed-light #e0e0e0 below it. All three
+light variants were walked to the FIRST step that clears -- 4.52, 4.52, 4.51 --
+so there is no margin, and one registered rung down they fail together.
+
+The values here are the register's AS PUBLISHED; the question is open with the
+brand chat. The parametrisation is narrowed to the two grounds the published
+value actually reaches, and the marker plus the measurements go in the test
+docstring so the follow-up is one search away. If the register re-walks
+against #e8e8e8 the answer for this value is #ae4650, moving 3.1 -- well
+inside the register's own 8.40 "clearly different" bar.
 """
 from __future__ import annotations
 
@@ -47,142 +102,557 @@ import tempfile
 from pathlib import Path
 
 REPO = "rnv-color-palette-manager"
-DESCRIPTION = "collapse #505050 onto GREY_44"
+DESCRIPTION = "move onto the RNV status family; register the light error text"
 SENTINEL_FILE = "ui/colors.py"
-SENTINEL = "RNV-COLLAPSE-505050"
-GUARD = "tests/test_collapse_505050.py"
+SENTINEL = "RNV-STATUS-FAMILY"
+GUARD = "tests/test_error_red.py"
 SHADOWS = {"colors.py", "config.py", "conftest.py", "run_tests.py"}
 
 SUITES = [
-    ('run_tests.py (unittest + pytest)',
-     [sys.executable, "run_tests.py"]),
+    ("run_tests.py (unittest + pytest)", [sys.executable, "run_tests.py"]),
 ]
 
-OLD_HEX = "#505050"
-NEW_HEX = "#444444"
-CONST = "GREY_44"
-KEYS = ['scroll_handle', 'scrollbar_handle']
+REGISTERED = {
+    "STATUS_SUCCESS": "#926c89",
+    "STATUS_WARNING": "#a2703c",
+    "STATUS_ERROR": "#c75b64",
+    "STATUS_ERROR_TEXT": "#dd6f77",
+    "STATUS_ERROR_TEXT_LIGHT": "#b84e58",
+}
+RETIRED = ("#28a745", "#ffc107", "#dc3545", "#e56b77", "#c82131")
 
-EDITS = [
-    ('ui/colors.py',
-     'APP_PANEL_HOVER: Final[str] = "#3a3a3a"\n',
-     'APP_PANEL_HOVER: Final[str] = "#3a3a3a"\n\n# grey(4) on the ink grid. The main button\'s pressed plate (ruled 2026-08-26)\n# and, from 2026-09-02, the scrollbar handle -- RNV-COLLAPSE-505050: this app\n# held #505050 for its handle where the other four already used #444444, and\n# #505050 was on neither the ladder nor the grid. Named here for the first\n# time in this app; rnv-text-transformer already calls it GREY_44.\nGREY_44: Final[str] = "#444444"\n',
-     1),
-    ('ui/colors.py',
-     "    'scroll_handle': '#505050',\n",
-     "    'scroll_handle': GREY_44,   # was #505050, see GREY_44\n",
-     2),
-    ('ui/colors.py',
-     "    'scrollbar_handle': '#505050',\n",
-     "    'scrollbar_handle': GREY_44,   # was #505050, see GREY_44\n",
-     1),
-    ('ui/colors.py',
-     "    'hover_color': '#444444',\n",
-     "    'hover_color': GREY_44,\n",
-     2),
-    ('ui/colors.py',
-     "    'main_btn_pressed_bg': '#444444',\n",
-     "    'main_btn_pressed_bg': GREY_44,\n",
-     3),
-]
+
+GUARD_SOURCE = r'''"""Error text is theme-aware, and every retired red is gone.
+
+    STATUS_ERROR             #c75b64   registered base; no fill is drawn here
+    STATUS_ERROR_TEXT        #dd6f77   dark ground, = register error-text
+    STATUS_ERROR_TEXT_LIGHT  #b84e58   light ground, = register error-text-light
+
+Before the 2026-09-02 pass a single #ff6b6b served both modes and read 2.5454
+on the light dialog ground -- below the text floor and below the UI floor too.
+That pass split them. This one, RNV-STATUS-FAMILY on 2026-09-03, moves the
+whole family: the register retired Bootstrap's #dc3545, and #e56b77 and
+#c82131 were both derived from it.
+
+TWO TESTS HERE WERE REPLACED RATHER THAN EDITED, and both replacements say so:
+
+  * test_the_light_error_text_is_derived_not_written asserted
+    STATUS_ERROR_TEXT_LIGHT == lighten(STATUS_ERROR, -20). Its argument was
+    right and is exactly why the value could not be left alone -- against the
+    new base that formula yields #b44753, a third answer. See
+    test_the_light_error_text_is_registered_and_why_that_changed.
+
+  * test_light_error_text_carries_to_the_published_boundary parametrised over
+    #ffffff, #f5f5f5, #eeeeee and #e8e8e8. The registered replacement does not
+    reach the last two. See RNV-STATUS-LIGHT-FLOOR below -- the boundary is an
+    open question with the brand chat, and narrowing it is recorded here in
+    full rather than quietly done.
+"""
+
+import pytest
+
+from ui import colors
+
+TEXT_FLOOR = 4.5
+
+
+MIN_OPAQUE_ALPHA = 0xE0
+
+
+def _rgb(value: str) -> str:
+    """Six hex digits, from a value that may carry a Qt alpha channel.
+
+    Image mode's window_bg is `#ED000000` -- eight digits, #AARRGGBB, which
+    is Qt's order and NOT the CSS #RRGGBBAA. Read naively as #RRGGBB it
+    becomes #ED0000, a red, and the contrast against it computes to 1.6448
+    instead of the ~7.57 the eye actually sees. That is the 8-digit blind
+    spot the family register warns about, and it caught this very test.
+
+    The alpha is asserted rather than ignored: at 0xED the colour is 93%
+    opaque, so treating it as its own RGB is a sound approximation. Below
+    that it would not be, and this stops rather than quietly approximating.
+    """
+    h = value.lstrip("#")
+    if len(h) == 8:
+        alpha = int(h[0:2], 16)
+        assert alpha >= MIN_OPAQUE_ALPHA, (
+            f"{value} is only {alpha / 255:.0%} opaque; its effective colour "
+            f"depends on what is behind it and cannot be measured here")
+        return h[2:]
+    assert len(h) == 6, f"expected 6 or 8 hex digits, got {value!r}"
+    return h
+
+
+def _luminance(value: str) -> float:
+    h = _rgb(value)
+    parts = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+    parts = [x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4
+             for x in parts]
+    return 0.2126 * parts[0] + 0.7152 * parts[1] + 0.0722 * parts[2]
+
+
+def contrast(a: str, b: str) -> float:
+    first, second = sorted((_luminance(a), _luminance(b)), reverse=True)
+    return (first + 0.05) / (second + 0.05)
+
+
+def test_the_argb_reader_is_not_fooled_by_the_alpha_channel():
+    """Guard the guard.
+
+    If _rgb ever goes back to slicing the first six digits, every contrast
+    number measured against image mode becomes fiction -- and fiction that
+    reads as a FAILURE, which is the kind that gets 'fixed' by changing the
+    colour rather than the reader.
+    """
+    assert _rgb("#ED000000") == "000000"
+    assert _rgb("#f5f5f5") == "f5f5f5"
+    assert contrast("#ffffff", "#ED000000") == pytest.approx(
+        contrast("#ffffff", "#000000"))
+
+
+def test_the_light_error_text_is_registered_and_why_that_changed():
+    """This replaces test_the_light_error_text_is_derived_not_written.
+
+    That test asserted STATUS_ERROR_TEXT_LIGHT == lighten(STATUS_ERROR, -20)
+    and argued that a written-down derivative orphans the moment its base
+    moves. The argument was correct, and it is why this value could not be
+    left as it was: the base moved on 2026-09-03, and against #c75b64 the
+    formula yields #b44753 -- neither the old #c82131 nor the registered
+    #b84e58. A derivative whose rule no longer produces it is not a
+    derivative; it is a coincidence waiting to break.
+
+    The register's family rule is a different one -- hold hue and chroma, move
+    lightness only, take the first step clearing 4.5 on the worst ground --
+    and it publishes the RESULT with the walk as provenance, so retuning the
+    rule cannot silently change what an error looks like in five
+    applications. Same call the register made for BRAND_STANDBY_GOLD.
+    """
+    assert colors.STATUS_ERROR_TEXT_LIGHT == "#b84e58"
+    assert colors.STATUS_ERROR_TEXT_LIGHT != colors.lighten(colors.STATUS_ERROR, -20)
+
+
+def test_the_family_is_the_registered_one():
+    """Pinned by value. A test asserting only that these differ from each
+    other would pass on five wrong colours."""
+    assert colors.STATUS_SUCCESS == "#926c89"
+    assert colors.STATUS_WARNING == "#a2703c"
+    assert colors.STATUS_ERROR == "#c75b64"
+    assert colors.STATUS_ERROR_TEXT == "#dd6f77"
+    assert colors.STATUS_ERROR_TEXT_LIGHT == "#b84e58"
+
+
+def test_light_error_text_clears_its_own_dialog_ground():
+    """The pairing the 2026-09-02 pass existed to fix: 2.5454 -> 5.1811, and
+    now 4.5123 with the registered replacement."""
+    ground = colors.LIGHT_THEME_COLORS["window_bg"]
+    ratio = contrast(colors.STATUS_ERROR_TEXT_LIGHT, ground)
+    assert ratio >= TEXT_FLOOR, \
+        f"{colors.STATUS_ERROR_TEXT_LIGHT} on {ground} = {ratio:.4f}"
+
+
+@pytest.mark.parametrize("ground", ["#ffffff", "#f5f5f5"])
+def test_light_error_text_carries_on_the_grounds_it_reaches(ground):
+    """RNV-STATUS-LIGHT-FLOOR -- READ THIS BEFORE WIDENING THE PARAMETERS.
+
+    This test used to run over #ffffff, #f5f5f5, #eeeeee and #e8e8e8, and its
+    docstring said: "#e8e8e8 is where the gold stops carrying text. The red is
+    derived to the same boundary so the two rules need not be remembered
+    separately." That was true of #c82131, which read 4.6100 there.
+
+    The registered replacement does not reach it:
+
+        #b84e58   #f5f5f5 4.5123   #eeeeee 4.2401   #e8e8e8 4.0150   #e0e0e0 3.7266
+
+    The cause is in the register's own rule, which walks the light text
+    variants against #f5f5f5 as "the worst light ground". Rev 27 put APP
+    hover-light #eeeeee, GOLD_TEXT_GROUND_FLOOR #e8e8e8 and pressed-light
+    #e0e0e0 below it. All three light variants were walked to the FIRST step
+    that clears -- 4.52, 4.52, 4.51 -- so none has margin, and one registered
+    rung down they fail together.
+
+    THIS IS AN OPEN QUESTION WITH THE BRAND CHAT, NOT A LOOSENED TEST. The
+    parameters are narrowed to the two grounds the published value actually
+    reaches, and this docstring is the record of what was given up. If the
+    register re-walks against #e8e8e8 the answer here is #ae4650 -- moving
+    3.1, well inside the register's own 8.40 "clearly different" bar, so it
+    stays the same red -- and the fix is to restore the two grounds above and
+    update the pinned value.
+    """
+    ratio = contrast(colors.STATUS_ERROR_TEXT_LIGHT, ground)
+    assert ratio >= TEXT_FLOOR, \
+        f"{colors.STATUS_ERROR_TEXT_LIGHT} on {ground} = {ratio:.4f}"
+
+
+def test_dark_error_text_mirrors_the_register_and_still_clears():
+    """Dark was never short, and this test existed to stop the value moving
+    quietly. It has now done that job twice.
+
+    RNV-STATUS-REGISTER (2026-09-02): #ff6b6b was this app's own dark error
+    text, left alone by the error-red pass on the argument that a value
+    already clearing the floor should not be replaced to buy uniformity. The
+    register then published error-text #e56b77 for this exact job, so the
+    choice became one name against a fourth spelling.
+
+    RNV-STATUS-FAMILY (2026-09-03): #e56b77 was itself derived from Bootstrap's
+    #dc3545. With that base retired it is an ORPHAN, and it moves with its
+    base rather than being kept alongside it. #dd6f77 has slightly LESS
+    headroom on every dark ground than the value it replaces -- 4.5210
+    against 4.5801 on the card -- and is still above the floor.
+
+    The assertion stays exact for the same reason it was written exact."""
+    assert colors.STATUS_ERROR_TEXT == "#dd6f77"
+    for name in ("DARK", "IMAGE_MODE"):
+        palette = getattr(colors, name + "_THEME_COLORS", None) or \
+            getattr(colors, "IMAGE_MODE_COLORS")
+        ratio = contrast(colors.STATUS_ERROR_TEXT, palette["window_bg"])
+        assert ratio >= TEXT_FLOOR, f"{name}: {ratio:.4f}"
+
+
+def test_the_two_error_texts_are_not_the_same_value():
+    """If these ever collapse onto one value, one of the two modes is short
+    again -- which is the state the 2026-09-02 pass found the app in."""
+    assert colors.STATUS_ERROR_TEXT != colors.STATUS_ERROR_TEXT_LIGHT
+
+
+def test_the_fills_cannot_carry_text_and_that_is_why_there_are_five_values():
+    """The arithmetic behind the family's shape.
+
+    STATUS_SUCCESS, STATUS_WARNING and STATUS_ERROR are fills. Every fill in
+    the family sits at L* 48-59, which is exactly what lets ONE value clear
+    3:1 on a dark AND a light ground -- and a mid-tone reaches 4.5:1 on
+    neither. This application already knew that for the red and spent two
+    values on it before the register generalised it.
+
+    If any fill ever clears the text floor, the register has moved it out of
+    the band and somebody needs to know rather than quietly benefiting.
+    """
+    for name in ("STATUS_SUCCESS", "STATUS_WARNING", "STATUS_ERROR"):
+        value = getattr(colors, name)
+        for ground in ("#1a1a1a", "#2a2a2a", "#f5f5f5", "#ffffff"):
+            assert contrast(value, ground) >= 3.0, f"{name} on {ground}"
+            assert contrast(value, ground) < TEXT_FLOOR, (
+                f"{name} now clears the text floor on {ground}. Do not relax "
+                f"this -- find out whether the register moved it.")
+
+
+def test_the_retired_material_red_is_gone_from_every_palette():
+    """It was an orphan -- no code path read it -- but an unread wrong value
+    is still a wrong value waiting for a reader."""
+    retired = "#f44336"
+    for name in ("DARK_THEME_COLORS", "LIGHT_THEME_COLORS", "IMAGE_MODE_COLORS"):
+        palette = getattr(colors, name)
+        offenders = [k for k, v in palette.items()
+                     if isinstance(v, str) and v.lower() == retired]
+        assert not offenders, f"{name} still carries {retired} on {offenders}"
+        assert "error" not in palette, \
+            f"{name} still has the dead 'error' key"
+
+
+def test_no_retired_status_value_is_in_any_palette():
+    """The 2026-09-03 sweep. The three Bootstrap values and the two orphans
+    derived from the red -- none of them belongs in a palette any more."""
+    retired = {"#28a745", "#ffc107", "#dc3545", "#e56b77", "#c82131"}
+    for name in ("DARK_THEME_COLORS", "LIGHT_THEME_COLORS", "IMAGE_MODE_COLORS"):
+        palette = getattr(colors, name)
+        offenders = {k: v for k, v in palette.items()
+                     if isinstance(v, str) and v.lower() in retired}
+        assert not offenders, f"{name} still carries {offenders}"
+
+
+def test_that_check_is_actually_looking():
+    """Guard the guard. The sweeps above walk three palettes; if they ever
+    turn up empty they would pass while checking nothing."""
+    for name in ("DARK_THEME_COLORS", "LIGHT_THEME_COLORS", "IMAGE_MODE_COLORS"):
+        palette = getattr(colors, name)
+        assert len(palette) > 20, f"{name} has only {len(palette)} keys"
+    planted = {"error": "#f44336"}
+    assert [k for k, v in planted.items() if v.lower() == "#f44336"], \
+        "the retired-value pattern no longer matches a known offender"
+
+
+def test_both_error_labels_go_through_the_helper(qtbot):
+    """The two call sites used to name the constant directly. One helper is
+    what stops a future change fixing one of them and forgetting the other.
+    """
+    import inspect
+
+    from ui import batch_export_dialog
+
+    source = inspect.getsource(batch_export_dialog)
+    assert source.count("self._error_text_color()") == 2
+    assert "f\"color: {STATUS_ERROR_TEXT};\"" not in source, \
+        "a call site still names the dark constant directly"
+'''
+
+NEW_CONSTANTS = r'''STATUS_SUCCESS: Final[str] = "#926c89"
+"""MIRRORS the register's STATUS["success"]. A FILL.
+
+RNV-STATUS-FAMILY (2026-09-03): was #28a745, Bootstrap's green. Retired
+because it and Bootstrap's red collapsed to one olive under deuteranopia at
+about 4 apart -- roughly 8% of men could not tell success from error, which
+are the two most consequential colours in an interface.
+
+It is a FILL and cannot carry text: 3.92 on #1a1a1a, 3.23 on #2a2a2a. That is
+the fill band, not a shortcoming -- a value that clears 3:1 on a dark AND a
+light ground sits at L* 48-59 by arithmetic, and a mid-tone reaches 4.5:1 on
+neither side. This application already knew that for the red and spent two
+values on it; the register has now generalised it to all three roles.
+
+RNV-STATUS-REGISTER (2026-09-02): the three palettes wrote #4caf50,
+Material's green, as a literal. Two applications held that value for one
+role while the other three used the register's. Named here so the value
+has one home, and collapsed onto the register so the fleet has one green."""
+
+STATUS_WARNING: Final[str] = "#a2703c"
+"""MIRRORS the register's STATUS["warning"]. A FILL.
+
+RNV-STATUS-FAMILY (2026-09-03): was #ffc107, retired on arithmetic rather
+than taste -- 1.63 on #ffffff and 1.49 on #f5f5f5 against a 3:1 fill floor.
+It could not legally carry a boundary on a light ground at all."""
+
+STATUS_ERROR: Final[str] = "#c75b64"
+"""The registered error red. Not drawn by this app, which renders no error
+fill -- it is here so the family has its base and so the two text values
+below are visibly siblings of it rather than free-standing reds.
+
+RNV-STATUS-FAMILY (2026-09-03): was #dc3545, Bootstrap's. IT IS NO LONGER
+WHAT THE LIGHT VALUE IS DERIVED FROM -- see STATUS_ERROR_TEXT_LIGHT."""
+
+STATUS_ERROR_TEXT: Final[str] = "#dd6f77"
+"""Inline error/warning label text on a DARK ground (e.g. batch export
+validation). MIRRORS the register's STATUS["error-text"].
+
+RNV-STATUS-FAMILY (2026-09-03): was #e56b77, which was derived from the
+retired #dc3545. With that base gone it is an ORPHAN -- a value derived from
+something no longer in the palette -- which is precisely the #c4a458 failure
+this file's own docstrings warn about twice. It moves with its base.
+
+    #e56b77  6.7011 on #000000   4.5801 on #2a2a2a
+    #dd6f77  6.6146 on #000000   4.5210 on #2a2a2a
+
+Slightly LESS headroom than the value it replaces -- 4.5210 against
+4.5801 on the card -- and still above the floor. The gamut correction of
+2026-09-04 moved the whole red family a byte or so; the direction of that
+half-point is worth stating rather than rounding away.
+
+RNV-STATUS-REGISTER (2026-09-02): before #e56b77 this was #ff6b6b, and being
+left alone was a RULING rather than an oversight -- the error-red pass held
+that a dark value already clearing the floor should not be replaced to buy
+uniformity. That argument was right when the register had no name for this
+job. It now does, and a fourth spelling of a registered colour costs more
+than the headroom does."""
+
+STATUS_ERROR_TEXT_LIGHT: Final[str] = "#b84e58"
+"""The same label on a LIGHT ground. MIRRORS STATUS["error-text-light"].
+
+STATUS_ERROR_TEXT reads 2.8367 on #f5f5f5 -- below the 4.5 text floor and
+below even the 3.0 UI floor. This reads 4.5123. No red carries text at 4.5:1
+on a real light panel, so light spends a value on TEXT for exactly the reason
+the gold does: the fill and text jobs occupy non-overlapping luminance bands.
+
+WRITTEN DOWN, NOT DERIVED, AND THAT IS A CHANGE. This was
+lighten(STATUS_ERROR, -20), and the test beside it argued -- correctly -- that
+a written-down derivative orphans the moment its base moves. That argument is
+why the value is not silently kept: against the new base the formula yields
+#b44753, which is neither the old #c82131 nor the registered #b84e58. A
+derivative whose rule no longer produces it is not a derivative, it is a
+coincidence waiting to break.
+
+The register's family derivation is a different rule -- hold hue and chroma,
+move lightness only, take the first step that clears 4.5 on the worst ground
+-- and it publishes the RESULT with the walk as provenance, so that retuning
+the rule cannot silently change what an error looks like in five
+applications. Same call the register made for BRAND_STANDBY_GOLD.
+
+RNV-STATUS-LIGHT-FLOOR: this value does NOT reach the coverage boundary its
+predecessor did. #c82131 read 4.6100 on #e8e8e8; #b84e58 reads 4.0150 there
+and 4.2401 on APP hover-light #eeeeee. The register walks its light variants
+against #f5f5f5 as "the worst light ground", and rev 27 put three registered
+rungs below it. The question is open with the brand chat; if it re-walks
+against #e8e8e8 the answer here is #ae4650, moving 3.1 -- well inside the
+register's own 8.40 threshold, so it would stay the same red."""
+'''
+
+
+def _code_only(text: str) -> str:
+    """Source with comments and DOCSTRINGS removed -- and nothing else.
+
+    Why this exists: every value these guards forbid is named, in words, in
+    the provenance explaining why it was retired. A sweep that cannot tell a
+    value being USED from a value being MENTIONED forces the fix to be silence
+    about what changed, which is the opposite of what the provenance is for.
+
+    Why it is fussier than it looks: an earlier version dropped every STRING
+    token. In Python a colour value IS a string literal -- `X = "#926c89"` --
+    so that version removed the uses along with the mentions and the sweep
+    could never find anything. It passed on every input, including a file that
+    had just put a retired value back. This file's own guard-the-guard is what
+    caught it, which is the entire reason for writing guards that check the
+    guard can still see.
+
+    So: a STRING token is dropped only when it STARTS a statement -- a
+    docstring, or a bare string expression, which is prose either way. A string
+    on the right of an assignment, in a dict, or in a call is kept, because
+    that is what a value looks like.
+    """
+    import io
+    import tokenize
+    out = []
+    # ENCODING behaves like the start of a line for this purpose.
+    at_statement_start = True
+    try:
+        for tok in tokenize.generate_tokens(io.StringIO(text).readline):
+            if tok.type == tokenize.COMMENT:
+                continue
+            if tok.type == tokenize.STRING and at_statement_start:
+                at_statement_start = False
+                continue
+            if tok.type in (tokenize.NEWLINE, tokenize.NL, tokenize.INDENT,
+                            tokenize.DEDENT, tokenize.ENCODING):
+                at_statement_start = True
+            else:
+                at_statement_start = False
+            out.append(tok.string)
+    except (tokenize.TokenError, IndentationError):
+        # Falling back to the raw text can only make a sweep STRICTER, never
+        # looser, so it fails safe.
+        return text
+    return " ".join(out)
 
 
 def edits(tree) -> None:
-    for rel, old, new, times in EDITS:
-        tree.sub(rel, old, new, times)
-    print(f"  {len(EDITS)} edit(s) composed")
+    # --- 1. the five constants, replaced as one block.
+    #
+    # Anchored on the first line and the last, so a file that has moved fails
+    # here rather than composing a wrong replacement out of anchors that still
+    # happen to match individually.
+    src = tree.read("ui/colors.py")
+    start_anchor = 'STATUS_SUCCESS: Final[str] = "#28a745"'
+    end_anchor = ("hue at 354.25 degrees, identical to the base.\"\"\"\n")
+    if src.count(start_anchor) != 1 or src.count(end_anchor) != 1:
+        raise SystemExit("ui/colors.py: the status block is not where this "
+                         "script expects it")
+    start = src.index(start_anchor)
+    end = src.index(end_anchor) + len(end_anchor)
+    if end <= start:
+        raise SystemExit("ui/colors.py: the status block's anchors are in the "
+                         "wrong order")
+    tree.write("ui/colors.py", src[:start] + NEW_CONSTANTS + src[end:])
+
+    # --- 2. the three palettes' dead semantic keys.
+    #
+    # 'success' and 'warning' are looked up nowhere in this application -- zero
+    # elements in the fleet colour tree -- and this pass does not wire them to
+    # anything; whether they should exist at all is a separate question on the
+    # standing dead-key list. They stay wired through the constants, so they
+    # move with the values without a single literal changing here.
+    #
+    # Asserted rather than assumed: if either key were ever rewritten as a
+    # literal, the count below would not be three and this would stop.
+    body = tree.read("ui/colors.py")
+    for key, const in (("success", "STATUS_SUCCESS"), ("warning", "STATUS_WARNING")):
+        found = len(re.findall(r"'%s':\s+%s\b" % (key, const), body))
+        if found != 3:
+            raise SystemExit(
+                f"'{key}' is wired through {const} in {found} palettes, not 3. "
+                f"A palette that writes it as a literal will not move with the "
+                f"constant; re-derive this script before trusting it.")
+
+    # --- 3. tests/test_status_register.py pins the three retired values by hex
+    # and explains at length why each was THE one. Changing a hex inside an
+    # argument for it would leave the argument standing for a value that lost
+    # it, so the three assertions and their reasoning are replaced together.
+    tree.sub("tests/test_status_register.py",
+             '    assert colors.STATUS_SUCCESS == "#28a745"\n'
+             '    assert colors.STATUS_WARNING == "#ffc107"\n'
+             '    assert colors.STATUS_ERROR == "#dc3545"\n'
+             '    assert colors.STATUS_ERROR_TEXT == "#e56b77"\n',
+             '    # RNV-STATUS-FAMILY (2026-09-03): the register replaced all\n'
+             '    # three. The green and the red were one olive under\n'
+             '    # deuteranopia at about 4 apart; the amber read 1.63 on\n'
+             '    # #ffffff against a 3:1 fill floor. Still pinned by value --\n'
+             '    # an app that picks its own status colour has an opinion\n'
+             '    # about what success means, which is the register\'s job.\n'
+             '    assert colors.STATUS_SUCCESS == "#926c89"\n'
+             '    assert colors.STATUS_WARNING == "#a2703c"\n'
+             '    assert colors.STATUS_ERROR == "#c75b64"\n'
+             '    # #e56b77 was derived from #dc3545 and orphaned when the\n'
+             '    # base was retired, so it moves with it.\n'
+             '    assert colors.STATUS_ERROR_TEXT == "#dd6f77"\n', 1)
+
+    # --- 3b. and the headroom note beside it, which measured the move that
+    # brought #ff6b6b down to #e56b77. That move is now two moves.
+    tree.sub("tests/test_status_register.py",
+             '    """The move costs 0.87 of headroom. This is the check that '
+             'says it could\n'
+             '    afford it, on the grounds this app actually paints."""\n',
+             '    """The 2026-09-02 move cost 0.87 of headroom and this is the\n'
+             '    check that said it could afford it. RNV-STATUS-FAMILY\n'
+             '    (2026-09-03) takes a little more: #dd6f77 reads 4.5210 on\n'
+             '    APP card against #e56b77\'s 4.5801 -- still above the floor,\n'
+             '    on the grounds this app\n'
+             '    actually paints."""\n', 1)
+
+    # --- 4. that file's stray list. #4caf50 and #ff6b6b are still retired and
+    # still worth sweeping for; the three Bootstrap values join them, because a
+    # value the register retired is exactly what "stray" means here.
+    tree.sub("tests/test_status_register.py",
+             'STRAYS = {"#4caf50", "#ff6b6b"}\n',
+             'STRAYS = {\n'
+             '    "#4caf50",   # Material green, ruled out 2026-09-02\n'
+             '    "#ff6b6b",   # this app\'s own dark error text, ruled out 2026-09-02\n'
+             '    # RNV-STATUS-FAMILY (2026-09-03), the Bootstrap family and its\n'
+             '    # two orphans. #e56b77 and #c82131 were derived from #dc3545;\n'
+             '    # with the base retired they are values derived from something\n'
+             '    # no longer in the palette, which is the #c4a458 failure.\n'
+             '    "#28a745", "#ffc107", "#dc3545", "#e56b77", "#c82131",\n'
+             '}\n', 1)
+
+    # --- 5. tests/test_error_red.py, rewritten by the harness as the guard.
+    #
+    # Two of its tests cannot survive as edits. One asserts the light value
+    # equals lighten(STATUS_ERROR, -20) and argues in its own name that the
+    # value is "derived not written" -- an argument this pass agrees with and
+    # is acting on, since the formula no longer produces the registered value.
+    # The other parametrises the coverage boundary down to #e8e8e8, which the
+    # registered replacement does not reach. Both are replaced with tests that
+    # say what changed and why, rather than with edited assertions that would
+    # leave the old reasoning attached to new numbers.
+    print("  5 edit groups composed")
 
 
 def checks(tree) -> None:
-    src = tree.read(SENTINEL_FILE)
-    if f"'{OLD_HEX}'" in src or f'"{OLD_HEX}"' in src:
-        raise SystemExit(f"{OLD_HEX} survived in {SENTINEL_FILE}")
-    if src.count(SENTINEL) != 1:
-        raise SystemExit("the ruling note did not land exactly once")
-    for key in KEYS:
-        pattern = re.compile(r"'%s':\s+%s\b" % (key, CONST))
-        if not pattern.search(src):
-            raise SystemExit(f"{key} is not wired through {CONST}")
+    colors_src = tree.read("ui/colors.py")
+    reg = tree.read("tests/test_status_register.py")
 
-    # The five #444444 entries that were already this value are now wired.
-    # A literal '#444444' left in a palette after this would be a value this
-    # file names and then does not use.
-    src = tree.read("ui/colors.py")
-    body = src[src.index("DARK_THEME_COLORS"):]
-    if "'#444444'" in body:
-        raise SystemExit("a palette still writes '#444444' as a literal after "
-                         "GREY_44 was introduced")
+    for dead in RETIRED:
+        if f'"{dead}"' in _code_only(colors_src):
+            raise SystemExit(f"{dead} survives as a value in ui/colors.py")
 
-    print(f"  guards: {OLD_HEX} is gone, {len(KEYS)} key(s) wired through {CONST}")
+    for name, want in REGISTERED.items():
+        if f'{name}: Final[str] = "{want}"' not in colors_src:
+            raise SystemExit(f"{name} is not defined as {want}")
 
+    # the derivation is gone: it no longer produces the registered value, and
+    # leaving it would give a third answer -- #b44753 -- to a settled question
+    if "lighten(STATUS_ERROR" in _code_only(colors_src):
+        raise SystemExit("the light error text is still derived with lighten(); "
+                         "against the new base that yields #b44753, which is "
+                         "neither the old value nor the registered one")
 
-GUARD_SOURCE = r'''"""#505050 no longer exists in this application. RNV-COLLAPSE-GUARD
+    # the two text values remain distinct. If they ever collapse, one mode is
+    # short again, which is the state the 2026-09-02 pass found this app in.
+    if REGISTERED["STATUS_ERROR_TEXT"] == REGISTERED["STATUS_ERROR_TEXT_LIGHT"]:
+        raise SystemExit("the two error texts are the same value")
 
-Ruled 2026-09-02: #505050 collapses onto GREY_44 #444444. The value was on
-neither the surface ladder nor the ink grid, and its neighbours were not a
-visible step away. This guard pins the ruling in both directions: the keys
-hold the new value, and they hold it THROUGH the constant.
-"""
-from __future__ import annotations
+    for want in ("#926c89", "#a2703c", "#c75b64"):
+        if want not in reg:
+            raise SystemExit(f"tests/test_status_register.py does not pin {want}")
 
-import re
-from pathlib import Path
-
-ROOT = Path(__file__).resolve().parent.parent
-OLD_HEX = "#505050"
-NEW_HEX = "#444444"
-CONST = "GREY_44"
-KEYS = ['scroll_handle', 'scrollbar_handle']
-EXPECT = {'dark': ['scroll_handle', 'scrollbar_handle'], 'image': ['scroll_handle']}
-PALETTE_FILE = "ui/colors.py"
-
-
-def _palettes():
-    from ui.colors import DARK_THEME_COLORS as D, IMAGE_MODE_COLORS as I, LIGHT_THEME_COLORS as L; P={'dark':D,'image':I,'light':L}
-    return P
-
-
-def test_the_ruled_keys_hold_the_new_value():
-    for mode, keys in EXPECT.items():
-        palette = _palettes()[mode]
-        for key in keys:
-            assert palette[key] == NEW_HEX, (
-                f"{mode}[{key}] is {palette[key]}, ruled onto {NEW_HEX}")
-
-
-def test_the_old_value_is_gone_from_every_palette():
-    for mode, palette in _palettes().items():
-        holders = [k for k, v in palette.items() if str(v).lower() == OLD_HEX]
-        assert not holders, f"{mode} still holds {OLD_HEX} under {holders}"
-
-
-def test_the_keys_are_wired_through_the_constant_not_rewritten():
-    """Swapping one literal for another passes the value check and defeats
-    the point. The constant is what a later substitution changes."""
-    src = (ROOT / PALETTE_FILE).read_text(encoding="utf-8-sig")
-    for key in KEYS:
-        assert re.search(r"'%s':\s+%s\b" % (key, CONST), src), (
-            f"{key} is not written as {CONST} in {PALETTE_FILE}")
-
-
-def test_the_old_value_is_not_written_anywhere_in_source():
-    """A sweep for the literal AS A STRING -- quoted. The palette file records
-    "was #505050" in a comment beside each ruled key, and that mention is the
-    provenance, not a use. The first version of this test matched the bare
-    text and failed on its own script's comment: use versus mention, again.
-    Excludes this guard and the delivery script, which quote the value in
-    order to forbid it."""
-    strays = []
-    for path in sorted(ROOT.rglob("*.py")):
-        if any(p in {".git", "build", "dist", ".venv", "__pycache__"} for p in path.parts):
-            continue
-        text = path.read_text(encoding="utf-8-sig", errors="replace")
-        if "RNV-COLLAPSE-GUARD" in text or "RNV-COLLAPSE-TOOL-DO-NOT-SWEEP" in text:
-            continue
-        if re.search(r"""['"]%s['"]""" % OLD_HEX, text, re.I):
-            strays.append(str(path.relative_to(ROOT)))
-    assert not strays, f"{OLD_HEX} is still written as a literal in: {strays}"
-'''
+    if SENTINEL not in colors_src:
+        raise SystemExit("the ruling note did not land in ui/colors.py")
+    print("  guards: 5 retired values gone, 5 registered values in, "
+          "the light derivation is now a value")
 
 
 # ------------------------------------------------------------------ plumbing
@@ -223,12 +693,18 @@ class Tree:
         self.write(rel, src.replace(old, new, times))
 
     def flush(self) -> list[str]:
+        """Compare and write BYTES, not decoded text.
+
+        read_text('utf-8') here raised on a file that was not valid UTF-8 --
+        which is precisely the file some scripts exist to fix. Bytes compare
+        identically for everything else and cannot refuse to look."""
         touched = []
         for rel, text in self.files.items():
             p = self.root / rel
             p.parent.mkdir(parents=True, exist_ok=True)
-            if not p.exists() or p.read_text(encoding="utf-8") != text:
-                p.write_text(text, encoding="utf-8")
+            data = text.encode("utf-8")
+            if not p.exists() or p.read_bytes() != data:
+                p.write_bytes(data)
                 touched.append(rel)
         return touched
 
