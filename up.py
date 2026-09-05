@@ -22,7 +22,7 @@ the red-green axis entirely.
     error    #dc3545  ->  #c75b64
 
     error-text        #e56b77  ->  #dd6f77
-    error-text-light  #c82131  ->  #b84e58
+    error-text-light  #c82131  ->  #ae4650
 
 The last two are ORPHANS: both were derived from #dc3545, and a value derived
 from something no longer in the palette is the #c4a458 failure this programme
@@ -53,7 +53,7 @@ THE DERIVATION HAS TO BECOME A VALUE
     STATUS_ERROR_TEXT_LIGHT: Final[str] = lighten(STATUS_ERROR, -20)
 
 no longer produces the registered value. Against the new base it yields
-#b44753 -- neither the old #c82131 nor the registered #b84e58. The register's
+#b44753 -- neither the old #c82131 nor the registered #ae4650. The register's
 family derivation is a different rule (hold hue and chroma, move lightness,
 first step clearing 4.5) and it publishes the RESULT, with the walk as
 provenance.
@@ -66,30 +66,62 @@ whose rule no longer produces it is not a derivative, it is a coincidence
 waiting to break. The register made the same call for BRAND_STANDBY_GOLD.
 
 
-THE OPEN QUESTION THIS SCRIPT DOES NOT DECIDE
+THE BOUNDARY THIS PASS WAITED ON, NOW CLOSED
 
-RNV-STATUS-LIGHT-FLOOR. This repository has
+RNV-STATUS-LIGHT-FLOOR was open while these scripts were written. The three
+LIGHT text variants had been walked to clear 4.5:1 on #f5f5f5, which the
+register's rule called "the worst light ground". It was not: rev 27 had put
+APP hover-light #eeeeee, GOLD_TEXT_GROUND_FLOOR #e8e8e8 and pressed-light
+#e0e0e0 below it, and because the rule takes the FIRST step that clears, each
+value stopped at 4.52 with no margin and all three failed one rung down.
 
-    @pytest.mark.parametrize("ground", ["#ffffff", "#f5f5f5", "#eeeeee", "#e8e8e8"])
-    def test_light_error_text_carries_to_the_published_boundary(ground)
+Register rev 31 (2026-09-05) re-walked them against #e8e8e8:
 
-written when #c82131 reached #e8e8e8 at 4.6100, against a register that
-published #e8e8e8 as the boundary where red stops carrying text. The
-registered replacement #b84e58 reads 4.0150 there and 4.2401 on #eeeeee --
-it does not reach.
+    success-text-light  #8a6581 -> #825d79
+    warning-text-light  #976633 -> #8e5e2b
+    error-text-light    #b84e58 -> #ae4650
 
-The cause is in the register's rule, which walks the light variants against
-#f5f5f5 as "the worst light ground" while rev 27 put APP hover-light #eeeeee,
-GOLD_TEXT_GROUND_FLOOR #e8e8e8 and pressed-light #e0e0e0 below it. All three
-light variants were walked to the FIRST step that clears -- 4.52, 4.52, 4.51 --
-so there is no margin, and one registered rung down they fail together.
+AND THE DECIDING REASON IS NOT THE ONE THIS CHAT GAVE. The argument here was
+from cost -- a small move, the same three colours. True, and not sufficient,
+because #e0e0e0 would have been affordable too. The register's reason is
+better: #e8e8e8 is where BRAND_DARK_GOLD_DEEP already stops.
 
-The values here are the register's AS PUBLISHED; the question is open with the
-brand chat. The parametrisation is narrowed to the two grounds the published
-value actually reaches, and the marker plus the measurements go in the test
-docstring so the follow-up is one search away. If the register re-walks
-against #e8e8e8 the answer for this value is #ae4650, moving 3.1 -- well
-inside the register's own 8.40 "clearly different" bar.
+    on #e8e8e8   gold-deep 4.53   the three 4.52 / 4.53 / 4.52   pass
+    on #e0e0e0   gold-deep 4.21   the three 4.20 / 4.20 / 4.20   fail
+
+ONE boundary for every brand text family instead of two. Walking to #e0e0e0
+would have covered the pressed plate and left an author having to remember
+which family they were in to know where text stops.
+
+So the boundary tests are not narrowed. They run the full four rungs, and they
+pass -- which is the point of the re-walk being visible in the test rather than
+only in the register.
+
+
+ONE THING IS STILL OPEN, AND IT IS THE OTHER SIDE OF THE SAME FAULT
+
+The three DARK text variants were derived against APP card #2a2a2a. Rev 29
+then registered panel-hover #3a3a3a, which is LIGHTER and therefore worse for
+light text on a dark ground. All three fail there:
+
+    success-text 3.61   warning-text 3.64   error-text 3.58   floor 4.5
+    BRAND_GOLD clears every dark surface at 6.15
+
+Same two-boundary asymmetry, other side. The register left it open rather than
+fixing it in rev 31, because the fix is not symmetric: on light the worst
+surface is a PRESSED plate and ruling that running text is not carried on a
+transient state is defensible, while on dark the worst is a HOVER, which a
+label sits under for as long as a cursor rests there. The walk would cost
+CIEDE2000 6.53-7.06 -- inside the 8.40 bar, but more than double the light
+move, and it lightens all three toward the ink ramp.
+
+WHAT THIS CHAT CAN ADD: the fleet's exposure today is ZERO. The element sweep
+across all five applications resolves four status elements, all of them plain
+dialog labels painted with an inline `color:` on a dialog ground; not one
+status key is painted in a selector carrying :hover. So this is a register
+question about where the boundary should be, not a live defect in these apps
+-- and if a status label is ever put on a hover row, the dark-ground
+assertions in the guard are where it should surface.
 """
 from __future__ import annotations
 
@@ -117,7 +149,7 @@ REGISTERED = {
     "STATUS_WARNING": "#a2703c",
     "STATUS_ERROR": "#c75b64",
     "STATUS_ERROR_TEXT": "#dd6f77",
-    "STATUS_ERROR_TEXT_LIGHT": "#b84e58",
+    "STATUS_ERROR_TEXT_LIGHT": "#ae4650",
 }
 RETIRED = ("#28a745", "#ffc107", "#dc3545", "#e56b77", "#c82131")
 
@@ -126,7 +158,7 @@ GUARD_SOURCE = r'''"""Error text is theme-aware, and every retired red is gone.
 
     STATUS_ERROR             #c75b64   registered base; no fill is drawn here
     STATUS_ERROR_TEXT        #dd6f77   dark ground, = register error-text
-    STATUS_ERROR_TEXT_LIGHT  #b84e58   light ground, = register error-text-light
+    STATUS_ERROR_TEXT_LIGHT  #ae4650   light ground, = register error-text-light
 
 Before the 2026-09-02 pass a single #ff6b6b served both modes and read 2.5454
 on the light dialog ground -- below the text floor and below the UI floor too.
@@ -144,9 +176,9 @@ TWO TESTS HERE WERE REPLACED RATHER THAN EDITED, and both replacements say so:
 
   * test_light_error_text_carries_to_the_published_boundary parametrised over
     #ffffff, #f5f5f5, #eeeeee and #e8e8e8. The registered replacement does not
-    reach the last two. See RNV-STATUS-LIGHT-FLOOR below -- the boundary is an
-    open question with the brand chat, and narrowing it is recorded here in
-    full rather than quietly done.
+    reach the last two, so this test was briefly narrowed to two grounds.
+    Register rev 31 re-walked them against #e8e8e8 and the four grounds
+    are back. See RNV-STATUS-LIGHT-FLOOR below.
 """
 
 import pytest
@@ -218,7 +250,7 @@ def test_the_light_error_text_is_registered_and_why_that_changed():
     moves. The argument was correct, and it is why this value could not be
     left as it was: the base moved on 2026-09-03, and against #c75b64 the
     formula yields #b44753 -- neither the old #c82131 nor the registered
-    #b84e58. A derivative whose rule no longer produces it is not a
+    #ae4650. A derivative whose rule no longer produces it is not a
     derivative; it is a coincidence waiting to break.
 
     The register's family rule is a different one -- hold hue and chroma, move
@@ -227,7 +259,7 @@ def test_the_light_error_text_is_registered_and_why_that_changed():
     rule cannot silently change what an error looks like in five
     applications. Same call the register made for BRAND_STANDBY_GOLD.
     """
-    assert colors.STATUS_ERROR_TEXT_LIGHT == "#b84e58"
+    assert colors.STATUS_ERROR_TEXT_LIGHT == "#ae4650"
     assert colors.STATUS_ERROR_TEXT_LIGHT != colors.lighten(colors.STATUS_ERROR, -20)
 
 
@@ -238,7 +270,7 @@ def test_the_family_is_the_registered_one():
     assert colors.STATUS_WARNING == "#a2703c"
     assert colors.STATUS_ERROR == "#c75b64"
     assert colors.STATUS_ERROR_TEXT == "#dd6f77"
-    assert colors.STATUS_ERROR_TEXT_LIGHT == "#b84e58"
+    assert colors.STATUS_ERROR_TEXT_LIGHT == "#ae4650"
 
 
 def test_light_error_text_clears_its_own_dialog_ground():
@@ -250,33 +282,30 @@ def test_light_error_text_clears_its_own_dialog_ground():
         f"{colors.STATUS_ERROR_TEXT_LIGHT} on {ground} = {ratio:.4f}"
 
 
-@pytest.mark.parametrize("ground", ["#ffffff", "#f5f5f5"])
-def test_light_error_text_carries_on_the_grounds_it_reaches(ground):
-    """RNV-STATUS-LIGHT-FLOOR -- READ THIS BEFORE WIDENING THE PARAMETERS.
+@pytest.mark.parametrize("ground", ["#ffffff", "#f5f5f5", "#eeeeee", "#e8e8e8"])
+def test_light_error_text_carries_to_the_published_boundary(ground):
+    """RNV-STATUS-LIGHT-FLOOR, closed 2026-09-05 at register rev 31.
 
-    This test used to run over #ffffff, #f5f5f5, #eeeeee and #e8e8e8, and its
-    docstring said: "#e8e8e8 is where the gold stops carrying text. The red is
-    derived to the same boundary so the two rules need not be remembered
-    separately." That was true of #c82131, which read 4.6100 there.
+    This ran over #ffffff, #f5f5f5, #eeeeee and #e8e8e8 when the light value
+    was #c82131, which reached all four. The first RNV replacements did not:
+    walked against #f5f5f5 as "the worst light ground" and taken at the first
+    step that cleared, they stopped at 4.52 with no margin and failed on the
+    three registered rungs below it.
 
-    The registered replacement does not reach it:
+    The register re-walked them against #e8e8e8, and the reason is not the
+    size of the move. It is that #e8e8e8 is where BRAND_DARK_GOLD_DEEP already
+    stops:
 
-        #b84e58   #f5f5f5 4.5123   #eeeeee 4.2401   #e8e8e8 4.0150   #e0e0e0 3.7266
+        on #e8e8e8   gold-deep 4.53   the three 4.52 / 4.53 / 4.52   pass
+        on #e0e0e0   gold-deep 4.21   the three 4.20 / 4.20 / 4.20   fail
 
-    The cause is in the register's own rule, which walks the light text
-    variants against #f5f5f5 as "the worst light ground". Rev 27 put APP
-    hover-light #eeeeee, GOLD_TEXT_GROUND_FLOOR #e8e8e8 and pressed-light
-    #e0e0e0 below it. All three light variants were walked to the FIRST step
-    that clears -- 4.52, 4.52, 4.51 -- so none has margin, and one registered
-    rung down they fail together.
+    ONE boundary for every brand text family instead of two. #e0e0e0 was
+    affordable and would have covered the pressed plate, at the cost of an
+    author having to remember which family they were in to know where text
+    stops. Below #e8e8e8, no brand text of any family.
 
-    THIS IS AN OPEN QUESTION WITH THE BRAND CHAT, NOT A LOOSENED TEST. The
-    parameters are narrowed to the two grounds the published value actually
-    reaches, and this docstring is the record of what was given up. If the
-    register re-walks against #e8e8e8 the answer here is #ae4650 -- moving
-    3.1, well inside the register's own 8.40 "clearly different" bar, so it
-    stays the same red -- and the fix is to restore the two grounds above and
-    update the pinned value.
+    So the four grounds are back, and they are back because the values reach
+    them -- not because the test was widened to make a point.
     """
     ratio = contrast(colors.STATUS_ERROR_TEXT_LIGHT, ground)
     assert ratio >= TEXT_FLOOR, \
@@ -442,7 +471,7 @@ uniformity. That argument was right when the register had no name for this
 job. It now does, and a fourth spelling of a registered colour costs more
 than the headroom does."""
 
-STATUS_ERROR_TEXT_LIGHT: Final[str] = "#b84e58"
+STATUS_ERROR_TEXT_LIGHT: Final[str] = "#ae4650"
 """The same label on a LIGHT ground. MIRRORS STATUS["error-text-light"].
 
 STATUS_ERROR_TEXT reads 2.8367 on #f5f5f5 -- below the 4.5 text floor and
@@ -454,7 +483,7 @@ WRITTEN DOWN, NOT DERIVED, AND THAT IS A CHANGE. This was
 lighten(STATUS_ERROR, -20), and the test beside it argued -- correctly -- that
 a written-down derivative orphans the moment its base moves. That argument is
 why the value is not silently kept: against the new base the formula yields
-#b44753, which is neither the old #c82131 nor the registered #b84e58. A
+#b44753, which is neither the old #c82131 nor the registered #ae4650. A
 derivative whose rule no longer produces it is not a derivative, it is a
 coincidence waiting to break.
 
@@ -464,13 +493,24 @@ move lightness only, take the first step that clears 4.5 on the worst ground
 the rule cannot silently change what an error looks like in five
 applications. Same call the register made for BRAND_STANDBY_GOLD.
 
-RNV-STATUS-LIGHT-FLOOR: this value does NOT reach the coverage boundary its
-predecessor did. #c82131 read 4.6100 on #e8e8e8; #b84e58 reads 4.0150 there
-and 4.2401 on APP hover-light #eeeeee. The register walks its light variants
-against #f5f5f5 as "the worst light ground", and rev 27 put three registered
-rungs below it. The question is open with the brand chat; if it re-walks
-against #e8e8e8 the answer here is #ae4650, moving 3.1 -- well inside the
-register's own 8.40 threshold, so it would stay the same red."""
+RNV-STATUS-LIGHT-FLOOR, CLOSED 2026-09-05 at register rev 31. The three
+light text variants were first walked against #f5f5f5 as "the worst light
+ground". It was not the worst: rev 27 had put APP hover-light #eeeeee,
+GOLD_TEXT_GROUND_FLOOR #e8e8e8 and pressed-light #e0e0e0 below it, and each
+value was taken at the FIRST step that cleared -- 4.52 -- so none had margin
+and one rung down they failed together.
+
+They were re-walked against #e8e8e8, and the deciding reason is not the small
+size of the move. It is that #e8e8e8 is where BRAND_DARK_GOLD_DEEP already
+stops:
+
+    on #e8e8e8   gold-deep 4.53   the three 4.52 / 4.53 / 4.52   all pass
+    on #e0e0e0   gold-deep 4.21   the three 4.20 / 4.20 / 4.20   all fail
+
+ONE boundary for every brand text family rather than two. Walking to #e0e0e0
+was affordable and would have covered the pressed plate, at the cost of an
+author having to remember which family they were in to know where text stops.
+Below #e8e8e8, no brand text of any family."""
 '''
 
 
