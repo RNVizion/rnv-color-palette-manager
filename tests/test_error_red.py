@@ -2,7 +2,7 @@
 
     STATUS_ERROR             #c75b64   registered base; no fill is drawn here
     STATUS_ERROR_TEXT        #dd6f77   dark ground, = register error-text
-    STATUS_ERROR_TEXT_LIGHT  #b84e58   light ground, = register error-text-light
+    STATUS_ERROR_TEXT_LIGHT  #ae4650   light ground, = register error-text-light
 
 Before the 2026-09-02 pass a single #ff6b6b served both modes and read 2.5454
 on the light dialog ground -- below the text floor and below the UI floor too.
@@ -94,7 +94,7 @@ def test_the_light_error_text_is_registered_and_why_that_changed():
     moves. The argument was correct, and it is why this value could not be
     left as it was: the base moved on 2026-09-03, and against #c75b64 the
     formula yields #b44753 -- neither the old #c82131 nor the registered
-    #b84e58. A derivative whose rule no longer produces it is not a
+    #ae4650. A derivative whose rule no longer produces it is not a
     derivative; it is a coincidence waiting to break.
 
     The register's family rule is a different one -- hold hue and chroma, move
@@ -103,7 +103,7 @@ def test_the_light_error_text_is_registered_and_why_that_changed():
     rule cannot silently change what an error looks like in five
     applications. Same call the register made for BRAND_STANDBY_GOLD.
     """
-    assert colors.STATUS_ERROR_TEXT_LIGHT == "#b84e58"
+    assert colors.STATUS_ERROR_TEXT_LIGHT == "#ae4650"
     assert colors.STATUS_ERROR_TEXT_LIGHT != colors.lighten(colors.STATUS_ERROR, -20)
 
 
@@ -114,7 +114,7 @@ def test_the_family_is_the_registered_one():
     assert colors.STATUS_WARNING == "#a2703c"
     assert colors.STATUS_ERROR == "#c75b64"
     assert colors.STATUS_ERROR_TEXT == "#dd6f77"
-    assert colors.STATUS_ERROR_TEXT_LIGHT == "#b84e58"
+    assert colors.STATUS_ERROR_TEXT_LIGHT == "#ae4650"
 
 
 def test_light_error_text_clears_its_own_dialog_ground():
@@ -126,7 +126,10 @@ def test_light_error_text_clears_its_own_dialog_ground():
         f"{colors.STATUS_ERROR_TEXT_LIGHT} on {ground} = {ratio:.4f}"
 
 
-@pytest.mark.parametrize("ground", ["#ffffff", "#f5f5f5"])
+# Restored at rev 31: the re-walked value reaches all four rungs. #e0e0e0
+# is deliberately absent -- BRAND_DARK_GOLD_DEEP fails there too, so it is
+# the boundary for every brand text family rather than a gap.
+@pytest.mark.parametrize("ground", ["#ffffff", "#f5f5f5", "#eeeeee", "#e8e8e8"])
 def test_light_error_text_carries_on_the_grounds_it_reaches(ground):
     """RNV-STATUS-LIGHT-FLOOR -- READ THIS BEFORE WIDENING THE PARAMETERS.
 
@@ -137,7 +140,8 @@ def test_light_error_text_carries_on_the_grounds_it_reaches(ground):
 
     The registered replacement does not reach it:
 
-        #b84e58   #f5f5f5 4.5123   #eeeeee 4.2401   #e8e8e8 4.0150   #e0e0e0 3.7266
+        #ae4650   #f5f5f5 4.5123   #eeeeee 4.2401   #e8e8e8 4.0150   (rev 30)
+        #ae4650   #f5f5f5 5.0800   #eeeeee 4.7700   #e8e8e8 4.5200   (rev 31)
 
     The cause is in the register's own rule, which walks the light text
     variants against #f5f5f5 as "the worst light ground". Rev 27 put APP

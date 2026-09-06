@@ -373,7 +373,7 @@ uniformity. That argument was right when the register had no name for this
 job. It now does, and a fourth spelling of a registered colour costs more
 than the headroom does."""
 
-STATUS_ERROR_TEXT_LIGHT: Final[str] = "#b84e58"
+STATUS_ERROR_TEXT_LIGHT: Final[str] = "#ae4650"
 """The same label on a LIGHT ground. MIRRORS STATUS["error-text-light"].
 
 STATUS_ERROR_TEXT reads 2.8367 on #f5f5f5 -- below the 4.5 text floor and
@@ -385,7 +385,7 @@ WRITTEN DOWN, NOT DERIVED, AND THAT IS A CHANGE. This was
 lighten(STATUS_ERROR, -20), and the test beside it argued -- correctly -- that
 a written-down derivative orphans the moment its base moves. That argument is
 why the value is not silently kept: against the new base the formula yields
-#b44753, which is neither the old #c82131 nor the registered #b84e58. A
+#b44753, which is neither the old #c82131 nor the registered #ae4650. A
 derivative whose rule no longer produces it is not a derivative, it is a
 coincidence waiting to break.
 
@@ -395,13 +395,29 @@ move lightness only, take the first step that clears 4.5 on the worst ground
 the rule cannot silently change what an error looks like in five
 applications. Same call the register made for BRAND_STANDBY_GOLD.
 
-RNV-STATUS-LIGHT-FLOOR: this value does NOT reach the coverage boundary its
-predecessor did. #c82131 read 4.6100 on #e8e8e8; #b84e58 reads 4.0150 there
-and 4.2401 on APP hover-light #eeeeee. The register walks its light variants
-against #f5f5f5 as "the worst light ground", and rev 27 put three registered
-rungs below it. The question is open with the brand chat; if it re-walks
-against #e8e8e8 the answer here is #ae4650, moving 3.1 -- well inside the
-register's own 8.40 threshold, so it would stay the same red."""
+RNV-STATUS-LIGHT-FLOOR, CLOSED 2026-09-05 at register rev 31.
+
+These were first walked against #f5f5f5 as "the worst light ground". It was
+not the worst: rev 27 had put APP hover-light #eeeeee, GOLD_TEXT_GROUND_FLOOR
+#e8e8e8 and pressed-light #e0e0e0 below it, and because the rule takes the
+FIRST step that clears, each value stopped at 4.52 with no margin and they
+failed one rung down together.
+
+Re-walked against #e8e8e8. THE DECIDING REASON IS NOT THE SIZE OF THE MOVE --
+#e0e0e0 was affordable on identical grounds, so cost does not pick between
+them. It is that #e8e8e8 is where BRAND_DARK_GOLD_DEEP already stops:
+
+    on #e8e8e8   gold-deep 4.53   these 4.52 / 4.53 / 4.52   pass
+    on #e0e0e0   gold-deep 4.21   these 4.20 / 4.20 / 4.20   fail
+
+ONE boundary for every brand text family instead of two. Walking to #e0e0e0
+would have covered the pressed plate and left an author having to remember
+which family they were in to know where text stops. Below #e8e8e8, no brand
+text of any family.
+
+This value reads 4.52 on #e8e8e8 and 5.08 on #f5f5f5, so it reaches the
+coverage boundary its predecessor #c82131 did -- which the intermediate
+#ae4650 did not, at 4.0150."""
 
 # ==================== Preview & History Borders ====================
 PREVIEW_GRID_BORDER: Final[tuple[int, int, int]] = (0, 0, 0)
