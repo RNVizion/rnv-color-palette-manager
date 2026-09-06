@@ -177,6 +177,44 @@ plate on it would have pinned every hover to the one value the gold cannot
 afford to lose. A boundary is not a plate.
 """
 
+# RNV-LIGHT-WIRING (2026-09-06): the constants below name values the
+# palettes already carried as literals. Nothing here is a new colour.
+# Registered values take the register's key; ramp greys take their byte.
+
+APP_SURFACE_LIGHT_3: Final[str] = "#f5f5f5"
+"""engine/brand.py APP["surface-light-3"]. The light window and panel
+ground -- what a dialog sits on in light mode.
+
+RNV-LIGHT-WIRING (2026-09-06): this value was written out as a literal
+in every palette that used it, so nothing could move it. Registered by
+rev 27 as the third rung of the light surface ladder; named here under
+the register's key, the way APP_PANEL_HOVER and APP_HOVER_LIGHT are.
+Every key that carries it is a surface, so it is not split."""
+
+GREY_E0: Final[str] = "#e0e0e0"
+"""grey(14) on the ramp, #e0e0e0. Static surfaces that share a hex with
+APP_PRESSED_LIGHT without being a pressed state. See the split note
+there. Named by its byte, like every other ramp step."""
+
+GREY_EE: Final[str] = "#eeeeee"
+"""grey(14) on the ramp, #eeeeee. Static surfaces that share a hex with
+APP_HOVER_LIGHT without being a hover: a list header, a scroll ground.
+Same split rnv-text-transformer ruled for its diff headers."""
+
+GREY_CC: Final[str] = "#cccccc"
+"""grey(12) on the ramp, #cccccc. The light-mode border."""
+
+GREY_88: Final[str] = "#888888"
+"""grey(8) on the ramp, #888888. Muted text on dark, a scrollbar handle
+hover on light."""
+
+GREY_55: Final[str] = "#555555"
+"""grey(5) on the ramp, #555555. Disabled text and a checkbox edge on dark."""
+
+GREY_60: Final[str] = "#606060"
+"""grey(6) on the ramp, #606060. A scrollbar handle hover on dark."""
+
+
 IMAGE_OVERLAY_ALPHA: Final[str] = "ED"
 """The alpha byte image mode composites its chrome at -- 0xED, about 93%.
 
@@ -212,6 +250,13 @@ APP_PROVENANCE: Final[dict[str, str]] = {
     "APP_HOVER_LIGHT": "register",
     "APP_WINDOW_OVERLAY": "register-overlay",
     "APP_PANEL_OVERLAY": "register-overlay",
+    "APP_SURFACE_LIGHT_3": "register",
+    "GREY_E0": "app-ramp",
+    "GREY_EE": "app-ramp",
+    "GREY_CC": "app-ramp",
+    "GREY_88": "app-ramp",
+    "GREY_55": "app-ramp",
+    "GREY_60": "app-ramp",
 }
 """Declarative, and read by tests/test_app_mirror.py, in the same shape as
 GOLD_PROVENANCE above. A classification that lives only in a test drifts from
@@ -222,12 +267,16 @@ the thing it classifies."""
 SELECTION_OVERLAY_COLOR: Final[str] = "rgba(0,120,215,200)"
 
 # ── Neutral greys, named for what they are ──
-# RNV-INK-RULE (2026-09-02). These were GREY_66 and
-# GREY_F0 -- role names on values that four applications in the
-# fleet paint with. GREY_F0 in particular is used by the picker, the icon
-# builder and this app, and until now had a name in none of them.
+# RNV-INK-RULE (2026-09-02). This was a role name on a value four
+# applications paint with.
+#
+# RNV-LIGHT-WIRING (2026-09-06): GREY_F0 (#f0f0f0) was defined beside this
+# and painted by ui/image_upload_dialog.py. #f0f0f0 sat on no ladder,
+# 0.42 CIEDE2000 from APP hover-light #eeeeee, and was ruled onto it
+# with the other two light strays. The dialog now paints GREY_EE, defined
+# with the ramp steps above. THIS MOVES A PIXEL in that dialog -- the
+# one place in this script that does.
 GREY_66: Final[str] = "#666666"
-GREY_F0: Final[str] = "#f0f0f0"
 
 
 # ── Which ink goes on this ground ──
@@ -474,8 +523,8 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     # into a local and never uses that local, which is why a grep for it looks
     # live. Aligned to the value the apps that DO paint a muted text use, so
     # wiring it up stays one line and not a colour decision.
-    'text_secondary': '#888888',
-    'text_disabled': '#555555',
+    'text_secondary': GREY_88,
+    'text_disabled': GREY_55,
     # Borders
     'border_color': APP_BORDER,
     'hover_color': GREY_44,
@@ -530,7 +579,7 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     # Scrollbar
     'scrollbar_bg': BRAND_BLACK,
     'scrollbar_handle': GREY_44,   # was #505050, see GREY_44
-    'scrollbar_handle_hover': '#606060',
+    'scrollbar_handle_hover': GREY_60,
     'scrollbar_border': APP_BORDER,
     # Dialog
     'dialog_bg': BRAND_BLACK,
@@ -545,26 +594,26 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
 LIGHT_THEME_COLORS: Final[ThemeDict] = {
     'name': 'Light',
     # Base colors
-    'window_bg': '#f5f5f5',
-    'panel_bg': '#f5f5f5',
-    'scroll_bg': '#eeeeee',
-    'card_bg': '#ffffff',
-    'input_bg': '#ffffff',
+    'window_bg': APP_SURFACE_LIGHT_3,
+    'panel_bg': APP_SURFACE_LIGHT_3,
+    'scroll_bg': GREY_EE,
+    'card_bg': WHITE,
+    'input_bg': WHITE,
     # Text
-    'text_color': '#000000',
+    'text_color': TRUE_BLACK,
     # NOT CONSUMED -- see the note in the dark palette.
-    'text_secondary': '#666666',
-    'text_disabled': '#aaaaaa',
+    'text_secondary': GREY_66,
+    'text_disabled': APP_TEXT_DIM,
     # Borders
-    'border_color': '#cccccc',
-    'hover_color': '#e0e0e0',
+    'border_color': GREY_CC,
+    'hover_color': GREY_E0,
     # Buttons: white base, dark-grey hover/press, white text on press, no visible border
-    'main_btn_bg': '#ffffff',
-    'main_btn_text': '#000000',
-    'main_btn_hover_bg': '#333333',
-    'main_btn_hover_text': '#000000',
+    'main_btn_bg': WHITE,
+    'main_btn_text': TRUE_BLACK,
+    'main_btn_hover_bg': APP_BORDER,
+    'main_btn_hover_text': TRUE_BLACK,
     'main_btn_pressed_bg': GREY_44,
-    'main_btn_pressed_text': '#ffffff',
+    'main_btn_pressed_text': WHITE,
     'main_btn_border_color': 'transparent',
     # The About dialog's button hover plate. Spelled 'tab_hover' until
     # 2026-08-28, where it filled a QPushButton and not a tab.
@@ -578,8 +627,8 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     # holding what these dialogs already painted -- before this they
     # reached into the main family for both, which is why one name
     # ended up describing two schemes.
-    'dialog_btn_bg': '#ffffff',
-    'dialog_btn_text': '#000000',
+    'dialog_btn_bg': WHITE,
+    'dialog_btn_text': TRUE_BLACK,
     # Dialog / tab widget colors
     #
     # NOT CONSUMED -- all three of these. This app paints its tabs from
@@ -597,23 +646,23 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     # RENAMED 2026-08-28 to the spelling those two apps use. `tab_hover` left
     # this block entirely: it was consumed, but to fill a QPushButton, and it
     # is now dialog_btn_hover_bg in the button section above.
-    'tab_bg': '#e0e0e0',
-    'tab_selected_bg': '#ffffff',
+    'tab_bg': GREY_E0,
+    'tab_selected_bg': WHITE,
     'tab_hover_bg': APP_HOVER_LIGHT,
-    'scroll_handle': '#aaaaaa',
+    'scroll_handle': APP_TEXT_DIM,
     # Accent (brand gold - darker variant for readability on light bg)
     'accent': BRAND_DARK_GOLD,
     'accent_dark': BRAND_DARK_GOLD,
     'accent_ink': BRAND_DARK_GOLD_DEEP,
-    'accent_text': '#000000',
+    'accent_text': TRUE_BLACK,
     # Scrollbar
-    'scrollbar_bg': '#f5f5f5',
-    'scrollbar_handle': '#aaaaaa',
-    'scrollbar_handle_hover': '#888888',
-    'scrollbar_border': '#cccccc',
+    'scrollbar_bg': APP_SURFACE_LIGHT_3,
+    'scrollbar_handle': APP_TEXT_DIM,
+    'scrollbar_handle_hover': GREY_88,
+    'scrollbar_border': GREY_CC,
     # Dialog
-    'dialog_bg': '#f5f5f5',
-    'dialog_border': '#cccccc',
+    'dialog_bg': APP_SURFACE_LIGHT_3,
+    'dialog_border': GREY_CC,
     # Status
     'success': STATUS_SUCCESS,
     'warning': STATUS_WARNING,
@@ -633,8 +682,8 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     # Text
     'text_color': APP_TEXT,
     # NOT CONSUMED -- see the note in the dark palette.
-    'text_secondary': '#888888',
-    'text_disabled': '#555555',
+    'text_secondary': GREY_88,
+    'text_disabled': GREY_55,
     # Borders
     'border_color': APP_BORDER,
     'hover_color': GREY_44,
@@ -751,7 +800,7 @@ __all__ = [
     "BRAND_GOLD_RGB",
     "BRAND_DARK_GOLD_RGB",
     "GREY_66",
-    "GREY_F0",
+    "GREY_EE",
     "relative_luminance",
     "contrast_ratio",
     "better_on",

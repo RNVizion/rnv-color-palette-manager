@@ -15,7 +15,7 @@ from PyQt6.QtGui import QPixmap
 from PIL import Image
 
 from utils.logger import Logger, get_logger_instance
-from ui.colors import GREY_66, GREY_F0
+from ui.colors import GREY_66, GREY_EE
 
 logger: Logger = get_logger_instance(__name__)
 
@@ -70,7 +70,8 @@ class ImageUploadDialog(QWidget):
             )
         preview_label.setPixmap(pixmap)
         preview_label.setStyleSheet(
-            f"border: 2px solid {GREY_66}; background-color: {GREY_F0}; padding: 5px;"
+            # RNV-LIGHT-WIRING: was GREY_F0 #f0f0f0, collapsed onto #eeeeee
+            f"border: 2px solid {GREY_66}; background-color: {GREY_EE}; padding: 5px;"
         )
         layout.addWidget(preview_label)
 

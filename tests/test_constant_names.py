@@ -65,7 +65,9 @@ def test_the_values_they_named_are_still_here():
     assert colors.TRUE_BLACK == "#000000"
     assert colors.WHITE == "#ffffff"
     assert colors.GREY_66 == "#666666"
-    assert colors.GREY_F0 == "#f0f0f0"
+    # RNV-LIGHT-WIRING (2026-09-06): GREY_F0 collapsed onto GREY_EE.
+    assert colors.GREY_EE == "#eeeeee"
+    assert not hasattr(colors, "GREY_F0")
     assert colors.BRAND_DARK_GOLD_DEEP == "#7e6529"
 
 

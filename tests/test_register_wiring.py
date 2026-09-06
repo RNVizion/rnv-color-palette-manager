@@ -147,7 +147,10 @@ def test_the_dark_palettes_actually_use_some_of_them():
 
 #: The light half is ruled one value at a time. This is the allowlist, and it
 #: is what a later pass has to extend ON PURPOSE.
-LIGHT_RULED = ('APP_HOVER_LIGHT',)
+# RNV-LIGHT-WIRING (2026-09-06). Widened on purpose, with the pass that
+# wires them: light ink is TRUE_BLACK and light edges are APP_BORDER,
+# both already ruled in the register and until now written as literals.
+LIGHT_RULED = ('APP_HOVER_LIGHT', 'TRUE_BLACK', 'APP_BORDER')
 
 
 def test_the_light_palettes_reference_only_what_the_register_has_ruled():
@@ -188,19 +191,32 @@ def test_the_ruled_light_value_is_actually_wired():
         f'{sorted(used)}')
 
 
-def test_the_unruled_light_surface_is_still_a_literal():
-    """scroll_bg is #eeeeee, which is now APP["hover-light"] -- and it is NOT
-    wired, on purpose. A scrollbar groove is a surface, not an interaction
-    plate, and the light SURFACE ladder is what the register has deferred.
-    Wiring it would claim a role it does not play, on the strength of a shared
-    hex. When the light ladder is ruled, this test is the thing that has to be
-    deleted deliberately."""
+def test_the_light_groove_takes_the_ramp_step_not_the_hover():
+    """RNV-LIGHT-WIRING (2026-09-06). This replaces
+    test_the_unruled_light_surface_is_still_a_literal, which pinned scroll_bg
+    as a bare #eeeeee and said in its own docstring that it had to be deleted
+    deliberately once the light ladder was ruled. Rev 27 ruled it; this is
+    that deliberate act, in the commit that wires it.
+
+    The RULING it protected has not changed and is not being relaxed. A
+    scrollbar groove is a resting surface, not an interaction plate, so it
+    takes the ramp-step name GREY_EE and NOT the register role name
+    APP_HOVER_LIGHT, even though both resolve to #eeeeee. That is the same
+    split rnv-text-transformer ruled for its diff headers.
+
+    So the assertion gets stronger, not weaker: before, any constant at all
+    would have failed it and told you nothing about which one belonged.
+    Now the wrong constant fails it by name."""
     node = _dicts(LIGHT_DICTS)['LIGHT_THEME_COLORS']
     for key, value in zip(node.keys, node.values):
         if isinstance(key, ast.Constant) and key.value == 'scroll_bg':
-            assert isinstance(value, ast.Constant), (
-                'scroll_bg now names a constant. If the light ladder has been '
-                'ruled, delete this test in that commit and say so.')
-            assert value.value == '#eeeeee'
+            assert isinstance(value, ast.Name), (
+                'scroll_bg is a literal again. Every light value is wired; a '
+                'literal here cannot follow the register.')
+            assert value.id == 'GREY_EE', (
+                f'scroll_bg names {value.id}. A groove is a resting surface, '
+                f'not a hover -- it takes the ramp step GREY_EE. Sharing a hex '
+                f'with APP_HOVER_LIGHT is not sharing a role.')
+            assert colors.LIGHT_THEME_COLORS['scroll_bg'] == '#eeeeee'
             return
     raise AssertionError('LIGHT_THEME_COLORS has no scroll_bg')

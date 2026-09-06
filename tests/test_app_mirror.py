@@ -70,6 +70,7 @@ PINNED = {
     'APP_TEXT_DIM': '#aaaaaa',
     'APP_PANEL_HOVER': '#3a3a3a',
     'APP_HOVER_LIGHT': '#eeeeee',
+    'APP_SURFACE_LIGHT_3': '#f5f5f5',
 }
 
 #: Dark and image ink. These carry APP_TEXT and must reference it by name.
