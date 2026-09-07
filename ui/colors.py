@@ -842,3 +842,9 @@ __all__ = [
     "get_theme_colors",
     "is_dark_theme",
 ]
+
+# RNV-GOLD-GUARD (2026-09-07): the values below are swept by
+# tests/test_gold_as_text.py, which resolves every QSS f-string in this
+# repository through these palettes and measures the gold family as text
+# and as a fill. A gold that reads correctly here can still be drawn on
+# the wrong ground three files away, and that is what it is for.
