@@ -33,6 +33,7 @@ from ui.colors import (
 )
 from utils.logger import Logger, get_logger_instance
 from utils.dialog_helper import DialogHelper
+from utils.pil_compat import flat_pixels
 
 if TYPE_CHECKING:
     from ui.preview_grid import PreviewGrid
@@ -783,7 +784,7 @@ class ColorSlotWidget(QWidget):
             new_size = (int(calc_image.width * ratio), int(calc_image.height * ratio))
             calc_image = calc_image.resize(new_size, Image.Resampling.LANCZOS)
 
-        pixels = list(calc_image.getdata())
+        pixels = flat_pixels(calc_image)
         avg_color = tuple(sum(c[i] for c in pixels) // len(pixels) for i in range(3))
 
         self.slot.color = QColor(*avg_color)

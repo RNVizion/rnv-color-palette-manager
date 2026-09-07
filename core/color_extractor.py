@@ -12,6 +12,7 @@ from collections import defaultdict
 from PIL import Image
 
 from utils.logger import Logger, get_logger_instance
+from utils.pil_compat import flat_pixels
 
 logger: Logger = get_logger_instance(__name__)
 
@@ -93,7 +94,7 @@ class ColorExtractor:
             new_size = (max(1, int(img.width * ratio)), max(1, int(img.height * ratio)))
             img = img.resize(new_size, Image.Resampling.LANCZOS)
 
-        raw_pixels = list(img.getdata())
+        raw_pixels = flat_pixels(img)
 
         # Sample with quality step
         pixels: list[RGB] = []
@@ -236,3 +237,7 @@ class ColorExtractor:
             + (c1[1] - c2[1]) ** 2
             + (c1[2] - c2[2]) ** 2
         )
+
+# RNV-PIL-COMPAT (2026-09-07): pixel access in this file goes through
+# utils.pil_compat.flat_pixels, not Image.getdata(), which Pillow removes
+# on 2027-10-15. tests/test_pil_compat.py fails if a direct call returns.
