@@ -5,10 +5,10 @@
 # Required to run the application.
 
 # Qt Framework
-PyQt6>=6.5.0
+PyQt6>=6.5.0,<7.0
 
 # Image Processing
-Pillow>=10.0.0
+Pillow>=10.0.0,<13.0
 
 
 # ─── Test & Development Dependencies ──────────────────────────────────────

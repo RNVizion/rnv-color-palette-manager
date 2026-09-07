@@ -6,8 +6,8 @@
 # and coverage reports.
 
 # ----- Production dependencies (also in requirements.txt) -----
-PyQt6>=6.5.0
-Pillow>=10.0.0
+PyQt6>=6.5.0,<7.0
+Pillow>=10.0.0,<13.0
 
 # ----- Test framework -----
 pytest>=8.0,<10.0

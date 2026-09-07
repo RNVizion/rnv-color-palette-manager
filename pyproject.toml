@@ -53,7 +53,7 @@ classifiers = [
 
 dependencies = [
     "PyQt6>=6.5.0,<7.0",
-    "Pillow>=10.0.0,<12.0",
+    "Pillow>=10.0.0,<13.0",
 ]
 
 [project.urls]
@@ -80,3 +80,10 @@ exclude = ["tests*", "resources*"]
 
 [tool.setuptools.package-data]
 "*" = ["resources/**/*", "py.typed"]
+
+# ── Dependency coherence (RNV-DEPENDENCY-COHERENCE, 2026-09-07) ────
+# The declarations in this file and in requirements.txt had drifted
+# apart, so which range applied depended on which file you installed
+# from. tests/test_dependency_coherence.py fails if they disagree
+# again, if an exact `==` pin comes back, or if Pillow stops matching
+# the range all five applications share.
