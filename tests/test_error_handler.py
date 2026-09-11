@@ -320,10 +320,24 @@ def test_safe_delete_file_returns_false_when_file_missing():
 # ═══════════════════════════════════════════════════════════════════════════
 
 def test_exception_handler_suppresses_exception_in_block():
-    """An exception inside the block must be suppressed (not re-raised)."""
+    """An exception inside the block must be suppressed (not re-raised).
+
+    RNV-NO-VACUOUS-TESTS, 2026-09-10. This ended in `assert True`, which is
+    true whatever the code does. The test itself was sound -- reaching the
+    line at all is the proof, because a re-raise would have propagated --
+    but the assertion said nothing, and a reader cannot tell a deliberate
+    marker from a forgotten stub. It now asserts the thing that reaching
+    the line means.
+    """
+    reached_the_line_after = []
+
     with exception_handler("test op", parent=None, show_error=False):
         raise RuntimeError("intentional")
-    assert True
+
+    reached_the_line_after.append("yes")
+
+    assert reached_the_line_after == ["yes"], (
+        "exception_handler re-raised instead of suppressing")
 
 
 def test_exception_handler_allows_clean_completion():
