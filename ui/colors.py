@@ -211,10 +211,6 @@ hover on light."""
 GREY_55: Final[str] = "#555555"
 """grey(5) on the ramp, #555555. Disabled text and a checkbox edge on dark."""
 
-GREY_60: Final[str] = "#606060"
-"""grey(6) on the ramp, #606060. A scrollbar handle hover on dark."""
-
-
 IMAGE_OVERLAY_ALPHA: Final[str] = "ED"
 """The alpha byte image mode composites its chrome at -- 0xED, about 93%.
 
@@ -256,7 +252,6 @@ APP_PROVENANCE: Final[dict[str, str]] = {
     "GREY_CC": "app-ramp",
     "GREY_88": "app-ramp",
     "GREY_55": "app-ramp",
-    "GREY_60": "app-ramp",
 }
 """Declarative, and read by tests/test_app_mirror.py, in the same shape as
 GOLD_PROVENANCE above. A classification that lives only in a test drifts from
@@ -579,7 +574,7 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     # Scrollbar
     'scrollbar_bg': BRAND_BLACK,
     'scrollbar_handle': GREY_44,   # was #505050, see GREY_44
-    'scrollbar_handle_hover': GREY_60,
+    'scrollbar_handle_hover': BRAND_GOLD,
     'scrollbar_border': APP_BORDER,
     # Dialog
     'dialog_bg': BRAND_BLACK,
@@ -658,7 +653,7 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     # Scrollbar
     'scrollbar_bg': APP_SURFACE_LIGHT_3,
     'scrollbar_handle': APP_TEXT_DIM,
-    'scrollbar_handle_hover': GREY_88,
+    'scrollbar_handle_hover': BRAND_DARK_GOLD,
     'scrollbar_border': GREY_CC,
     # Dialog
     'dialog_bg': APP_SURFACE_LIGHT_3,
@@ -738,7 +733,7 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     # Scrollbar -- uses rgba in CSS strings, not here
     'scrollbar_bg': 'transparent',
     'scrollbar_handle': 'rgba(80, 80, 80, 100)',
-    'scrollbar_handle_hover': 'rgba(80, 80, 80, 120)',
+    'scrollbar_handle_hover': BRAND_GOLD,
     'scrollbar_border': 'rgba(51, 51, 51, 100)',
     # Dialog
     'dialog_bg': BRAND_BLACK,

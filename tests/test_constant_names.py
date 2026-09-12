@@ -18,7 +18,7 @@ from pathlib import Path
 from ui import colors
 
 ROOT = Path(__file__).resolve().parent.parent
-RETIRED = ('ACCENT_PRESSED_TEXT_DARK', 'ACCENT_PRESSED_TEXT_LIGHT', 'TEXTEDIT_BG_DARK', 'TEXTEDIT_BG_LIGHT', 'SELECTION_OVERLAY_TEXT', 'IMAGE_PREVIEW_BORDER', 'IMAGE_PREVIEW_BG', 'DARK_GOLD_DEEP', 'SLOT_SELECTED_COLOR', 'CHECKBOX_ACCENT', 'SVG_EXPORT_TEXT_DARK', 'SVG_EXPORT_TEXT_LIGHT')
+RETIRED = ('ACCENT_PRESSED_TEXT_DARK', 'ACCENT_PRESSED_TEXT_LIGHT', 'TEXTEDIT_BG_DARK', 'TEXTEDIT_BG_LIGHT', 'SELECTION_OVERLAY_TEXT', 'IMAGE_PREVIEW_BORDER', 'IMAGE_PREVIEW_BG', 'DARK_GOLD_DEEP', 'SLOT_SELECTED_COLOR', 'CHECKBOX_ACCENT', 'SVG_EXPORT_TEXT_DARK', 'SVG_EXPORT_TEXT_LIGHT', 'GREY_60')
 SKIP = {".git", "build", "dist", ".venv", "__pycache__"}
 
 
@@ -45,7 +45,14 @@ def _sources():
         if any(p in SKIP for p in path.parts):
             continue
         text = path.read_bytes().decode("utf-8-sig", errors="replace")
-        if "RNV-NAME-GUARD" in text or "RNV-NAMING-TOOL-DO-NOT-SWEEP" in text:
+        # RNV-GOLD-HOVER 2026-09-12: the fleet's one delivery marker. This
+        # guard reads RAW TEXT and a delivery script names the constant it
+        # retires, so without this line such a script lands red here. The
+        # round that added it escaped on its own, because its payload quotes
+        # the two markers above -- luck, not a rule. Measured both ways with
+        # a probe file carrying only this marker.
+        if ("RNV-NAME-GUARD" in text or "RNV-NAMING-TOOL-DO-NOT-SWEEP" in text
+                or "RNV-DELIVERY-SCRIPT-DO-NOT-SWEEP" in text):
             continue
         yield path, text
 
@@ -65,6 +72,10 @@ def test_the_values_they_named_are_still_here():
     assert colors.TRUE_BLACK == "#000000"
     assert colors.WHITE == "#ffffff"
     assert colors.GREY_66 == "#666666"
+    # RNV-GOLD-HOVER (2026-09-12): the dark scrollbar handle on hover was this
+    # ramp step's only consumer, here and in the transformer. The hover is the
+    # brand gold now, so the step had nothing left to paint.
+    assert not hasattr(colors, "GREY_60")
     # RNV-LIGHT-WIRING (2026-09-06): GREY_F0 collapsed onto GREY_EE.
     assert colors.GREY_EE == "#eeeeee"
     assert not hasattr(colors, "GREY_F0")
