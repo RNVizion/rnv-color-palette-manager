@@ -1,3 +1,9 @@
+# RNV-DERIVE-ALPHA, 2026-09-25 -- every colour this application writes
+# at an alpha is DERIVED, translucent(BASE, ALPHA), so a change to a base
+# reaches every alpha form of it. The image-mode scrollbar handle left
+# #505050 at 100 for GREY_44 at 150, by ruling. tests/test_derived_values.py
+# holds the derivations; tests/test_collapse_505050.py now decodes every
+# spelling, and names the two integer tuples still awaiting a ruling.
 # RNV-GOLD-HOVER, 2026-09-12 -- every hover on the main surface takes the
 # mode's gold: BRAND_GOLD in dark and image, BRAND_DARK_GOLD in light. The
 # extras were always allowed it; this extends the same treatment to the

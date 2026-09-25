@@ -48,6 +48,66 @@ def lighten(hex_color: str, step: int) -> str:
         max(0, min(255, c + step)) for c in (r, g, b))
 
 
+def _hex6(hex_color: str) -> str:
+    """The six hex digits of a colour, or ValueError. Shared by the two
+    helpers below so that they refuse exactly the same inputs."""
+    h = hex_color.lstrip("#")
+    if len(h) != 6 or any(c not in "0123456789abcdefABCDEF" for c in h):
+        raise ValueError(f"{hex_color!r} is not a six-digit hex colour")
+    return h
+
+
+def _alpha_byte(alpha: int) -> int:
+    """An alpha as the 0-255 byte, or an error. A fraction is refused, not
+    scaled: Qt TRUNCATES a fractional alpha (0.3 is 76, not 77), and a helper
+    that rounded would move a pixel inside a respelling."""
+    if isinstance(alpha, bool) or not isinstance(alpha, int):
+        raise TypeError(f"alpha {alpha!r} is not an int byte")
+    if not 0 <= alpha <= 255:
+        raise ValueError(f"alpha {alpha} is outside 0-255")
+    return alpha
+
+
+def translucent(hex_color: str, alpha: int) -> str:
+    """A colour at an alpha, as Qt's eight-digit #AARRGGBB -- ALPHA FIRST.
+
+    WHY A FUNCTION RATHER THAN A WRITTEN-OUT VALUE. A value computed from
+    another value must be computed in code; a written-down derivative is
+    orphaned the moment its source moves, and nothing says so.
+    RNV-COLLAPSE-505050 is what that cost here: the value was ruled onto
+    GREY_44 on 2026-09-02, and IMAGE_MODE_COLORS went on painting the main
+    scrollbar handle with it for three weeks, written out as rgba(), while
+    the guard for that ruling reported clean.
+
+    WHY #AARRGGBB. It is the one spelling valid both in a stylesheet and in
+    QColor(). QColor() cannot parse rgba(): it returns an INVALID colour, and
+    Qt paints that as opaque black.
+
+    WHY UPPER CASE, when rnv-icon-builder's helper of the same name writes
+    lower. The two overlays this replaced were written #ED000000 and
+    #ED1A1A1A, and the locked suite checks image window_bg with a
+    case-sensitive startswith("#ED"). Upper case keeps both byte-identical.
+    Qt reads either. Whether eight-digit hex falls under the register's
+    lower-case rule is a question for rnv-brand, which has not ruled on it.
+    """
+    return "#%02X%s" % (_alpha_byte(alpha), _hex6(hex_color).upper())
+
+
+def translucent_rgba(hex_color: str, alpha: int) -> str:
+    """The same derivation, spelled rgba(r, g, b, a). STYLESHEETS ONLY.
+
+    It exists for one consumer. The locked suite asserts that SIZE_OVERLAY_BG
+    contains "rgba", and that lock stands; everything that reads
+    SIZE_OVERLAY_BG is a stylesheet, where rgba() is valid. QColor() is not
+    -- it reads rgba() as INVALID and paints opaque black -- so translucent()
+    is the default and this is the exception, pinned in
+    tests/test_derived_values.py to the one constant that needs it.
+    """
+    h = _hex6(hex_color)
+    r, g, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
+    return f"rgba({r}, {g}, {b}, {_alpha_byte(alpha)})"
+
+
 BRAND_GOLD: Final[str] = "#d2bc93"
 """Primary brand gold - dark-mode accents, hovers, group titles, highlights."""
 
@@ -133,13 +193,6 @@ APP_TEXT_DIM: Final[str] = "#aaaaaa"
 """engine/brand.py APP["text-dim"]. grey(10)."""
 
 APP_PANEL_HOVER: Final[str] = "#3a3a3a"
-
-# grey(4) on the ink grid. The main button's pressed plate (ruled 2026-08-26)
-# and, from 2026-09-02, the scrollbar handle -- RNV-COLLAPSE-505050: this app
-# held #505050 for its handle where the other four already used #444444, and
-# #505050 was on neither the ladder nor the grid. Named here for the first
-# time in this app; rnv-text-transformer already calls it GREY_44.
-GREY_44: Final[str] = "#444444"
 """engine/brand.py APP["panel-hover"]. The n=+2 rung of the dark surface
 ladder, and the dark interaction plate.
 
@@ -153,6 +206,23 @@ The register had called the ladder "two-thirds specified" because APP_BORDER
 all: #333333 is grey(3) on the INK grid, which governs inks and EDGES, and a
 border is an edge. The ladder was complete when the question was first asked.
 """
+
+# grey(4) on the ink grid. The main button's pressed plate (ruled 2026-08-26)
+# and the scrollbar handle -- RNV-COLLAPSE-505050, ruled 2026-09-02: #505050
+# was on neither the ladder nor the grid. Named here for the first time in
+# this app; rnv-text-transformer already calls it GREY_44.
+#
+# CORRECTED 2026-09-25, AND MOVED. This said the other four applications
+# "already used #444444" for the handle. In dark mode three did, and the
+# mixer used #333333. In image mode none did: all four still painted #505050,
+# spelled rgba(), on the main surface -- the mixer in IMAGE_STYLESHEET,
+# beside the #333333 its palette gives dialogs -- and so did this
+# application's own image scrollbar_handle, until this date. The comment also
+# sat between APP_PANEL_HOVER and that constant's docstring, so the text
+# describing the panel-hover rung read as GREY_44's.
+GREY_44: Final[str] = "#444444"
+"""grey(4) on the ink grid. The pressed plate, and the scrollbar handle in
+every mode -- in image mode at SCROLLBAR_HANDLE_ALPHA."""
 
 APP_HOVER_LIGHT: Final[str] = "#eeeeee"
 """engine/brand.py APP["hover-light"]. grey(14). The light interaction plate.
@@ -211,16 +281,28 @@ hover on light."""
 GREY_55: Final[str] = "#555555"
 """grey(5) on the ramp, #555555. Disabled text and a checkbox edge on dark."""
 
-IMAGE_OVERLAY_ALPHA: Final[str] = "ED"
-"""The alpha byte image mode composites its chrome at -- 0xED, about 93%.
+# ==================== Composite alphas ====================
+# A composite is a named colour AT AN ALPHA: translucent(BASE, ALPHA). The
+# colour half is a name, so a register move reaches it; the alpha half is one
+# of these, so that same move carries every alpha form of the colour with it.
+# Each byte is the one the literal it replaced already held, except the
+# scrollbar handle's, which was ruled.
 
-WHY THE OVERLAYS BELOW ARE WRITTEN OUT RATHER THAN COMPOSED. Qt wants the
-eight-digit #AARRGGBB form, and building it from the six-digit constant would
-make the palette entries resolve to an expression rather than a value, which
-this app's own before/after comparison cannot check. The relationship is
-asserted in tests/test_ladder_and_plate.py instead: each overlay's last six
-digits must BE the register value it claims, and its alpha byte must be this
-one. If the register moves a base, those tests fail and these move with it.
+IMAGE_OVERLAY_ALPHA: Final[int] = 0xED
+"""237, about 93%. The alpha image mode composites its chrome at.
+
+WAS THE STRING "ED", AND THE OVERLAYS BELOW WERE WRITTEN OUT. The reason
+given was that composing them would make the palette entries resolve to an
+expression rather than a value, which this app's own before/after comparison
+could not check -- so tests/test_ladder_and_plate.py asserted the
+relationship instead, and a register move would have failed that test and
+waited for someone to edit two strings by hand.
+
+RULED 2026-09-24 by Chris: derived values are DERIVED, not asserted. The
+palettes still resolve to plain strings at import, so every comparison of
+values still compares values. What changed is that a register move now
+reaches the overlays on its own. The ladder test keeps its check, taking each
+overlay apart rather than trusting the call that built it.
 
 THEY WERE INVISIBLE BEFORE. The 2026-08-29 wiring pass claimed no registered
 value was left spelled as a literal in a dark palette. That was true of
@@ -229,10 +311,28 @@ matched #000000, and three of these sat in IMAGE_MODE_COLORS -- which is a DARK
 dict here -- while the test reported clean.
 """
 
-APP_WINDOW_OVERLAY: Final[str] = "#ED000000"
+SCROLLBAR_HANDLE_ALPHA: Final[int] = 0x96
+"""150. The image-mode scrollbar handle. It was 100 here and 150 in all four
+other applications, and nothing recorded why. Ruled 2026-09-24: 150
+fleet-wide, moving with the handle's colour."""
+
+SCROLLBAR_BORDER_ALPHA: Final[int] = 0x64
+"""100. The image-mode scrollbar edge -- the byte it already had."""
+
+SIZE_OVERLAY_ALPHA: Final[int] = 0xC8
+"""200. The floating size and status readout -- the byte it already had."""
+
+SLOT_IMAGE_ALPHA: Final[int] = 0xAB
+"""171. A new slot's default fill in image mode -- the byte it already had.
+
+DEFAULT_SLOT_COLOR_IMAGE_RGB spells the same colour as an integer tuple and is
+NOT derived yet. Tuples are a notation of their own, measured across the fleet
+on 2026-09-25, and they get a round of their own."""
+
+APP_WINDOW_OVERLAY: Final[str] = translucent(TRUE_BLACK, IMAGE_OVERLAY_ALPHA)
 """TRUE_BLACK, and APP["window"], at IMAGE_OVERLAY_ALPHA."""
 
-APP_PANEL_OVERLAY: Final[str] = "#ED1A1A1A"
+APP_PANEL_OVERLAY: Final[str] = translucent(BRAND_BLACK, IMAGE_OVERLAY_ALPHA)
 """BRAND_BLACK, and APP["panel"], at IMAGE_OVERLAY_ALPHA."""
 APP_PROVENANCE: Final[dict[str, str]] = {
     "TRUE_BLACK": "register",
@@ -355,8 +455,10 @@ SLOT_BORDER_THIN_COLOR: Final[tuple[int,int,int]] = (80, 80, 80)
 SLOT_BORDER_THICK_COLOR: Final[tuple[int,int,int]] = (60, 60, 60)
 """Border color for thick slot border style."""
 
-SIZE_OVERLAY_BG: Final[str] = "rgba(0, 0, 0, 200)"
-"""Background for the floating size/status overlay widget."""
+SIZE_OVERLAY_BG: Final[str] = translucent_rgba(TRUE_BLACK, SIZE_OVERLAY_ALPHA)
+"""Background for the floating size/status overlay widget. TRUE_BLACK at
+SIZE_OVERLAY_ALPHA, spelled rgba() because the locked suite pins that
+spelling -- every consumer is a stylesheet, where it is valid."""
 
 # ==================== Status Colors ====================
 STATUS_SUCCESS: Final[str] = "#926c89"
@@ -496,8 +598,10 @@ TRANSPARENT_RGBA: Final[tuple[int, int, int, int]] = (0, 0, 0, 0)
 DEFAULT_SLOT_COLOR: Final[str] = "#a9a9a9"
 """Default color for new color slots in Dark/Light mode (darkgrey)."""
 
-DEFAULT_SLOT_COLOR_IMAGE: Final[str] = "rgba(0, 0, 0, 171)"
-"""Default color for new color slots in Image mode (semi-transparent black)."""
+DEFAULT_SLOT_COLOR_IMAGE: Final[str] = translucent(TRUE_BLACK, SLOT_IMAGE_ALPHA)
+"""Default color for new color slots in Image mode (semi-transparent black).
+TRUE_BLACK at SLOT_IMAGE_ALPHA: the colour it always was, in the one
+spelling QColor() can read as well as a stylesheet."""
 
 DEFAULT_SLOT_COLOR_IMAGE_RGB: Final[tuple[int, int, int, int]] = (0, 0, 0, 171)
 """Default slot color in Image mode as RGBA tuple."""
@@ -730,11 +834,17 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'accent_dark': BRAND_GOLD_HOVER,
     'accent_ink': BRAND_GOLD,
     'accent_text': TRUE_BLACK,
-    # Scrollbar -- uses rgba in CSS strings, not here
+    # Scrollbar. The two composites are DERIVED -- a named colour at a
+    # declared alpha -- so a register move reaches them.
     'scrollbar_bg': 'transparent',
-    'scrollbar_handle': 'rgba(80, 80, 80, 100)',
+    # RNV-COLLAPSE-505050, closed in this palette 2026-09-25. This read
+    # rgba(80, 80, 80, 100) -- the retired value at alpha 100 -- three
+    # weeks after the ruling, while tests/test_collapse_505050.py
+    # reported it gone: nothing here decoded rgba(). The alpha moves
+    # to 150 with it, the byte the other four image scrollbars use.
+    'scrollbar_handle': translucent(GREY_44, SCROLLBAR_HANDLE_ALPHA),
     'scrollbar_handle_hover': BRAND_GOLD,
-    'scrollbar_border': 'rgba(51, 51, 51, 100)',
+    'scrollbar_border': translucent(APP_BORDER, SCROLLBAR_BORDER_ALPHA),
     # Dialog
     'dialog_bg': BRAND_BLACK,
     'dialog_border': APP_BORDER,
@@ -834,6 +944,8 @@ __all__ = [
     "SESSION_FALLBACK_COLOR_IMAGE",
     "TRANSPARENT_RGBA",
     # Functions
+    "translucent",
+    "translucent_rgba",
     "get_theme_colors",
     "is_dark_theme",
 ]
