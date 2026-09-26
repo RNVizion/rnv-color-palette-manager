@@ -108,6 +108,21 @@ def translucent_rgba(hex_color: str, alpha: int) -> str:
     return f"rgba({r}, {g}, {b}, {_alpha_byte(alpha)})"
 
 
+
+def translucent_tuple(hex_color: str, alpha: int) -> tuple[int, int, int, int]:
+    """The same derivation, as the (r, g, b, a) tuple QColor(*t) takes.
+
+    RNV-TUPLE-ROUND, 2026-09-26. The third spelling of one derived value:
+    translucent() writes #aarrggbb for stylesheets and QColor(); this is for
+    the callers that unpack a tuple into QColor or key a cache by one. A tuple
+    is the notation the fleet's string sweeps never read, so a constant written
+    as one could not follow its base. Same refusals as translucent(), same
+    bytes.
+    """
+    h = _hex6(hex_color)
+    return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16), _alpha_byte(alpha))
+
+
 BRAND_GOLD: Final[str] = "#d2bc93"
 """Primary brand gold - dark-mode accents, hovers, group titles, highlights."""
 
@@ -325,9 +340,12 @@ SIZE_OVERLAY_ALPHA: Final[int] = 0xC8
 SLOT_IMAGE_ALPHA: Final[int] = 0xAB
 """171. A new slot's default fill in image mode -- the byte it already had.
 
-DEFAULT_SLOT_COLOR_IMAGE_RGB spells the same colour as an integer tuple and is
-NOT derived yet. Tuples are a notation of their own, measured across the fleet
-on 2026-09-25, and they get a round of their own."""
+DEFAULT_SLOT_COLOR_IMAGE_RGB spells the same colour as an integer tuple, and
+since 2026-09-26 it is derived from the same pair (RNV-TUPLE-ROUND)."""
+
+SEARCH_DIM_ALPHA: Final[int] = 0x8C
+"""140. The dim drawn over slots that do not match a search (TRUE_BLACK) --
+the byte it already had."""
 
 APP_WINDOW_OVERLAY: Final[str] = translucent(TRUE_BLACK, IMAGE_OVERLAY_ALPHA)
 """TRUE_BLACK, and APP["window"], at IMAGE_OVERLAY_ALPHA."""
@@ -446,11 +464,13 @@ def prefers_dark_ink(background: "str | tuple[int, int, int]") -> bool:
 SEARCH_HIGHLIGHT_COLOR: Final[tuple[int,int,int]] = (0, 255, 100)
 """Bright green border drawn on search-matching slots."""
 
-SEARCH_DIM_OVERLAY: Final[tuple[int,int,int,int]] = (0, 0, 0, 140)
+SEARCH_DIM_OVERLAY: Final[tuple[int,int,int,int]] = translucent_tuple(
+    TRUE_BLACK, SEARCH_DIM_ALPHA)
 """Semi-transparent black overlay drawn on non-matching slots."""
 
-SLOT_BORDER_THIN_COLOR: Final[tuple[int,int,int]] = (80, 80, 80)
-"""Border color for thin slot border style."""
+SLOT_BORDER_THIN_COLOR: Final[tuple[int,int,int]] = _to_rgb(GREY_44)
+"""Border color for thin slot border style. GREY_44: it was (80, 80, 80),
+#505050, until the 2026-09-25 ruling collapsed it (RNV-COLLAPSE-505050)."""
 
 SLOT_BORDER_THICK_COLOR: Final[tuple[int,int,int]] = (60, 60, 60)
 """Border color for thick slot border style."""
@@ -566,11 +586,12 @@ coverage boundary its predecessor #c82131 did -- which the intermediate
 #ae4650 did not, at 4.0150."""
 
 # ==================== Preview & History Borders ====================
-PREVIEW_GRID_BORDER: Final[tuple[int, int, int]] = (0, 0, 0)
+PREVIEW_GRID_BORDER: Final[tuple[int, int, int]] = _to_rgb(TRUE_BLACK)
 """Border color for grid cells in the preview grid widget."""
 
-HISTORY_SWATCH_BORDER: Final[tuple[int, int, int]] = (80, 80, 80)
-"""Border color for color history swatch thumbnails."""
+HISTORY_SWATCH_BORDER: Final[tuple[int, int, int]] = _to_rgb(GREY_44)
+"""Border color for color history swatch thumbnails. GREY_44: it was
+(80, 80, 80), #505050, until the 2026-09-25 ruling collapsed it."""
 
 # ==================== Structural / Data Colors ====================
 # These colors are used in non-themed contexts (file export, data defaults,
@@ -603,8 +624,10 @@ DEFAULT_SLOT_COLOR_IMAGE: Final[str] = translucent(TRUE_BLACK, SLOT_IMAGE_ALPHA)
 TRUE_BLACK at SLOT_IMAGE_ALPHA: the colour it always was, in the one
 spelling QColor() can read as well as a stylesheet."""
 
-DEFAULT_SLOT_COLOR_IMAGE_RGB: Final[tuple[int, int, int, int]] = (0, 0, 0, 171)
-"""Default slot color in Image mode as RGBA tuple."""
+DEFAULT_SLOT_COLOR_IMAGE_RGB: Final[tuple[int, int, int, int]] = translucent_tuple(
+    TRUE_BLACK, SLOT_IMAGE_ALPHA)
+"""Default slot color in Image mode as RGBA tuple: DEFAULT_SLOT_COLOR_IMAGE's
+colour and alpha, in the spelling QColor(*t) takes."""
 
 
 # ==================== Dark Theme Colors ====================
@@ -946,6 +969,7 @@ __all__ = [
     # Functions
     "translucent",
     "translucent_rgba",
+    "translucent_tuple",
     "get_theme_colors",
     "is_dark_theme",
 ]

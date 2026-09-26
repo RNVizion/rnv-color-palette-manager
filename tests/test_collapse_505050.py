@@ -19,17 +19,18 @@ None of the three decoded rgba(), and rgba() was the only spelling the value
 had left. Every check below decodes: #rgb, #rrggbb, #aarrggbb, rgb() and
 rgba() all read as the colour they are.
 
-WHAT IT STILL CANNOT CLEAR, STATED RATHER THAN HIDDEN. Two constants hold the
-value as an INTEGER TUPLE, which no string sweep reads at all:
+THE LAST TWO, RULED. Two constants held the value as an INTEGER TUPLE, which
+no string sweep reads at all:
 
     SLOT_BORDER_THIN_COLOR   (80, 80, 80)   core/color_slot.py, the thin slot pen
     HISTORY_SWATCH_BORDER    (80, 80, 80)   utils/color_history.py, the swatch pen
 
-Whether a slot border is the same decision as a scrollbar handle is a ruling,
-not a sweep -- the thin and thick slot borders are told apart partly by
-colour, and a collapse must not erase a distinction nobody was asked about.
-So they are pinned as the KNOWN set: a third appearing fails, and collapsing
-either fails until PENDING_RULING is updated in the same commit.
+Whether a slot border was the same decision as a scrollbar handle was a
+ruling, not a sweep, and it was asked. A render showed #505050 and #444444
+all but indistinguishable at 1px, and the thick border (#3c3c3c) differs by
+its width, not its colour. Ruled 2026-09-25: collapse. Since 2026-09-26 both
+are _to_rgb(GREY_44) (RNV-TUPLE-ROUND), and PENDING_RULING is empty, so any
+integer spelling of the value that comes back fails.
 """
 from __future__ import annotations
 
@@ -49,11 +50,9 @@ DICT_NAMES = {'dark': 'DARK_THEME_COLORS', 'image': 'IMAGE_MODE_COLORS',
 
 #: The integer spellings of the value that await a ruling, by the name each is
 #: assigned to. Not an exemption: the sweep below must find EXACTLY these, so
-#: a new one fails, and a ruled one fails until this is updated.
-PENDING_RULING = {
-    ("ui/colors.py", "SLOT_BORDER_THIN_COLOR"),
-    ("ui/colors.py", "HISTORY_SWATCH_BORDER"),
-}
+#: a new one fails. EMPTY since 2026-09-26: the last two were ruled onto
+#: GREY_44 and are written through it.
+PENDING_RULING: set[tuple[str, str]] = set()
 
 #: Files that name the value in order to forbid it. The last is the fleet's
 #: delivery marker: a delivery script quotes what it retires.
@@ -279,3 +278,23 @@ def test_the_integer_spellings_are_exactly_the_ones_awaiting_a_ruling():
         f"  gone from the code:  {sorted(PENDING_RULING - found)}\n"
         f"A new one is a survivor. A gone one was ruled on: update "
         f"PENDING_RULING in the same commit.")
+
+
+def test_the_ruled_tuples_hold_the_new_value_through_the_constant():
+    """The two tuples the 2026-09-25 ruling collapsed. #444444, and written as
+    _to_rgb(GREY_44), so a later move of GREY_44 reaches them too."""
+    from ui import colors
+    tree = ast.parse((ROOT / PALETTE_FILE).read_text(encoding="utf-8-sig"))
+    values = {}
+    for node in tree.body:
+        if isinstance(node, (ast.Assign, ast.AnnAssign)) and node.value is not None:
+            target = node.targets[0] if isinstance(node, ast.Assign) else node.target
+            values[getattr(target, "id", "")] = node.value
+    for name in ("SLOT_BORDER_THIN_COLOR", "HISTORY_SWATCH_BORDER"):
+        assert getattr(colors, name) == (0x44, 0x44, 0x44), (
+            f"{name} is {getattr(colors, name)}, ruled onto {NEW_HEX}")
+        node = values[name]
+        assert (isinstance(node, ast.Call)
+                and getattr(node.func, "id", None) == "_to_rgb"
+                and [ast.unparse(a) for a in node.args] == [CONST]), (
+            f"{name} is {ast.unparse(node)}, not _to_rgb({CONST})")
