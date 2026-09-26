@@ -83,14 +83,14 @@ def translucent(hex_color: str, alpha: int) -> str:
     QColor(). QColor() cannot parse rgba(): it returns an INVALID colour, and
     Qt paints that as opaque black.
 
-    WHY UPPER CASE, when rnv-icon-builder's helper of the same name writes
-    lower. The two overlays this replaced were written #ED000000 and
-    #ED1A1A1A, and the locked suite checks image window_bg with a
-    case-sensitive startswith("#ED"). Upper case keeps both byte-identical.
-    Qt reads either. Whether eight-digit hex falls under the register's
-    lower-case rule is a question for rnv-brand, which has not ruled on it.
+    WHY LOWER CASE. The register writes hex in lower case (Notation, Brand
+    Book decision #19), and on 2026-09-25 that rule was extended to eight
+    digits (RNV-LOWER-EIGHT). This helper wrote upper case until then,
+    because the locked suite checked image window_bg with a case-sensitive
+    startswith("#ED"); the same ruling bent that one line to "#ed". Qt
+    reads either case, so no pixel moved.
     """
-    return "#%02X%s" % (_alpha_byte(alpha), _hex6(hex_color).upper())
+    return "#%02x%s" % (_alpha_byte(alpha), _hex6(hex_color).lower())
 
 
 def translucent_rgba(hex_color: str, alpha: int) -> str:

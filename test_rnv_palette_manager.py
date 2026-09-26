@@ -432,7 +432,7 @@ class TestColorsModule(unittest.TestCase):
         self.assertEqual(get_theme_colors("light")["accent"].lower(), BRAND_DARK_GOLD.lower())
 
     def test_image_window_bg_has_alpha(self):
-        self.assertTrue(get_theme_colors("image")["window_bg"].startswith("#ED"))
+        self.assertTrue(get_theme_colors("image")["window_bg"].startswith("#ed"))
 
 
 # ══════════════════════════════════════════════════════════════════════════════

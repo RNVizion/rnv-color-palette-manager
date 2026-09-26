@@ -38,9 +38,9 @@ MIN_OPAQUE_ALPHA = 0xE0
 def _rgb(value: str) -> str:
     """Six hex digits, from a value that may carry a Qt alpha channel.
 
-    Image mode's window_bg is `#ED000000` -- eight digits, #AARRGGBB, which
+    Image mode's window_bg is `#ed000000` -- eight digits, #AARRGGBB, which
     is Qt's order and NOT the CSS #RRGGBBAA. Read naively as #RRGGBB it
-    becomes #ED0000, a red, and the contrast against it computes to 1.6448
+    becomes #ed0000, a red, and the contrast against it computes to 1.6448
     instead of the ~7.57 the eye actually sees. That is the 8-digit blind
     spot the family register warns about, and it caught this very test.
 
@@ -80,9 +80,9 @@ def test_the_argb_reader_is_not_fooled_by_the_alpha_channel():
     reads as a FAILURE, which is the kind that gets 'fixed' by changing the
     colour rather than the reader.
     """
-    assert _rgb("#ED000000") == "000000"
+    assert _rgb("#ed000000") == "000000"
     assert _rgb("#f5f5f5") == "f5f5f5"
-    assert contrast("#ffffff", "#ED000000") == pytest.approx(
+    assert contrast("#ffffff", "#ed000000") == pytest.approx(
         contrast("#ffffff", "#000000"))
 
 
