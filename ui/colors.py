@@ -641,10 +641,11 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'input_bg': BRAND_BLACK,
     # Text
     'text_color': APP_TEXT,
-    # NOT CONSUMED. Nothing paints this key -- ui/settings_dialog.py reads it
-    # into a local and never uses that local, which is why a grep for it looks
-    # live. Aligned to the value the apps that DO paint a muted text use, so
-    # wiring it up stays one line and not a colour decision.
+    # Muted text. Kept aligned while nothing painted it, so that wiring it up
+    # would be one line and not a colour decision -- and on 2026-09-27 it was
+    # (RNV-MUTED-DESCRIPTIONS, ruling 1): the settings and batch export
+    # dialogs' notes, previews and empty history, named "muted_text" in each
+    # dialog's stylesheet. They were `color: grey`, #808080 in every mode.
     'text_secondary': GREY_88,
     'text_disabled': GREY_55,
     # Borders
@@ -723,7 +724,7 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     'input_bg': WHITE,
     # Text
     'text_color': TRUE_BLACK,
-    # NOT CONSUMED -- see the note in the dark palette.
+    # Muted text -- see the note in the dark palette.
     'text_secondary': GREY_66,
     'text_disabled': APP_TEXT_DIM,
     # Borders
@@ -803,7 +804,7 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     'input_bg': APP_CARD,
     # Text
     'text_color': APP_TEXT,
-    # NOT CONSUMED -- see the note in the dark palette.
+    # Muted text -- see the note in the dark palette.
     'text_secondary': GREY_88,
     'text_disabled': GREY_55,
     # Borders

@@ -334,7 +334,8 @@ class SettingsDialog(QDialog):
         clip_layout.addWidget(self.combo_clipboard, 0, 1)
 
         self.lbl_clipboard_preview = QLabel("")
-        self.lbl_clipboard_preview.setStyleSheet("color: grey; font-style: italic;")
+        self.lbl_clipboard_preview.setObjectName("muted_text")
+        self.lbl_clipboard_preview.setStyleSheet("font-style: italic;")
         clip_layout.addWidget(self.lbl_clipboard_preview, 1, 0, 1, 2)
         self.combo_clipboard.currentTextChanged.connect(self._update_clipboard_preview)
 
@@ -477,12 +478,14 @@ class SettingsDialog(QDialog):
 
         info_layout.addWidget(QLabel("Created:"), 0, 0)
         self.lbl_created = QLabel("—")
-        self.lbl_created.setStyleSheet("color: grey; font-style: italic;")
+        self.lbl_created.setObjectName("muted_text")
+        self.lbl_created.setStyleSheet("font-style: italic;")
         info_layout.addWidget(self.lbl_created, 0, 1)
 
         info_layout.addWidget(QLabel("Last modified:"), 1, 0)
         self.lbl_modified = QLabel("—")
-        self.lbl_modified.setStyleSheet("color: grey; font-style: italic;")
+        self.lbl_modified.setObjectName("muted_text")
+        self.lbl_modified.setStyleSheet("font-style: italic;")
         info_layout.addWidget(self.lbl_modified, 1, 1)
 
         layout.addWidget(info_group)
@@ -560,7 +563,8 @@ class SettingsDialog(QDialog):
         if not entries:
             placeholder = QLabel("No color changes recorded yet.")
             placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            placeholder.setStyleSheet("color: grey; font-style: italic;")
+            placeholder.setObjectName("muted_text")
+            placeholder.setStyleSheet("font-style: italic;")
             self._history_grid.addWidget(placeholder, 0, 0, 1, cols)
 
         scroll.setWidget(swatch_container)
@@ -582,7 +586,8 @@ class SettingsDialog(QDialog):
                     item.widget().deleteLater()
             placeholder = QLabel("No color changes recorded yet.")
             placeholder.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            placeholder.setStyleSheet("color: grey; font-style: italic;")
+            placeholder.setObjectName("muted_text")
+            placeholder.setStyleSheet("font-style: italic;")
             self._history_grid.addWidget(placeholder, 0, 0, 1, 16)
         if hasattr(self, '_history_count_label'):
             self._history_count_label.setText("Recorded changes: 0")
@@ -895,6 +900,11 @@ class SettingsDialog(QDialog):
             /* ---- Labels ---- */
             QLabel {{
                 color: {theme['text_color']};
+            }}
+            /* ---- Muted text: notes, previews, the empty history ----
+               RNV-MUTED-DESCRIPTIONS, ruling 1 of 2026-09-27 */
+            QLabel#muted_text {{
+                color: {text_secondary};
             }}
 
             /* ---- Checkboxes (gold checked state) ---- */

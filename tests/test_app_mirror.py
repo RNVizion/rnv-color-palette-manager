@@ -221,11 +221,20 @@ def test_the_tab_keys_are_still_unconsumed(key):
 
 def test_the_tab_keys_carry_the_note_that_says_so():
     """Both halves of the arrangement, held together. The values are correct
-    and the note explains why they are not painted."""
-    src = SRC.read_text(encoding='utf-8-sig')
-    assert src.count('NOT CONSUMED') >= 4, (
-        'the NOT CONSUMED notes are gone -- text_secondary had three and the '
-        'tab block adds one')
+    and the note explains why they are not painted -- one note above the tab
+    keys in each of the three palettes.
+
+    Counted across the whole file until 2026-09-27, as four or more: three
+    beside text_secondary and the tab block's. text_secondary is painted now
+    (RNV-MUTED-DESCRIPTIONS, ruling 1) and its notes went with it, so this
+    measures the tab block's own, where they stand."""
+    lines = SRC.read_text(encoding='utf-8-sig').splitlines()
+    rows = [i for i, line in enumerate(lines) if line.strip().startswith("'tab_bg':")]
+    assert len(rows) == 3, f'expected tab_bg in three palettes, found lines {rows}'
+    for i in rows:
+        assert 'NOT CONSUMED' in '\n'.join(lines[max(0, i - 20):i]), (
+            f'the tab keys at line {i + 1} lost the note that says they are '
+            f'not painted')
 
 
 def test_the_tabs_are_actually_painted_from_the_surfaces():

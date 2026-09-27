@@ -185,7 +185,8 @@ class BatchExportDialog(QDialog):
 
         # Filename preview
         self._lbl_preview = QLabel("")
-        self._lbl_preview.setStyleSheet("color: grey; font-style: italic; font-size: 11px;")
+        self._lbl_preview.setObjectName("muted_text")
+        self._lbl_preview.setStyleSheet("font-style: italic; font-size: 11px;")
         layout.addWidget(self._lbl_preview)
         self._update_preview()
 
@@ -404,6 +405,8 @@ class BatchExportDialog(QDialog):
                 background-color: {accent}; border-color: {accent};
             }}
             QLabel {{ color: {text}; }}
+            /* RNV-MUTED-DESCRIPTIONS, ruling 1: the filename preview */
+            QLabel#muted_text {{ color: {theme["text_secondary"]}; }}
             QLineEdit {{
                 color: {text}; background-color: {panel};
                 border: 1px solid {border}; border-radius: 3px;
