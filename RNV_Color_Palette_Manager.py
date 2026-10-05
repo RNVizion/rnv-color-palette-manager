@@ -57,6 +57,7 @@ from ui.colors import (
     TRUE_BLACK, WHITE,
     SELECTION_OVERLAY_COLOR, WHITE,
     SIZE_OVERLAY_BG, SESSION_FALLBACK_COLOR, TRANSPARENT_RGBA,
+    SLOT_IMAGE_ALPHA,
 )
 
 logger: Logger = get_logger_instance(__name__)
@@ -1582,8 +1583,9 @@ class MainWindow(QMainWindow):
         hex_color = self.settings_manager.default_slot_color_for_theme(theme_name)
         color = QColor(hex_color)
         if self.theme_manager.is_image_mode():
-            # Image mode uses semi-transparent version
-            color.setAlpha(171)
+            # Image mode uses semi-transparent version.
+            # RNV-NAMED-AND-USED (2026-10-04): was 171, written out; the same byte.
+            color.setAlpha(SLOT_IMAGE_ALPHA)
         return color
 
     def add_slot(self) -> None:

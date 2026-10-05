@@ -18,10 +18,11 @@ one of them is about a name or a value that was not telling the truth.
 3. THE TAB KEYS SAY WHAT THEY DO. This app paints its tabs from card_bg (rest
    and hover) and panel_bg (selected), in BOTH dialogs. So `tab_bg` and
    `tab_selected` were never consumed, and `tab_hover` was consumed to fill a
-   QPushButton. The first two are kept and annotated -- rnv-color-picker and
-   rnv-icon-builder paint from the equivalents and the values here already
-   agree with them -- and renamed to those apps' spelling. The third became
-   `dialog_btn_hover_bg`, which is what it always was.
+   QPushButton. The third became `dialog_btn_hover_bg`, which is what it
+   always was. The first two were kept, renamed and annotated NOT CONSUMED
+   until RNV-NAMED-AND-USED, 2026-10-04, when it was ruled that a palette
+   holds what is used: they went, with the hover key beside them, the note,
+   and the tests here that held them unread.
 
 4. THE TWO DIALOGS AGREE ABOUT THE PANE. `tab_pane_bg` is deleted. About and
    Settings drew their tab pane from different keys, and in light that made
@@ -76,9 +77,6 @@ PINNED = {
 #: Dark and image ink. These carry APP_TEXT and must reference it by name.
 INK_KEYS = ('text_color', 'main_btn_text', 'main_btn_hover_text')
 
-#: Unconsumed here, live in the other two apps, values already agreed.
-UNCONSUMED_TAB_KEYS = ('tab_bg', 'tab_selected_bg', 'tab_hover_bg')
-
 #: The About dialog's button hover plate, per mode. Unchanged values; only the
 #: name moved off `tab_hover`.
 DIALOG_BTN_HOVER = {'DARK': '#3a3a3a', 'LIGHT': '#eeeeee', 'IMAGE': '#3a3a3a'}
@@ -114,7 +112,7 @@ def test_the_names_this_file_reads_still_exist():
     for name in PINNED:
         assert hasattr(colors, name), f'ui.colors has no {name}'
     for mode, palette in PALETTES.items():
-        for key in INK_KEYS + UNCONSUMED_TAB_KEYS + ('dialog_btn_hover_bg',):
+        for key in INK_KEYS + ('dialog_btn_hover_bg',):
             assert key in palette, f'{mode} has no {key}'
 
 
@@ -152,17 +150,30 @@ def test_register_values_match_rnv_brand():
 
 def test_every_dark_and_image_ink_reads_the_constant_not_a_literal():
     """A literal cannot follow its base. If APP_TEXT moves again these move
-    with it, or this fails."""
+    with it, or this fails.
+
+    RNV-NAMED-AND-USED, 2026-10-04: the image palette is the dark one under
+    its own name -- `{**DARK_THEME_COLORS, ...}` -- so its ink arrives through
+    the spread. What is held for image is that it spreads the dark palette
+    and no other, and that an ink written after the spread is still the
+    constant."""
     literals = []
-    for dict_name, mode in (('DARK_THEME_COLORS', 'DARK'),
-                            ('IMAGE_MODE_COLORS', 'IMAGE')):
-        node = _dict_node(dict_name)
-        for key in INK_KEYS:
-            value = _entry(node, key)
-            if not (isinstance(value, ast.Name) and value.id == 'APP_TEXT'):
-                literals.append(
-                    f'{mode}.{key} = '
-                    f'{ast.unparse(value) if value is not None else "missing"}')
+    node = _dict_node('DARK_THEME_COLORS')
+    for key in INK_KEYS:
+        value = _entry(node, key)
+        if not (isinstance(value, ast.Name) and value.id == 'APP_TEXT'):
+            literals.append(
+                f'DARK.{key} = '
+                f'{ast.unparse(value) if value is not None else "missing"}')
+    node = _dict_node('IMAGE_MODE_COLORS')
+    spreads = [ast.unparse(v) for k, v in zip(node.keys, node.values) if k is None]
+    assert spreads == ['DARK_THEME_COLORS'], (
+        f'IMAGE_MODE_COLORS spreads {spreads}, not the dark palette alone')
+    for key in INK_KEYS:
+        value = _entry(node, key)
+        if value is not None and not (isinstance(value, ast.Name)
+                                      and value.id == 'APP_TEXT'):
+            literals.append(f'IMAGE.{key} = {ast.unparse(value)}')
     assert not literals, ('ink entries still written as literals:\n  '
                           + '\n  '.join(literals))
 
@@ -173,11 +184,9 @@ def test_the_resolved_ink_is_the_constant():
             assert PALETTES[mode][key] == colors.APP_TEXT, f'{mode}[{key!r}]'
 
 
-def test_the_light_surfaces_did_not_follow_the_ink():
-    """#e0e0e0's other half is a LIGHT SURFACE, and the grid does not govern
-    surfaces. hover_color and tab_bg stay exactly where they were."""
-    assert LIGHT['hover_color'] == '#e0e0e0'
-    assert LIGHT['tab_bg'] == '#e0e0e0'
+# RNV-NAMED-AND-USED, 2026-10-04: a test stood here holding two light
+# surfaces at #e0e0e0 while the ink moved off it. Nothing read either key, so
+# no surface was drawn from them; they went, and the test with them.
 
 
 def test_the_light_ink_is_true_black():
@@ -188,64 +197,21 @@ def test_the_light_ink_is_true_black():
 
 # ------------------------------------------------------------------ the tabs
 
-def _consumers(key: str) -> list[str]:
-    """Where a theme key is read outside the palette file and the tests."""
-    sites = []
-    for path in ROOT.rglob('*.py'):
-        parts = path.parts
-        if any(p in parts for p in ('.git', '__pycache__', 'tests')):
-            continue
-        if path.name.startswith('test_') or path == SRC:
-            continue
-        # A delivery script at the root names the keys it moves. Sweeping it
-        # makes this guard fail on the very run that installs it.
-        if path.parent == ROOT and path.name.startswith('up'):
-            continue
-        text = path.read_text(encoding='utf-8-sig', errors='replace')
-        for lineno, line in enumerate(text.splitlines(), 1):
-            if f"'{key}'" in line or f'"{key}"' in line:
-                sites.append(f'{path.relative_to(ROOT)}:{lineno}')
-    return sites
-
-
-@pytest.mark.parametrize('key', UNCONSUMED_TAB_KEYS)
-def test_the_tab_keys_are_still_unconsumed(key):
-    """They are kept because picker and icon-builder paint from the
-    equivalents and these values already agree. The note beside them only
-    helps while it is true: wire one up and this says so."""
-    sites = _consumers(key)
-    assert not sites, (
-        f'{key} is now read at {sites}. It is annotated NOT CONSUMED in '
-        f'ui/colors.py -- update the note in the same commit.')
-
-
-def test_the_tab_keys_carry_the_note_that_says_so():
-    """Both halves of the arrangement, held together. The values are correct
-    and the note explains why they are not painted -- one note above the tab
-    keys in each of the three palettes.
-
-    Counted across the whole file until 2026-09-27, as four or more: three
-    beside text_secondary and the tab block's. text_secondary is painted now
-    (RNV-MUTED-DESCRIPTIONS, ruling 1) and its notes went with it, so this
-    measures the tab block's own, where they stand."""
-    lines = SRC.read_text(encoding='utf-8-sig').splitlines()
-    rows = [i for i, line in enumerate(lines) if line.strip().startswith("'tab_bg':")]
-    assert len(rows) == 3, f'expected tab_bg in three palettes, found lines {rows}'
-    for i in rows:
-        assert 'NOT CONSUMED' in '\n'.join(lines[max(0, i - 20):i]), (
-            f'the tab keys at line {i + 1} lost the note that says they are '
-            f'not painted')
+# RNV-NAMED-AND-USED, 2026-10-04: two tests stood here. One held the three
+# tab keys unread, the other held the note beside them that said so. The
+# keys and the note went: a palette holds what is used, and a list of what
+# is not used keeps nothing.
 
 
 def test_the_tabs_are_actually_painted_from_the_surfaces():
-    """What the keys above are NOT doing, something else is. Both dialogs
-    fill a tab from card_bg and the selected one from the pane."""
+    """Both dialogs fill a tab from card_bg and the selected one from the
+    pane. There are no tab keys: the surfaces are what a tab is drawn from."""
     for path in (ABOUT, ROOT / 'ui' / 'settings_dialog.py'):
         text = path.read_text(encoding='utf-8-sig')
         assert 'QTabBar::tab' in text, f'{path.name} no longer styles tabs'
         assert 'card_bg' in text, (
-            f'{path.name} no longer reads card_bg -- if the tabs were wired to '
-            f'the tab_* keys, those keys are no longer unconsumed')
+            f'{path.name} no longer reads card_bg, the surface its tabs are '
+            f'drawn from')
 
 
 def test_the_dialog_button_hover_kept_its_value_and_gained_its_name():

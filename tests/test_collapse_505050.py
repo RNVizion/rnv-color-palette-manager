@@ -213,6 +213,15 @@ def test_the_keys_are_wired_through_the_constant_not_rewritten():
         node = nodes[DICT_NAMES[mode]]
         entries = {k.value: v for k, v in zip(node.keys, node.values)
                    if isinstance(k, ast.Constant)}
+        # RNV-NAMED-AND-USED, 2026-10-04: the image palette is the dark one
+        # under its own name. An entry that arrives through the spread is
+        # written in the palette it is spread from, and is read there.
+        for k, v in zip(node.keys, node.values):
+            if k is None:
+                spread = nodes[ast.unparse(v)]
+                for k2, v2 in zip(spread.keys, spread.values):
+                    if isinstance(k2, ast.Constant):
+                        entries.setdefault(k2.value, v2)
         for key in keys:
             value = entries.get(key)
             assert value is not None, f"{mode} has no {key}"
@@ -235,7 +244,9 @@ def test_the_old_value_is_gone_from_every_palette():
             looked += 1
             if OLD_HEX in colours_in(value):
                 holders.append(f"{mode}[{key}] = {value}")
-    assert looked >= 100, f"only {looked} palette entries seen -- the sweep is blind"
+    # 84 since RNV-NAMED-AND-USED, 2026-10-04: nine keys nothing read went
+    # from each of the three palettes.
+    assert looked >= 84, f"only {looked} palette entries seen -- the sweep is blind"
     assert not holders, f"{OLD_HEX} is still painted, in some spelling: {holders}"
 
 

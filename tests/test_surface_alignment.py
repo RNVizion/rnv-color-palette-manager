@@ -86,10 +86,12 @@ def test_the_input_is_separated_from_the_surface_it_sits_on():
                 f"matches the panel -- the field has no visible extent")
 
 
-def test_image_mode_was_left_alone():
-    """Recorded rather than trusted: if image mode is aligned later, this test
-    is the thing that has to be deleted on purpose."""
-    assert "input_bg" in IMAGE
-    assert IMAGE["input_bg"] != "#1a1a1a", (
-        "image mode now uses the dark input surface. That was outside the "
-        "2026-08-27 ruling -- if it is intended, delete this test and say so.")
+# RNV-NAMED-AND-USED, 2026-10-04: test_image_mode_was_left_alone stood here,
+# holding image mode's input_bg off the dark input surface, and it said that
+# if image mode were aligned later the test should be deleted on purpose.
+# This is that. The entry it held, input_bg at the card colour, was read by
+# nothing in image mode: its one reader is the settings dialog, and that
+# dialog takes the dark palette in image mode. Ruled 2026-10-04: a value
+# that differs from what is drawn, and that nothing needs, is removed. Image
+# mode now holds dark's input_bg through the spread, the surface the
+# settings dialog always drew there.

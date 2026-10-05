@@ -110,7 +110,14 @@ def test_no_accepted_entry_is_stale():
 
 
 def test_white_and_black_on_the_gold_fill():
-    """Both clear at the new value; the register prefers black and this app
-    uses it. Recorded so a future change cannot quietly drop below the floor."""
+    """Both clear at the new value. Recorded so a future change cannot quietly
+    drop below the floor.
+
+    RNV-NAMED-AND-USED, 2026-10-04: this read accent_text, a key nothing
+    painted from, and said the application uses black. It paints black on
+    the gold in dark and image and WHITE on it in light; each is measured on
+    the fill it is drawn on. tests/test_brand_mirror.py reads the two inks
+    from the code that writes them."""
     for theme, palette in PALETTES.items():
-        assert contrast(palette["accent_text"], palette["accent"]) >= TEXT_FLOOR, theme
+        ink = C.WHITE if theme == "LIGHT" else C.TRUE_BLACK
+        assert contrast(ink, palette["accent"]) >= TEXT_FLOOR, theme

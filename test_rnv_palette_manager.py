@@ -367,17 +367,18 @@ class TestAccessibility(unittest.TestCase):
 class TestColorsModule(unittest.TestCase):
     """ui/colors.py — theme dicts, brand constants, get_theme_colors."""
 
+    # RNV-NAMED-AND-USED 2026-10-04: nine keys nothing read went from the
+    # palettes, and from this list with them. Ruled: "for the locked key test
+    # if we don't use these values we can fix the test and remove unused values".
     REQUIRED = [
         "window_bg","panel_bg","scroll_bg","card_bg","input_bg",
         "text_color","text_secondary","text_disabled",
-        "border_color","hover_color",
+        "border_color",
         "main_btn_bg","main_btn_text","main_btn_hover_bg","main_btn_hover_text",
-        "main_btn_pressed_bg","main_btn_pressed_text","main_btn_border_color",
-        "accent","accent_dark","accent_text",
-        "tab_bg","tab_selected_bg","tab_hover_bg",
+        "main_btn_pressed_bg","main_btn_pressed_text",
+        "accent","accent_dark",
         "dialog_btn_hover_bg",
-        "scroll_handle","dialog_bg","dialog_border",
-        "success","warning",
+        "scroll_handle","dialog_bg",
     ]
 
     def test_all_themes_have_required_keys(self):

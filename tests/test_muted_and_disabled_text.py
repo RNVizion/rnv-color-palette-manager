@@ -129,7 +129,9 @@ def test_the_muted_key_is_read_where_it_is_painted():
     lines = COLORS_PY.read_text(encoding="utf-8").splitlines()
     beside = [i + 1 for i, line in enumerate(lines)
               if line.strip().startswith("'text_secondary':")]
-    assert len(beside) == 3, f"expected text_secondary in three palettes, found {beside}"
+    # two since RNV-NAMED-AND-USED, 2026-10-04: the image palette is the dark
+    # one under its own name, and takes dark's entry through the spread.
+    assert len(beside) == 2, f"expected text_secondary in two palettes, found {beside}"
     stale = [n for n in beside
              if re.search(r"#\s*NOT CONSUMED", "\n".join(lines[max(0, n - 7):n - 1]))]
     assert not stale, f"a NOT CONSUMED note still stands beside text_secondary at {stale}"

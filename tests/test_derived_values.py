@@ -60,7 +60,6 @@ MADE_OF = {
     "APP_WINDOW_OVERLAY": ("TRUE_BLACK", 0xED),
     "APP_PANEL_OVERLAY": ("BRAND_BLACK", 0xED),
     "SIZE_OVERLAY_BG": ("TRUE_BLACK", 0xC8),
-    "DEFAULT_SLOT_COLOR_IMAGE": ("TRUE_BLACK", 0xAB),
     "IMAGE_MODE_COLORS['scrollbar_border']": ("APP_BORDER", 0x64),
     "IMAGE_MODE_COLORS['scrollbar_handle']": ("GREY_44", 0x96),  # the ruled one
 }
@@ -208,7 +207,6 @@ def test_the_derivation_sweep_is_looking():
     would all pass over nothing."""
     where = {w for w, _c, _v in _derived()}
     assert {"APP_WINDOW_OVERLAY", "APP_PANEL_OVERLAY", "SIZE_OVERLAY_BG",
-            "DEFAULT_SLOT_COLOR_IMAGE",
             "IMAGE_MODE_COLORS['scrollbar_handle']",
             "IMAGE_MODE_COLORS['scrollbar_border']"} <= where, sorted(where)
 
@@ -357,13 +355,19 @@ def test_nothing_moved_that_was_not_ruled():
 def test_what_qcolor_reads_it_can_read():
     """window_bg and scroll_bg go through QColor() in the main window. #AARRGGBB
     is the one derived spelling QColor() parses; rgba() would come back
-    INVALID and paint opaque black."""
+    INVALID and paint opaque black.
+
+    RNV-NAMED-AND-USED, 2026-10-04: a new slot's default in image mode was
+    held here as an eight-digit string nothing read. A slot reads the tuple,
+    QColor(*DEFAULT_SLOT_COLOR_IMAGE_RGB), so the tuple is what is held."""
     from PyQt6.QtGui import QColor
-    for value, alpha in ((IMAGE["window_bg"], 0xED), (IMAGE["scroll_bg"], 0xED),
-                         (colors.DEFAULT_SLOT_COLOR_IMAGE, 0xAB)):
+    for value, alpha in ((IMAGE["window_bg"], 0xED), (IMAGE["scroll_bg"], 0xED)):
         colour = QColor(value)
         assert colour.isValid(), f"QColor({value!r}) is invalid"
         assert colour.alpha() == alpha, f"{value} reads at alpha {colour.alpha()}"
+    slot = QColor(*colors.DEFAULT_SLOT_COLOR_IMAGE_RGB)
+    assert slot.isValid() and slot.alpha() == colors.SLOT_IMAGE_ALPHA == 0xAB, (
+        f"a new slot in image mode reads at alpha {slot.alpha()}")
 
 # RNV-DERIVE-ALPHA
 

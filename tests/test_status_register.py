@@ -67,21 +67,17 @@ def test_the_three_ruled_values_are_the_register_s():
     # #ffffff against a 3:1 fill floor. Still pinned by value --
     # an app that picks its own status colour has an opinion
     # about what success means, which is the register's job.
-    assert colors.STATUS_SUCCESS == "#926c89"
-    assert colors.STATUS_WARNING == "#a2703c"
-    assert colors.STATUS_ERROR == "#c75b64"
+    # RNV-NAMED-AND-USED, 2026-10-04: the three fills were pinned
+    # here. This application draws none of them and no longer
+    # carries them; what it draws is the error text below.
     # #e56b77 was derived from #dc3545 and orphaned when the
     # base was retired, so it moves with it.
     assert colors.STATUS_ERROR_TEXT == "#dd6f77"
 
 
-def test_the_palettes_are_wired_through_the_constants_not_rewritten():
-    """Swapping one literal for another passes the value check and defeats
-    the point: the constant is what a later register change moves."""
-    src = (ROOT / "ui" / "colors.py").read_text(encoding="utf-8-sig")
-    for key, const in (("success", "STATUS_SUCCESS"), ("warning", "STATUS_WARNING")):
-        found = len(re.findall(r"'%s':\s+%s\b" % (key, const), src))
-        assert found == 3, f"{key} is wired through {const} in {found} palettes, not 3"
+# RNV-NAMED-AND-USED, 2026-10-04: a test stood here holding the palettes'
+# success and warning keys to their constants. Nothing read the keys, so
+# they went, and the constants with them.
 
 
 def test_the_dark_error_text_still_clears_on_every_dark_ground():

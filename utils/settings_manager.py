@@ -40,7 +40,11 @@ class Defaults:
     STARTING_COLS: int = 4
     DEFAULT_SLOT_COLOR_DARK: str = SESSION_FALLBACK_COLOR    # darkgrey for Dark Mode
     DEFAULT_SLOT_COLOR_LIGHT: str = SESSION_FALLBACK_COLOR   # darkgrey for Light Mode
-    DEFAULT_SLOT_COLOR_IMAGE: str = SESSION_FALLBACK_COLOR_IMAGE  # black (semi-transparent) for Image Mode
+    # RNV-NAMED-AND-USED (2026-10-04): the comment here said "black
+    # (semi-transparent)". What is stored is opaque black. A new slot is
+    # drawn semi-transparent in image mode because the main window sets
+    # SLOT_IMAGE_ALPHA on the colour it reads from here.
+    DEFAULT_SLOT_COLOR_IMAGE: str = SESSION_FALLBACK_COLOR_IMAGE  # black for Image Mode; drawn at SLOT_IMAGE_ALPHA
     SINGLE_CLICK_EDIT: bool = True  # True=click opens picker, False=click selects
 
     # Auto-save

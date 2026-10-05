@@ -1,6 +1,5 @@
 """Error text is theme-aware, and every retired red is gone.
 
-    STATUS_ERROR             #c75b64   registered base; no fill is drawn here
     STATUS_ERROR_TEXT        #dd6f77   dark ground, = register error-text
     STATUS_ERROR_TEXT_LIGHT  #ae4650   light ground, = register error-text-light
 
@@ -23,6 +22,13 @@ TWO TESTS HERE WERE REPLACED RATHER THAN EDITED, and both replacements say so:
     reach the last two. See RNV-STATUS-LIGHT-FLOOR below -- the boundary is an
     open question with the brand chat, and narrowing it is recorded here in
     full rather than quietly done.
+
+RNV-NAMED-AND-USED, 2026-10-04. This application draws error TEXT and no
+status fill, so it no longer carries the family's three fills -- success,
+warning and the registered error base #c75b64 -- which nothing here read.
+The two text values above are what it draws and what this file holds.
+Where a test needs the base, to say why the light value is not derived from
+it, it writes the base as the register holds it.
 """
 
 import pytest
@@ -104,15 +110,14 @@ def test_the_light_error_text_is_registered_and_why_that_changed():
     applications. Same call the register made for BRAND_STANDBY_GOLD.
     """
     assert colors.STATUS_ERROR_TEXT_LIGHT == "#ae4650"
-    assert colors.STATUS_ERROR_TEXT_LIGHT != colors.lighten(colors.STATUS_ERROR, -20)
+    # the registered base, STATUS["error"]; this application draws no fill and carries none
+    assert colors.STATUS_ERROR_TEXT_LIGHT != colors.lighten("#c75b64", -20)
 
 
 def test_the_family_is_the_registered_one():
     """Pinned by value. A test asserting only that these differ from each
-    other would pass on five wrong colours."""
-    assert colors.STATUS_SUCCESS == "#926c89"
-    assert colors.STATUS_WARNING == "#a2703c"
-    assert colors.STATUS_ERROR == "#c75b64"
+    other would pass on two wrong colours. The two this application draws:
+    the family's three fills are the register's, and are not carried here."""
     assert colors.STATUS_ERROR_TEXT == "#dd6f77"
     assert colors.STATUS_ERROR_TEXT_LIGHT == "#ae4650"
 
@@ -194,25 +199,10 @@ def test_the_two_error_texts_are_not_the_same_value():
     assert colors.STATUS_ERROR_TEXT != colors.STATUS_ERROR_TEXT_LIGHT
 
 
-def test_the_fills_cannot_carry_text_and_that_is_why_there_are_five_values():
-    """The arithmetic behind the family's shape.
-
-    STATUS_SUCCESS, STATUS_WARNING and STATUS_ERROR are fills. Every fill in
-    the family sits at L* 48-59, which is exactly what lets ONE value clear
-    3:1 on a dark AND a light ground -- and a mid-tone reaches 4.5:1 on
-    neither. This application already knew that for the red and spent two
-    values on it before the register generalised it.
-
-    If any fill ever clears the text floor, the register has moved it out of
-    the band and somebody needs to know rather than quietly benefiting.
-    """
-    for name in ("STATUS_SUCCESS", "STATUS_WARNING", "STATUS_ERROR"):
-        value = getattr(colors, name)
-        for ground in ("#1a1a1a", "#2a2a2a", "#f5f5f5", "#ffffff"):
-            assert contrast(value, ground) >= 3.0, f"{name} on {ground}"
-            assert contrast(value, ground) < TEXT_FLOOR, (
-                f"{name} now clears the text floor on {ground}. Do not relax "
-                f"this -- find out whether the register moved it.")
+# RNV-NAMED-AND-USED, 2026-10-04: a test stood here on the arithmetic of the
+# three fills -- that each clears 3:1 on both grounds and 4.5:1 on neither.
+# This application draws no fill and no longer carries them; the arithmetic
+# is the register's, where the fills are.
 
 
 def test_the_retired_material_red_is_gone_from_every_palette():

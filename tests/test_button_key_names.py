@@ -23,22 +23,23 @@ ROOT = Path(__file__).resolve().parent.parent
 
 OLD = ("button_bg", "button_text", "button_hover_bg", "button_hover_text",
        "button_pressed_bg", "button_pressed_text", "button_border_color")
-NEW = tuple("main_" + n.replace("button_", "btn_") for n in OLD)
+#: RNV-NAMED-AND-USED, 2026-10-04: the main family as the application reads
+#: it. The rename carried seven names across; the seventh, a border colour
+#: written as transparent, was read by nothing -- the main button draws its
+#: border from border_color -- and went.
+NEW = tuple("main_" + n.replace("button_", "btn_") for n in OLD[:-1])
 DIALOG = ("dialog_btn_bg", "dialog_btn_text", "dialog_btn_hover_bg")
 
 PINNED_MAIN = {
     "dark": {"main_btn_bg": "#1a1a1a", "main_btn_text": "#dddddd",
              "main_btn_hover_bg": "#333333", "main_btn_hover_text": "#dddddd",
-             "main_btn_pressed_bg": "#444444", "main_btn_pressed_text": "#000000",
-             "main_btn_border_color": "transparent"},
+             "main_btn_pressed_bg": "#444444", "main_btn_pressed_text": "#000000"},
     "light": {"main_btn_bg": "#ffffff", "main_btn_text": "#000000",
               "main_btn_hover_bg": "#333333", "main_btn_hover_text": "#000000",
-              "main_btn_pressed_bg": "#444444", "main_btn_pressed_text": "#ffffff",
-              "main_btn_border_color": "transparent"},
+              "main_btn_pressed_bg": "#444444", "main_btn_pressed_text": "#ffffff"},
     "image": {"main_btn_bg": "#1a1a1a", "main_btn_text": "#dddddd",
               "main_btn_hover_bg": "#333333", "main_btn_hover_text": "#dddddd",
-              "main_btn_pressed_bg": "#444444", "main_btn_pressed_text": "#000000",
-              "main_btn_border_color": "transparent"},
+              "main_btn_pressed_bg": "#444444", "main_btn_pressed_text": "#000000"},
 }
 
 #: The dialog family holds exactly what those dialogs painted before the

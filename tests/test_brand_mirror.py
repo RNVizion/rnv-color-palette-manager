@@ -162,13 +162,34 @@ def test_the_light_gold_stays_out_of_the_dark_palettes():
             f"{name} carries the light-mode gold on {offenders}")
 
 
-def test_text_on_gold_is_black_and_stays_black():
-    """This is the only one of the five that paints black on the light fill.
-    It is what the register prefers and the better number. Not to be flattened
-    to match the others."""
-    for name, palette in PALETTES.items():
-        assert palette["accent_text"] == "#000000", name
-    assert contrast("#000000", PALETTES["LIGHT"]["accent"]) >= 4.5
+def test_text_on_gold_clears_in_every_mode():
+    """What is painted on the gold fill: black in dark and image, WHITE in
+    light. Both clear the floor at this gold.
+
+    RNV-NAMED-AND-USED, 2026-10-04. This was
+    test_text_on_gold_is_black_and_stays_black. It read accent_text, #000000
+    in all three palettes, and said this application is the one of the five
+    that paints black on the light fill. Nothing read that key. The pressed
+    states in the main window, the settings and batch export dialogs and the
+    message boxes write their ink themselves: TRUE_BLACK in dark and image,
+    WHITE in light. So the key went, and this measures what is drawn, read
+    from the code that draws it. Whether light should take black, which the
+    register prefers, is a ruling and not this test's to make."""
+    root = pathlib.Path(C.__file__).resolve().parent.parent
+    inks = set()
+    for rel in ("RNV_Color_Palette_Manager.py", "ui/settings_dialog.py",
+                "ui/batch_export_dialog.py", "utils/dialog_helper.py"):
+        tree = ast.parse((root / rel).read_text(encoding="utf-8-sig"))
+        found = {ast.unparse(node.value) for node in ast.walk(tree)
+                 if isinstance(node, ast.Assign) and len(node.targets) == 1
+                 and getattr(node.targets[0], "id", "").endswith("pressed_text")}
+        assert found, f"{rel} no longer writes a pressed ink"
+        inks |= found
+    assert inks == {"WHITE", "TRUE_BLACK", "WHITE if is_light else TRUE_BLACK"}, (
+        f"the ink on a pressed gold fill is written as {sorted(inks)}")
+    for name in ("DARK", "IMAGE"):
+        assert contrast(C.TRUE_BLACK, PALETTES[name]["accent"]) >= 4.5, name
+    assert contrast(C.WHITE, PALETTES["LIGHT"]["accent"]) >= 4.5
 
 
 # ------------------------------------------------------------ retired values

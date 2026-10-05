@@ -276,10 +276,8 @@ rev 27 as the third rung of the light surface ladder; named here under
 the register's key, the way APP_PANEL_HOVER and APP_HOVER_LIGHT are.
 Every key that carries it is a surface, so it is not split."""
 
-GREY_E0: Final[str] = "#e0e0e0"
-"""grey(14) on the ramp, #e0e0e0. Static surfaces that share a hex with
-APP_PRESSED_LIGHT without being a pressed state. See the split note
-there. Named by its byte, like every other ramp step."""
+# RNV-NAMED-AND-USED (2026-10-04): a ramp step at #e0e0e0 stood here, for two
+# light keys nothing read. It went with them.
 
 GREY_EE: Final[str] = "#eeeeee"
 """grey(14) on the ramp, #eeeeee. Static surfaces that share a hex with
@@ -340,8 +338,9 @@ SIZE_OVERLAY_ALPHA: Final[int] = 0xC8
 SLOT_IMAGE_ALPHA: Final[int] = 0xAB
 """171. A new slot's default fill in image mode -- the byte it already had.
 
-DEFAULT_SLOT_COLOR_IMAGE_RGB spells the same colour as an integer tuple, and
-since 2026-09-26 it is derived from the same pair (RNV-TUPLE-ROUND)."""
+DEFAULT_SLOT_COLOR_IMAGE_RGB is TRUE_BLACK at this byte, derived from the pair
+since 2026-09-26 (RNV-TUPLE-ROUND); and the main window sets this byte on a
+slot colour that comes from the settings."""
 
 SEARCH_DIM_ALPHA: Final[int] = 0x8C
 """140. The dim drawn over slots that do not match a search (TRUE_BLACK) --
@@ -365,7 +364,6 @@ APP_PROVENANCE: Final[dict[str, str]] = {
     "APP_WINDOW_OVERLAY": "register-overlay",
     "APP_PANEL_OVERLAY": "register-overlay",
     "APP_SURFACE_LIGHT_3": "register",
-    "GREY_E0": "app-ramp",
     "GREY_EE": "app-ramp",
     "GREY_CC": "app-ramp",
     "GREY_88": "app-ramp",
@@ -481,39 +479,11 @@ SIZE_OVERLAY_ALPHA, spelled rgba() because the locked suite pins that
 spelling -- every consumer is a stylesheet, where it is valid."""
 
 # ==================== Status Colors ====================
-STATUS_SUCCESS: Final[str] = "#926c89"
-"""MIRRORS the register's STATUS["success"]. A FILL.
-
-RNV-STATUS-FAMILY (2026-09-03): was #28a745, Bootstrap's green. Retired
-because it and Bootstrap's red collapsed to one olive under deuteranopia at
-about 4 apart -- roughly 8% of men could not tell success from error, which
-are the two most consequential colours in an interface.
-
-It is a FILL and cannot carry text: 3.92 on #1a1a1a, 3.23 on #2a2a2a. That is
-the fill band, not a shortcoming -- a value that clears 3:1 on a dark AND a
-light ground sits at L* 48-59 by arithmetic, and a mid-tone reaches 4.5:1 on
-neither side. This application already knew that for the red and spent two
-values on it; the register has now generalised it to all three roles.
-
-RNV-STATUS-REGISTER (2026-09-02): the three palettes wrote #4caf50,
-Material's green, as a literal. Two applications held that value for one
-role while the other three used the register's. Named here so the value
-has one home, and collapsed onto the register so the fleet has one green."""
-
-STATUS_WARNING: Final[str] = "#a2703c"
-"""MIRRORS the register's STATUS["warning"]. A FILL.
-
-RNV-STATUS-FAMILY (2026-09-03): was #ffc107, retired on arithmetic rather
-than taste -- 1.63 on #ffffff and 1.49 on #f5f5f5 against a 3:1 fill floor.
-It could not legally carry a boundary on a light ground at all."""
-
-STATUS_ERROR: Final[str] = "#c75b64"
-"""The registered error red. Not drawn by this app, which renders no error
-fill -- it is here so the family has its base and so the two text values
-below are visibly siblings of it rather than free-standing reds.
-
-RNV-STATUS-FAMILY (2026-09-03): was #dc3545, Bootstrap's. IT IS NO LONGER
-WHAT THE LIGHT VALUE IS DERIVED FROM -- see STATUS_ERROR_TEXT_LIGHT."""
+# RNV-NAMED-AND-USED (2026-10-04): the family's three fills stood here --
+# success, warning and the error red the two text values below are siblings
+# of. This application draws error TEXT and no status fill, and nothing read
+# the three, so it carries none: the register holds them, as STATUS["success"],
+# STATUS["warning"] and STATUS["error"].
 
 STATUS_ERROR_TEXT: Final[str] = "#dd6f77"
 """Inline error/warning label text on a DARK ground (e.g. batch export
@@ -619,18 +589,23 @@ TRANSPARENT_RGBA: Final[tuple[int, int, int, int]] = (0, 0, 0, 0)
 DEFAULT_SLOT_COLOR: Final[str] = "#a9a9a9"
 """Default color for new color slots in Dark/Light mode (darkgrey)."""
 
-DEFAULT_SLOT_COLOR_IMAGE: Final[str] = translucent(TRUE_BLACK, SLOT_IMAGE_ALPHA)
-"""Default color for new color slots in Image mode (semi-transparent black).
-TRUE_BLACK at SLOT_IMAGE_ALPHA: the colour it always was, in the one
-spelling QColor() can read as well as a stylesheet."""
-
 DEFAULT_SLOT_COLOR_IMAGE_RGB: Final[tuple[int, int, int, int]] = translucent_tuple(
     TRUE_BLACK, SLOT_IMAGE_ALPHA)
-"""Default slot color in Image mode as RGBA tuple: DEFAULT_SLOT_COLOR_IMAGE's
-colour and alpha, in the spelling QColor(*t) takes."""
+"""Default color for new color slots in Image mode (semi-transparent black):
+TRUE_BLACK at SLOT_IMAGE_ALPHA, in the spelling QColor(*t) takes.
+
+RNV-NAMED-AND-USED (2026-10-04): the same colour stood beside this as an
+eight-digit hex string, and nothing read it. This is the spelling the slot
+reads; where a slot's colour comes from the settings, the main window sets
+SLOT_IMAGE_ALPHA on it."""
 
 
 # ==================== Dark Theme Colors ====================
+# RNV-NAMED-AND-USED (2026-10-04): a palette holds what is looked up. Nine
+# keys nothing read went from all three palettes: a hover, the three tab
+# keys and the note that called them not consumed, two status fills, a
+# dialog border, an ink for the accent, and a main-button border written
+# as transparent while the button draws its border from border_color.
 DARK_THEME_COLORS: Final[ThemeDict] = {
     'name': 'Dark',
     # Base colors
@@ -650,7 +625,6 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'text_disabled': GREY_55,
     # Borders
     'border_color': APP_BORDER,
-    'hover_color': GREY_44,
     # Buttons
     'main_btn_bg': BRAND_BLACK,
     'main_btn_text': APP_TEXT,
@@ -658,7 +632,6 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'main_btn_hover_text': APP_TEXT,
     'main_btn_pressed_bg': GREY_44,
     'main_btn_pressed_text': TRUE_BLACK,
-    'main_btn_border_color': 'transparent',
     # The About dialog's button hover plate. Spelled 'tab_hover' until
     # 2026-08-28, where it filled a QPushButton and not a tab.
     #
@@ -673,32 +646,12 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     # ended up describing two schemes.
     'dialog_btn_bg': BRAND_BLACK,
     'dialog_btn_text': APP_TEXT,
-    # Dialog / tab widget colors
-    #
-    # NOT CONSUMED -- all three of these. This app paints its tabs from
-    # card_bg (at rest AND on hover, so hovering an unselected tab changes
-    # only the label) and from panel_bg for the selected one, in both
-    # ui/about_dialog.py and ui/settings_dialog.py.
-    #
-    # Kept rather than deleted, on the same reasoning as text_secondary above:
-    # rnv-color-picker and rnv-icon-builder DO paint from the equivalents, and
-    # the values here already agree with them -- tab_bg matches both apps, and
-    # tab_selected_bg matches rnv-icon-builder (rnv-color-picker uses the panel
-    # step #1a1a1a instead, a two-against-one this pass records and does not
-    # settle). So wiring them up stays one line and not a colour decision.
-    #
-    # RENAMED 2026-08-28 to the spelling those two apps use. `tab_hover` left
-    # this block entirely: it was consumed, but to fill a QPushButton, and it
-    # is now dialog_btn_hover_bg in the button section above.
-    'tab_bg': APP_CARD,
-    'tab_selected_bg': APP_BORDER,
-    'tab_hover_bg': APP_PANEL_HOVER,
+    # The About dialog's scroll handle
     'scroll_handle': GREY_44,   # was #505050, see GREY_44
     # Accent (brand gold)
     'accent': BRAND_GOLD,
     'accent_dark': BRAND_GOLD_HOVER,
     'accent_ink': BRAND_GOLD,
-    'accent_text': TRUE_BLACK,
     # Scrollbar
     'scrollbar_bg': BRAND_BLACK,
     'scrollbar_handle': GREY_44,   # was #505050, see GREY_44
@@ -706,10 +659,6 @@ DARK_THEME_COLORS: Final[ThemeDict] = {
     'scrollbar_border': APP_BORDER,
     # Dialog
     'dialog_bg': BRAND_BLACK,
-    'dialog_border': APP_BORDER,
-    # Status
-    'success': STATUS_SUCCESS,
-    'warning': STATUS_WARNING,
 }
 
 
@@ -729,15 +678,13 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     'text_disabled': APP_TEXT_DIM,
     # Borders
     'border_color': GREY_CC,
-    'hover_color': GREY_E0,
-    # Buttons: white base, dark-grey hover/press, white text on press, no visible border
+    # Buttons: white base, dark-grey hover/press, white text on press
     'main_btn_bg': WHITE,
     'main_btn_text': TRUE_BLACK,
     'main_btn_hover_bg': APP_BORDER,
     'main_btn_hover_text': TRUE_BLACK,
     'main_btn_pressed_bg': GREY_44,
     'main_btn_pressed_text': WHITE,
-    'main_btn_border_color': 'transparent',
     # The About dialog's button hover plate. Spelled 'tab_hover' until
     # 2026-08-28, where it filled a QPushButton and not a tab.
     #
@@ -752,32 +699,12 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     # ended up describing two schemes.
     'dialog_btn_bg': WHITE,
     'dialog_btn_text': TRUE_BLACK,
-    # Dialog / tab widget colors
-    #
-    # NOT CONSUMED -- all three of these. This app paints its tabs from
-    # card_bg (at rest AND on hover, so hovering an unselected tab changes
-    # only the label) and from panel_bg for the selected one, in both
-    # ui/about_dialog.py and ui/settings_dialog.py.
-    #
-    # Kept rather than deleted, on the same reasoning as text_secondary above:
-    # rnv-color-picker and rnv-icon-builder DO paint from the equivalents, and
-    # the values here already agree with them -- tab_bg matches both apps, and
-    # tab_selected_bg matches rnv-icon-builder (rnv-color-picker uses the panel
-    # step #1a1a1a instead, a two-against-one this pass records and does not
-    # settle). So wiring them up stays one line and not a colour decision.
-    #
-    # RENAMED 2026-08-28 to the spelling those two apps use. `tab_hover` left
-    # this block entirely: it was consumed, but to fill a QPushButton, and it
-    # is now dialog_btn_hover_bg in the button section above.
-    'tab_bg': GREY_E0,
-    'tab_selected_bg': WHITE,
-    'tab_hover_bg': APP_HOVER_LIGHT,
+    # The About dialog's scroll handle
     'scroll_handle': APP_TEXT_DIM,
     # Accent (brand gold - darker variant for readability on light bg)
     'accent': BRAND_DARK_GOLD,
     'accent_dark': BRAND_DARK_GOLD,
     'accent_ink': BRAND_DARK_GOLD_DEEP,
-    'accent_text': TRUE_BLACK,
     # Scrollbar
     'scrollbar_bg': APP_SURFACE_LIGHT_3,
     'scrollbar_handle': APP_TEXT_DIM,
@@ -785,79 +712,27 @@ LIGHT_THEME_COLORS: Final[ThemeDict] = {
     'scrollbar_border': GREY_CC,
     # Dialog
     'dialog_bg': APP_SURFACE_LIGHT_3,
-    'dialog_border': GREY_CC,
-    # Status
-    'success': STATUS_SUCCESS,
-    'warning': STATUS_WARNING,
 }
 
 
 # ==================== Image Mode Colors ====================
-# Based on Dark theme with transparency for background overlay effect.
+# The dark palette under its own name, with what image mode draws differently.
+#
+# RNV-NAMED-AND-USED (2026-10-04): this was the dark palette written out a
+# second time, entry by entry, with seven of them changed. Most of the copy
+# was a second spelling of values image mode never looked up, and one of the
+# seven was a difference nothing drew: input_bg, at APP_CARD, whose one
+# reader is the settings dialog, and that dialog takes the dark palette in
+# image mode. So this is dark's values, and after the spread the six entries
+# image mode reads and draws differently. A key image mode looks up is always
+# there, and nothing it never reads is written.
 IMAGE_MODE_COLORS: Final[ThemeDict] = {
+    **DARK_THEME_COLORS,
     'name': 'Image',
     # Base colors -- alpha-prefixed hex for Qt stylesheet compatibility
     'window_bg': APP_WINDOW_OVERLAY,
     'panel_bg': APP_PANEL_OVERLAY,
     'scroll_bg': APP_WINDOW_OVERLAY,
-    'card_bg': APP_CARD,
-    'input_bg': APP_CARD,
-    # Text
-    'text_color': APP_TEXT,
-    # Muted text -- see the note in the dark palette.
-    'text_secondary': GREY_88,
-    'text_disabled': GREY_55,
-    # Borders
-    'border_color': APP_BORDER,
-    'hover_color': GREY_44,
-    # Buttons
-    'main_btn_bg': BRAND_BLACK,
-    'main_btn_text': APP_TEXT,
-    'main_btn_hover_bg': APP_BORDER,
-    'main_btn_hover_text': APP_TEXT,
-    'main_btn_pressed_bg': GREY_44,
-    'main_btn_pressed_text': TRUE_BLACK,
-    'main_btn_border_color': 'transparent',
-    # The About dialog's button hover plate. Spelled 'tab_hover' until
-    # 2026-08-28, where it filled a QPushButton and not a tab.
-    #
-    # Deliberately NOT main_btn_hover_bg. That is the MAIN button's inverse
-    # scheme -- #333333 in both modes, with the label flipping -- while dialog
-    # buttons take a softer plate carrying gold text and a gold border.
-    # Flattening the two would lose a scheme. Same value it always had.
-    'dialog_btn_hover_bg': APP_PANEL_HOVER,
-    # The plate and label a dialog button RESTS on. Added 2026-09-01,
-    # holding what these dialogs already painted -- before this they
-    # reached into the main family for both, which is why one name
-    # ended up describing two schemes.
-    'dialog_btn_bg': BRAND_BLACK,
-    'dialog_btn_text': APP_TEXT,
-    # Dialog / tab widget colors
-    #
-    # NOT CONSUMED -- all three of these. This app paints its tabs from
-    # card_bg (at rest AND on hover, so hovering an unselected tab changes
-    # only the label) and from panel_bg for the selected one, in both
-    # ui/about_dialog.py and ui/settings_dialog.py.
-    #
-    # Kept rather than deleted, on the same reasoning as text_secondary above:
-    # rnv-color-picker and rnv-icon-builder DO paint from the equivalents, and
-    # the values here already agree with them -- tab_bg matches both apps, and
-    # tab_selected_bg matches rnv-icon-builder (rnv-color-picker uses the panel
-    # step #1a1a1a instead, a two-against-one this pass records and does not
-    # settle). So wiring them up stays one line and not a colour decision.
-    #
-    # RENAMED 2026-08-28 to the spelling those two apps use. `tab_hover` left
-    # this block entirely: it was consumed, but to fill a QPushButton, and it
-    # is now dialog_btn_hover_bg in the button section above.
-    'tab_bg': APP_CARD,
-    'tab_selected_bg': APP_BORDER,
-    'tab_hover_bg': APP_PANEL_HOVER,
-    'scroll_handle': GREY_44,   # was #505050, see GREY_44
-    # Accent (brand gold)
-    'accent': BRAND_GOLD,
-    'accent_dark': BRAND_GOLD_HOVER,
-    'accent_ink': BRAND_GOLD,
-    'accent_text': TRUE_BLACK,
     # Scrollbar. The two composites are DERIVED -- a named colour at a
     # declared alpha -- so a register move reaches them.
     'scrollbar_bg': 'transparent',
@@ -867,14 +742,7 @@ IMAGE_MODE_COLORS: Final[ThemeDict] = {
     # reported it gone: nothing here decoded rgba(). The alpha moves
     # to 150 with it, the byte the other four image scrollbars use.
     'scrollbar_handle': translucent(GREY_44, SCROLLBAR_HANDLE_ALPHA),
-    'scrollbar_handle_hover': BRAND_GOLD,
     'scrollbar_border': translucent(APP_BORDER, SCROLLBAR_BORDER_ALPHA),
-    # Dialog
-    'dialog_bg': BRAND_BLACK,
-    'dialog_border': APP_BORDER,
-    # Status
-    'success': STATUS_SUCCESS,
-    'warning': STATUS_WARNING,
 }
 
 
@@ -937,7 +805,6 @@ __all__ = [
     "prefers_dark_ink",
     # Slot defaults
     "DEFAULT_SLOT_COLOR",
-    "DEFAULT_SLOT_COLOR_IMAGE",
     "DEFAULT_SLOT_COLOR_IMAGE_RGB",
     # Theme dictionaries
     "DARK_THEME_COLORS",
@@ -952,9 +819,6 @@ __all__ = [
     "SIZE_OVERLAY_BG",
     # Accent pressed-text
     # Status colors
-    "STATUS_SUCCESS",
-    "STATUS_WARNING",
-    "STATUS_ERROR",
     "STATUS_ERROR_TEXT",
     "STATUS_ERROR_TEXT_LIGHT",
     # Preview & history borders

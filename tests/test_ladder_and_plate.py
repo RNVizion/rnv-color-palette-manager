@@ -56,11 +56,14 @@ OVERLAYS = {
 }
 
 #: palette dict name -> the keys in it that must now name a constant.
+#: RNV-NAMED-AND-USED, 2026-10-04: the tab hover went with the other keys
+#: nothing read, and the image palette is the dark one under its own name,
+#: so its plate is dark's entry and is held there. What image writes for
+#: itself are the three overlays.
 WIRED = {
-    'DARK_THEME_COLORS': ('dialog_btn_hover_bg', 'tab_hover_bg'),
-    'IMAGE_MODE_COLORS': ('dialog_btn_hover_bg', 'tab_hover_bg',
-                          'window_bg', 'panel_bg', 'scroll_bg'),
-    'LIGHT_THEME_COLORS': ('dialog_btn_hover_bg', 'tab_hover_bg'),
+    'DARK_THEME_COLORS': ('dialog_btn_hover_bg',),
+    'IMAGE_MODE_COLORS': ('window_bg', 'panel_bg', 'scroll_bg'),
+    'LIGHT_THEME_COLORS': ('dialog_btn_hover_bg',),
 }
 
 #: dict NAME -> the live dict. Looking a key up in the wrong palette is how a
@@ -125,7 +128,7 @@ def test_everything_this_file_reads_still_exists():
 def test_the_wiring_map_is_not_empty():
     """Every sweep below iterates WIRED. An empty map passes all of them."""
     assert WIRED and all(WIRED.values())
-    assert sum(len(v) for v in WIRED.values()) >= 9
+    assert sum(len(v) for v in WIRED.values()) >= 5
 
 
 # ------------------------------------------------------------------ the value
