@@ -9,7 +9,7 @@ A professional desktop application for creating, managing, and exporting color p
 [![Version](https://img.shields.io/badge/Version-3.3.13-orange.svg)]()
 [![Tests (Windows)](https://github.com/RNVizion/rnv-color-palette-manager/actions/workflows/tests.yml/badge.svg)](https://github.com/RNVizion/rnv-color-palette-manager/actions/workflows/tests.yml)
 [![Tests (Linux)](https://github.com/RNVizion/rnv-color-palette-manager/actions/workflows/tests-linux.yml/badge.svg)](https://github.com/RNVizion/rnv-color-palette-manager/actions/workflows/tests-linux.yml)
-[![Test Suite](https://img.shields.io/badge/Tests-745%20passing-brightgreen.svg)]()
+[![Test Suite](https://img.shields.io/badge/Tests-800%2B%20passing-brightgreen.svg)]()
 [![Coverage](https://img.shields.io/badge/Coverage-70%25-brightgreen.svg)]()
 
 ---
@@ -195,7 +195,7 @@ RNV_Color_Palette_Manager/
 ├── requirements.txt                # Quick-install dependencies
 ├── RNV_Color_Palette_Manager.py    # Main application entry point
 ├── RNV_Color_Palette_Manager.spec  # PyInstaller build spec
-├── test_rnv_palette_manager.py     # unittest baseline suite (374 tests)
+├── test_rnv_palette_manager.py     # unittest baseline suite
 ├── run_tests.py                    # Unified runner for both test suites
 ├── .coveragerc                     # Coverage configuration
 ├── build_windows.bat               # Test-gated PyInstaller build (Windows)
@@ -253,7 +253,7 @@ RNV_Color_Palette_Manager/
 │   ├── recent_palettes.py          # Recent file menu
 │   └── color_history.py            # Color change history panel
 │
-├── tests/                          # Modern pytest suite (371 tests)
+├── tests/                          # Modern pytest suite
 │   └── requirements-dev.txt        # Test/benchmark dependencies
 │   ├── conftest.py                 # Shared fixtures & helpers
 │   ├── test_color_math_properties.py    # Hypothesis property tests
@@ -282,7 +282,7 @@ RNV_Color_Palette_Manager/
 
 ## Testing
 
-The project ships with a comprehensive test suite — **745 tests across two coexisting suites**, covering pure logic, Qt widget interactions, paint rendering, drag-and-drop, palette format roundtrips, and performance benchmarks.
+The project ships with a comprehensive test suite — **over 800 tests across two coexisting suites**, covering pure logic, Qt widget interactions, paint rendering, drag-and-drop, palette format roundtrips, and performance benchmarks.
 
 ### Quick start
 
@@ -295,8 +295,8 @@ python run_tests.py                   # Run both suites + coverage report
 
 | Suite | Tests | Description |
 |---|---|---|
-| **unittest** (`test_rnv_palette_manager.py`) | 374 | Frozen baseline: pure logic, validators, palette format roundtrips, MainWindow integration smoke tests, undo/redo, settings, color history. |
-| **pytest** (`tests/`) | 371 | Modern suite: Hypothesis property tests, format snapshots, pytest-qt interaction tests, paint event pixel sampling, drag-and-drop event handlers, performance benchmarks. |
+| **unittest** (`test_rnv_palette_manager.py`) | over 300 | Frozen baseline: pure logic, validators, palette format roundtrips, MainWindow integration smoke tests, undo/redo, settings, color history. |
+| **pytest** (`tests/`) | over 400 | Modern suite: Hypothesis property tests, format snapshots, pytest-qt interaction tests, paint event pixel sampling, drag-and-drop event handlers, performance benchmarks. |
 
 **Coverage:** 70% project-wide (96% on `core/color_math`, 94% on `utils/session_manager`, 89% on `utils/file_utils`, 84% on `utils/error_handler`, with the remaining gap concentrated in modal dialogs deliberately excluded from offscreen testing).
 
