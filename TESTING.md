@@ -34,7 +34,7 @@ The project has **two coexisting test suites**, by design:
 
 ### 1. unittest suite — `test_rnv_palette_manager.py` (root)
 
-- **374 tests across 21 classes**, single file.
+- **Over 300 unittest tests across 21 classes**, single file.
 - Run via `python -m unittest test_rnv_palette_manager.py`.
 - Mirrors the pattern from the sibling Color Mixer project — single
   monolithic test file, ANSI-colored summary, `os._exit()` to bypass
@@ -46,7 +46,8 @@ The project has **two coexisting test suites**, by design:
 
 ### 2. pytest suite — `tests/` directory
 
-- **371 tests** across 14 files (including 25 performance benchmarks).
+- **Over 400 pytest tests** across the files of `tests/`, performance
+  benchmarks among them.
 - Run via `python -m pytest tests/`.
 - Uses pytest fixtures + pytest-qt + hypothesis where each pays off.
 - Where new tests go.
@@ -54,7 +55,7 @@ The project has **two coexisting test suites**, by design:
 The two suites are independently runnable. `run_tests.py` runs both and
 merges their coverage data.
 
-**Combined: 745 tests, 70% coverage, 0 hangs, 0 flakes.**
+**Combined: over 800 tests, 70% coverage, 0 hangs, 0 flakes.**
 
 ---
 
@@ -62,7 +63,7 @@ merges their coverage data.
 
 ```
 .
-├── test_rnv_palette_manager.py         # Frozen unittest suite (374 tests)
+├── test_rnv_palette_manager.py         # Frozen unittest suite
 ├── tests/
 │   ├── conftest.py                     # Shared pytest fixtures & helpers
 │   ├── test_color_math_properties.py   # Hypothesis property tests

@@ -23,7 +23,7 @@ concurrency:
   cancel-in-progress: true
 
 # RNV-RULINGS-2026-10-05, item 14. Each action below is at the first version
-# built for Node 24: checkout v5, setup-python v6 and upload-artifact v6.
+# built for Node 24: checkout v5 and setup-python v6.
 # GitHub took Node 20 off its runners on 2026-09-23, and ran the versions
 # before these on Node 24 with a warning. tests/test_workflow_actions.py
 # holds the floor.
@@ -79,16 +79,6 @@ jobs:
           QT_QPA_PLATFORM: offscreen
         run: python run_tests.py
 
-      - name: Upload coverage report
-        # Always upload, even if tests failed — the report is useful for
-        # diagnosing which paths weren't reached on Linux vs Windows.
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: coverage-report-linux
-          path: |
-            .coverage
-            .coverage.unittest
-            .coverage.pytest
-          retention-days: 14
-          if-no-files-found: ignore
+      # RNV-RULINGS-2026-10-11, item 22: the step that uploaded the coverage
+      # data went. It named only hidden files, which upload-artifact leaves
+      # out, so it uploaded nothing. tests/test_workflow_actions.py holds it.

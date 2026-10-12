@@ -4,7 +4,7 @@ run_tests.py — Unified test runner for RNV Color Palette Manager
 Runs both test sources under coverage with branch analysis (configured
 in .coveragerc), then merges the data files into a single coverage report.
 
-  Suite 1 — test_rnv_palette_manager.py    (374 unittest tests, ~35s)
+  Suite 1 — test_rnv_palette_manager.py    (the unittest suite, ~35s)
   Suite 2 — tests/                          (hypothesis property tests)
 
 Usage:
