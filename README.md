@@ -295,7 +295,7 @@ python run_tests.py                   # Run both suites + coverage report
 
 | Suite | Tests | Description |
 |---|---|---|
-| **unittest** (`test_rnv_palette_manager.py`) | over 300 | Frozen baseline: pure logic, validators, palette format roundtrips, MainWindow integration smoke tests, undo/redo, settings, color history. |
+| **unittest** (`test_rnv_palette_manager.py`) | over 300 | The baseline: pure logic, validators, palette format roundtrips, MainWindow integration smoke tests, undo/redo, settings, color history. New tests go in the `tests` folder. |
 | **pytest** (`tests/`) | over 400 | Modern suite: Hypothesis property tests, format snapshots, pytest-qt interaction tests, paint event pixel sampling, drag-and-drop event handlers, performance benchmarks. |
 
 **Coverage:** 70% project-wide (96% on `core/color_math`, 94% on `utils/session_manager`, 89% on `utils/file_utils`, 84% on `utils/error_handler`, with the remaining gap concentrated in modal dialogs deliberately excluded from offscreen testing).

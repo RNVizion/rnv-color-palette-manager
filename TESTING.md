@@ -41,7 +41,7 @@ The project has **two coexisting test suites**, by design:
   PyQt6 cleanup crashes on shutdown.
 - Covers: pure logic, validators, palette format roundtrips, MainWindow
   integration smoke tests, undo/redo, settings, color history.
-- **Frozen.** New tests do not go here; this file is the established
+- **New tests go in `tests/`,** not here. This file is the established
   baseline that's known to pass on every supported Python/Qt combo.
 
 ### 2. pytest suite — `tests/` directory
@@ -63,7 +63,7 @@ merges their coverage data.
 
 ```
 .
-├── test_rnv_palette_manager.py         # Frozen unittest suite
+├── test_rnv_palette_manager.py         # unittest suite
 ├── tests/
 │   ├── conftest.py                     # Shared pytest fixtures & helpers
 │   ├── test_color_math_properties.py   # Hypothesis property tests
