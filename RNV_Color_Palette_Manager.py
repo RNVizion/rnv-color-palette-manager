@@ -822,7 +822,10 @@ class MainWindow(QMainWindow):
         is_light_theme = (not is_image and self.theme_manager.current_theme == 'light')
         gold      = QColor(BRAND_DARK_GOLD) if is_light_theme else QColor(BRAND_GOLD)
         gold_dark = QColor(BRAND_DARK_GOLD)
-        on_gold   = QColor(TRUE_BLACK)
+        # RNV-RULINGS-2026-10-15, item 33: the ink on each gold, as every rule
+        # of a sheet gives it: white on the dark gold, which light highlights
+        # in; black on the bright gold, which dark and image highlight in.
+        on_gold   = QColor(WHITE) if is_light_theme else QColor(TRUE_BLACK)
 
         for group in (QPalette.ColorGroup.Active, QPalette.ColorGroup.Inactive,
                       QPalette.ColorGroup.Disabled):

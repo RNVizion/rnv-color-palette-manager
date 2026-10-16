@@ -23,8 +23,6 @@ main window and every window its own openers show:
 3. The application's palette and each window's, where a selection takes
    its ink when no rule sets one: if it highlights in a gold, it gives the
    highlighted text that gold's ink.
-   HELD lists one thing found against the ruling while this was built: the
-   application's palette in light mode. A ruling is asked on it.
 4. The reader is looking: in each mode it reads every window, and finds at
    least as many rules putting an ink on a gold as it found on 2026-10-13;
    and it reads a sample sheet as Qt reads it.
@@ -77,10 +75,7 @@ MODES = ('dark', 'light', 'image')
 #: asked on it, -> why: ("rule", mode, selector, gold, ink) for a rule of a
 #: sheet, ("palette", mode, gold, ink) for a palette. One that is no longer
 #: found fails: take it out.
-HELD = {
-    ('palette', 'light', '#8c7337', '#000000'):
-        "item 33, asked 2026-10-13: the application's palette gives a selection black on the dark gold in light mode, where every rule of a sheet gives white",
-}
+HELD = {}
 
 
 def _mode(win) -> str:
