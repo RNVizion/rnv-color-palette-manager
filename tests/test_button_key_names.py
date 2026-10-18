@@ -30,16 +30,18 @@ OLD = ("button_bg", "button_text", "button_hover_bg", "button_hover_text",
 NEW = tuple("main_" + n.replace("button_", "btn_") for n in OLD[:-1])
 DIALOG = ("dialog_btn_bg", "dialog_btn_text", "dialog_btn_hover_bg")
 
+#: RNV-COLOUR-SYNC, 2026-10-16: each key by the constant it paints, where it
+#: was written as that constant's hex code, so a brand move needs no edit here.
 PINNED_MAIN = {
-    "dark": {"main_btn_bg": "#1a1a1a", "main_btn_text": "#dddddd",
-             "main_btn_hover_bg": "#333333", "main_btn_hover_text": "#dddddd",
-             "main_btn_pressed_bg": "#444444", "main_btn_pressed_text": "#000000"},
-    "light": {"main_btn_bg": "#ffffff", "main_btn_text": "#000000",
-              "main_btn_hover_bg": "#333333", "main_btn_hover_text": "#000000",
-              "main_btn_pressed_bg": "#444444", "main_btn_pressed_text": "#ffffff"},
-    "image": {"main_btn_bg": "#1a1a1a", "main_btn_text": "#dddddd",
-              "main_btn_hover_bg": "#333333", "main_btn_hover_text": "#dddddd",
-              "main_btn_pressed_bg": "#444444", "main_btn_pressed_text": "#000000"},
+    "dark": {"main_btn_bg": "BRAND_BLACK", "main_btn_text": "APP_TEXT",
+             "main_btn_hover_bg": "APP_BORDER", "main_btn_hover_text": "APP_TEXT",
+             "main_btn_pressed_bg": "GREY_44", "main_btn_pressed_text": "TRUE_BLACK"},
+    "light": {"main_btn_bg": "WHITE", "main_btn_text": "TRUE_BLACK",
+              "main_btn_hover_bg": "APP_BORDER", "main_btn_hover_text": "TRUE_BLACK",
+              "main_btn_pressed_bg": "GREY_44", "main_btn_pressed_text": "WHITE"},
+    "image": {"main_btn_bg": "BRAND_BLACK", "main_btn_text": "APP_TEXT",
+              "main_btn_hover_bg": "APP_BORDER", "main_btn_hover_text": "APP_TEXT",
+              "main_btn_pressed_bg": "GREY_44", "main_btn_pressed_text": "TRUE_BLACK"},
 }
 
 #: The dialog family holds exactly what those dialogs painted before the
@@ -47,12 +49,12 @@ PINNED_MAIN = {
 #: fine -- it means a dialog scheme was ruled on. What must not happen is a
 #: value moving during a rename.
 PINNED_DIALOG = {
-    "dark": {"dialog_btn_bg": "#1a1a1a", "dialog_btn_text": "#dddddd",
-             "dialog_btn_hover_bg": "#3a3a3a"},
-    "light": {"dialog_btn_bg": "#ffffff", "dialog_btn_text": "#000000",
-              "dialog_btn_hover_bg": "#eeeeee"},
-    "image": {"dialog_btn_bg": "#1a1a1a", "dialog_btn_text": "#dddddd",
-              "dialog_btn_hover_bg": "#3a3a3a"},
+    "dark": {"dialog_btn_bg": "BRAND_BLACK", "dialog_btn_text": "APP_TEXT",
+             "dialog_btn_hover_bg": "APP_PANEL_HOVER"},
+    "light": {"dialog_btn_bg": "WHITE", "dialog_btn_text": "TRUE_BLACK",
+              "dialog_btn_hover_bg": "APP_HOVER_LIGHT"},
+    "image": {"dialog_btn_bg": "BRAND_BLACK", "dialog_btn_text": "APP_TEXT",
+              "dialog_btn_hover_bg": "APP_PANEL_HOVER"},
 }
 
 SKIP = {".git", "build", "dist", ".venv", "__pycache__"}
@@ -67,6 +69,12 @@ MARKERS = ("RNV-BUTTON-NAMING-GUARD", "RNV-BUTTON-NAMING-TOOL-DO-NOT-SWEEP")
 #: Dialogs, and the family each is allowed to read.
 DIALOG_FILES = ("ui/about_dialog.py", "ui/batch_export_dialog.py",
                 "utils/dialog_helper.py")
+
+
+def _values(pins):
+    """Each key's constant, as the value it holds."""
+    from ui import colors
+    return {key: getattr(colors, name) for key, name in pins.items()}
 
 
 def _palettes():
@@ -144,8 +152,9 @@ def test_all_three_palettes_carry_both_families():
 
 
 def test_the_rename_moved_no_value():
-    for mode, pins in PINNED_MAIN.items():
+    for mode, names in PINNED_MAIN.items():
         palette = _palettes()[mode]
+        pins = _values(names)
         actual = {k: palette.get(k) for k in pins}
         assert actual == pins, (
             f"the {mode} main button values changed.\n"
@@ -154,8 +163,9 @@ def test_the_rename_moved_no_value():
 
 
 def test_the_dialog_family_holds_what_the_dialogs_already_painted():
-    for mode, pins in PINNED_DIALOG.items():
+    for mode, names in PINNED_DIALOG.items():
         palette = _palettes()[mode]
+        pins = _values(names)
         actual = {k: palette.get(k) for k in pins}
         assert actual == pins, (
             f"the {mode} dialog button values are not what those dialogs "

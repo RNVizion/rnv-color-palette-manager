@@ -60,7 +60,22 @@ from ui.colors             import (
     BRAND_GOLD, BRAND_DARK_GOLD, BRAND_GOLD_RGB, BRAND_DARK_GOLD_RGB,
     BRAND_DARK_GOLD_RGB, SLOT_BORDER_THIN_COLOR, SLOT_BORDER_THICK_COLOR,
     SEARCH_HIGHLIGHT_COLOR, SEARCH_DIM_OVERLAY, SIZE_OVERLAY_BG,
+    APP_BORDER,
 )
+# RNV-COLOUR-SYNC, 2026-10-17 (#53 A, #55 B): every other colour value this suite needs
+# is named in tests/colour_values.py, reached from the repository root.
+from tests.colour_values import (
+    DATA_HEX_INPUT_ORANGE, DATA_HEX_INPUT_ORANGE_BARE, DATA_HEX_INPUT_ORANGE_SHORT,
+    DATA_HISTORY_BLACK, DATA_HISTORY_BLACK_SHORT, DATA_HISTORY_DARK_RED,
+    DATA_HISTORY_GREEN, DATA_HISTORY_GREY_1, DATA_HISTORY_GREY_2, DATA_HISTORY_GREY_3,
+    DATA_HISTORY_GREY_4, DATA_HISTORY_NAVY, DATA_HISTORY_PALE_BLUE, DATA_HISTORY_SLATE,
+    DATA_HISTORY_WHITE, DATA_HISTORY_WHITE_SHORT, DATA_QUERY_GREEN_BARE,
+    DATA_QUERY_GREEN_RGB, DATA_QUERY_RED, DATA_QUERY_RED_BARE, DATA_QUERY_RED_PADDED,
+    DATA_QUERY_RED_SHORT, DATA_QUERY_RED_UPPER, DATA_QUERY_WHITE_SHORT,
+    DATA_SETTINGS_SLOT_COLOR, DATA_SLOT_BLACK, DATA_SLOT_RED, EXAMPLE_BLACK,
+    EXAMPLE_BLUE, EXAMPLE_GREEN, EXAMPLE_RED, EXAMPLE_RED_BARE, EXAMPLE_RED_SHORT,
+    EXAMPLE_RED_UPPER, EXAMPLE_WHITE, EXAMPLE_WHITE_SHORT, INVALID_HEX_FIVE_DIGITS,
+    INVALID_HEX_NOT_HEX_BARE)
 from ui.color_search       import parse_color_query, MATCH_THRESHOLD
 from ui.slot_group         import SlotGroupData, SlotGroupInfo
 from utils.color_history      import ColorHistoryPanel, ColorHistoryEntry
@@ -84,17 +99,17 @@ class TestColorMath(unittest.TestCase):
     """core/color_math.py — color-space conversions and all 7 mixing algorithms."""
 
     # --- hex conversions ---
-    def test_rgb_to_hex_black(self):    self.assertEqual(ColorMath.rgb_to_hex((0,0,0)), "#000000")
-    def test_rgb_to_hex_white(self):    self.assertEqual(ColorMath.rgb_to_hex((255,255,255)), "#ffffff")
-    def test_rgb_to_hex_red(self):      self.assertEqual(ColorMath.rgb_to_hex((255,0,0)), "#ff0000")
-    def test_rgb_to_hex_green(self):    self.assertEqual(ColorMath.rgb_to_hex((0,255,0)), "#00ff00")
-    def test_rgb_to_hex_blue(self):     self.assertEqual(ColorMath.rgb_to_hex((0,0,255)), "#0000ff")
-    def test_hex_to_rgb_black(self):    self.assertEqual(ColorMath.hex_to_rgb("#000000"), (0,0,0))
-    def test_hex_to_rgb_white(self):    self.assertEqual(ColorMath.hex_to_rgb("#ffffff"), (255,255,255))
-    def test_hex_to_rgb_no_hash(self):  self.assertEqual(ColorMath.hex_to_rgb("ff0000"), (255,0,0))
-    def test_hex_to_rgb_uppercase(self):self.assertEqual(ColorMath.hex_to_rgb("#FF0000"), (255,0,0))
-    def test_hex_to_rgb_short(self):    self.assertEqual(ColorMath.hex_to_rgb("#f00"), (255,0,0))
-    def test_hex_to_rgb_short_white(self): self.assertEqual(ColorMath.hex_to_rgb("#fff"), (255,255,255))
+    def test_rgb_to_hex_black(self):    self.assertEqual(ColorMath.rgb_to_hex((0,0,0)), EXAMPLE_BLACK)
+    def test_rgb_to_hex_white(self):    self.assertEqual(ColorMath.rgb_to_hex((255,255,255)), EXAMPLE_WHITE)
+    def test_rgb_to_hex_red(self):      self.assertEqual(ColorMath.rgb_to_hex((255,0,0)), EXAMPLE_RED)
+    def test_rgb_to_hex_green(self):    self.assertEqual(ColorMath.rgb_to_hex((0,255,0)), EXAMPLE_GREEN)
+    def test_rgb_to_hex_blue(self):     self.assertEqual(ColorMath.rgb_to_hex((0,0,255)), EXAMPLE_BLUE)
+    def test_hex_to_rgb_black(self):    self.assertEqual(ColorMath.hex_to_rgb(EXAMPLE_BLACK), (0,0,0))
+    def test_hex_to_rgb_white(self):    self.assertEqual(ColorMath.hex_to_rgb(EXAMPLE_WHITE), (255,255,255))
+    def test_hex_to_rgb_no_hash(self):  self.assertEqual(ColorMath.hex_to_rgb(EXAMPLE_RED_BARE), (255,0,0))
+    def test_hex_to_rgb_uppercase(self):self.assertEqual(ColorMath.hex_to_rgb(EXAMPLE_RED_UPPER), (255,0,0))
+    def test_hex_to_rgb_short(self):    self.assertEqual(ColorMath.hex_to_rgb(EXAMPLE_RED_SHORT), (255,0,0))
+    def test_hex_to_rgb_short_white(self): self.assertEqual(ColorMath.hex_to_rgb(EXAMPLE_WHITE_SHORT), (255,255,255))
 
     def test_roundtrip_rgb_hex(self):
         for c in [(0,0,0),(255,255,255),(128,64,200),(1,2,3),(16,0,255)]:
@@ -424,7 +439,7 @@ class TestColorsModule(unittest.TestCase):
         self.assertIn("rgba", SIZE_OVERLAY_BG.lower())
 
     def test_light_hover_dark_grey(self):
-        self.assertEqual(get_theme_colors("light")["main_btn_hover_bg"].lower(),"#333333")
+        self.assertEqual(get_theme_colors("light")["main_btn_hover_bg"].lower(),APP_BORDER)
 
     def test_dark_accent_is_light_gold(self):
         self.assertEqual(get_theme_colors("dark")["accent"].lower(), BRAND_GOLD.lower())
@@ -442,14 +457,14 @@ class TestColorsModule(unittest.TestCase):
 class TestParseColorQuery(unittest.TestCase):
     """ui/color_search.py — parse_color_query edge cases."""
 
-    def test_hex_with_hash(self):       self.assertEqual(parse_color_query("#ff0000"),(255,0,0))
-    def test_hex_without_hash(self):    self.assertEqual(parse_color_query("00ff00"),(0,255,0))
-    def test_hex_uppercase(self):       self.assertEqual(parse_color_query("#FF0000"),(255,0,0))
-    def test_short_hex(self):           self.assertEqual(parse_color_query("#f00"),(255,0,0))
-    def test_short_hex_white(self):     self.assertEqual(parse_color_query("#fff"),(255,255,255))
+    def test_hex_with_hash(self):       self.assertEqual(parse_color_query(DATA_QUERY_RED),(255,0,0))
+    def test_hex_without_hash(self):    self.assertEqual(parse_color_query(DATA_QUERY_GREEN_BARE),(0,255,0))
+    def test_hex_uppercase(self):       self.assertEqual(parse_color_query(DATA_QUERY_RED_UPPER),(255,0,0))
+    def test_short_hex(self):           self.assertEqual(parse_color_query(DATA_QUERY_RED_SHORT),(255,0,0))
+    def test_short_hex_white(self):     self.assertEqual(parse_color_query(DATA_QUERY_WHITE_SHORT),(255,255,255))
     def test_rgb_tuple(self):           self.assertEqual(parse_color_query("255,0,0"),(255,0,0))
     def test_rgb_spaces(self):          self.assertEqual(parse_color_query("255, 0, 0"),(255,0,0))
-    def test_rgb_function(self):        self.assertEqual(parse_color_query("rgb(0,255,0)"),(0,255,0))
+    def test_rgb_function(self):        self.assertEqual(parse_color_query(DATA_QUERY_GREEN_RGB),(0,255,0))
     def test_named_red(self):           self.assertEqual(parse_color_query("red"),(255,0,0))
     def test_named_blue(self):          self.assertEqual(parse_color_query("blue"),(0,0,255))
     def test_named_white(self):         self.assertEqual(parse_color_query("white"),(255,255,255))
@@ -459,7 +474,7 @@ class TestParseColorQuery(unittest.TestCase):
     def test_empty_none(self):          self.assertIsNone(parse_color_query(""))
     def test_nonsense_none(self):       self.assertIsNone(parse_color_query("xyzxyzxyz"))
     def test_out_of_range_none(self):   self.assertIsNone(parse_color_query("300,0,0"))
-    def test_whitespace_stripped(self): self.assertEqual(parse_color_query("  #ff0000  "),(255,0,0))
+    def test_whitespace_stripped(self): self.assertEqual(parse_color_query(DATA_QUERY_RED_PADDED),(255,0,0))
     def test_threshold_positive(self):  self.assertGreater(MATCH_THRESHOLD,0)
 
 
@@ -478,11 +493,11 @@ class TestErrorHandlerValidators(unittest.TestCase):
     def test_rgb_invalid_high(self):    self.assertFalse(ValidationHelper.validate_rgb_values(256,0,0)[0])
     def test_rgb_invalid_blue(self):    self.assertFalse(ValidationHelper.validate_rgb_values(0,0,256)[0])
 
-    def test_hex_valid_hash(self):      self.assertTrue(ValidationHelper.validate_hex_color("#FF8800")[0])
-    def test_hex_valid_no_hash(self):   self.assertTrue(ValidationHelper.validate_hex_color("FF8800")[0])
-    def test_hex_valid_short(self):     self.assertTrue(ValidationHelper.validate_hex_color("#F80")[0])
-    def test_hex_invalid_chars(self):   self.assertFalse(ValidationHelper.validate_hex_color("ZZZZZZ")[0])
-    def test_hex_invalid_length(self):  self.assertFalse(ValidationHelper.validate_hex_color("#12345")[0])
+    def test_hex_valid_hash(self):      self.assertTrue(ValidationHelper.validate_hex_color(DATA_HEX_INPUT_ORANGE)[0])
+    def test_hex_valid_no_hash(self):   self.assertTrue(ValidationHelper.validate_hex_color(DATA_HEX_INPUT_ORANGE_BARE)[0])
+    def test_hex_valid_short(self):     self.assertTrue(ValidationHelper.validate_hex_color(DATA_HEX_INPUT_ORANGE_SHORT)[0])
+    def test_hex_invalid_chars(self):   self.assertFalse(ValidationHelper.validate_hex_color(INVALID_HEX_NOT_HEX_BARE)[0])
+    def test_hex_invalid_length(self):  self.assertFalse(ValidationHelper.validate_hex_color(INVALID_HEX_FIVE_DIGITS)[0])
 
     def test_weight_valid_bounds(self):
         self.assertTrue(ValidationHelper.validate_weight(0)[0])
@@ -795,13 +810,13 @@ class TestColorHistory(unittest.TestCase):
 
     def test_initial_empty(self):   self.assertEqual(self.panel.entries,[])
     def test_record_adds(self):
-        self.panel.record("#000000","#ffffff",slot_index=0)
+        self.panel.record(DATA_HISTORY_BLACK,DATA_HISTORY_WHITE,slot_index=0)
         self.assertEqual(len(self.panel.entries),1)
 
     def test_record_stores_colors(self):
-        self.panel.record("#aabbcc","#112233",slot_index=2)
+        self.panel.record(DATA_HISTORY_SLATE,DATA_HISTORY_NAVY,slot_index=2)
         e = self.panel.entries[0]
-        self.assertEqual(e.old_color,"#aabbcc"); self.assertEqual(e.new_color,"#112233")
+        self.assertEqual(e.old_color,DATA_HISTORY_SLATE); self.assertEqual(e.new_color,DATA_HISTORY_NAVY)
         self.assertEqual(e.slot_index,2)
 
     def test_record_trims_to_max(self):
@@ -809,21 +824,21 @@ class TestColorHistory(unittest.TestCase):
         self.assertLessEqual(len(self.panel.entries),5)
 
     def test_clear(self):
-        self.panel.record("#000000","#ffffff"); self.panel.clear()
+        self.panel.record(DATA_HISTORY_BLACK,DATA_HISTORY_WHITE); self.panel.clear()
         self.assertEqual(self.panel.entries,[])
 
     def test_to_list_roundtrip(self):
-        self.panel.record("#aabbcc","#112233",slot_index=1)
+        self.panel.record(DATA_HISTORY_SLATE,DATA_HISTORY_NAVY,slot_index=1)
         data = self.panel.to_list()
-        self.assertEqual(data[0]["new_color"],"#112233")
+        self.assertEqual(data[0]["new_color"],DATA_HISTORY_NAVY)
 
     def test_entries_from_list(self):
-        self.panel.record("#aa0000","#00aa00")
+        self.panel.record(DATA_HISTORY_DARK_RED,DATA_HISTORY_GREEN)
         restored = ColorHistoryPanel.entries_from_list(self.panel.to_list())
-        self.assertEqual(restored[0].new_color,"#00aa00")
+        self.assertEqual(restored[0].new_color,DATA_HISTORY_GREEN)
 
     def test_set_entries(self):
-        self.panel.set_entries([ColorHistoryEntry(old_color="#000",new_color="#fff",slot_index=0)])
+        self.panel.set_entries([ColorHistoryEntry(old_color=DATA_HISTORY_BLACK_SHORT,new_color=DATA_HISTORY_WHITE_SHORT,slot_index=0)])
         self.assertEqual(len(self.panel.entries),1)
 
     def test_max_entries_setter(self):
@@ -833,13 +848,13 @@ class TestColorHistory(unittest.TestCase):
         self.assertLessEqual(len(self.panel.entries),10)
 
     def test_entry_roundtrip(self):
-        e = ColorHistoryEntry(old_color="#aabbcc",new_color="#ddeeff",slot_index=3)
+        e = ColorHistoryEntry(old_color=DATA_HISTORY_SLATE,new_color=DATA_HISTORY_PALE_BLUE,slot_index=3)
         e2 = ColorHistoryEntry.from_dict(e.to_dict())
-        self.assertEqual(e2.old_color,"#aabbcc"); self.assertEqual(e2.slot_index,3)
+        self.assertEqual(e2.old_color,DATA_HISTORY_SLATE); self.assertEqual(e2.slot_index,3)
 
     def test_newest_first(self):
-        self.panel.record("#111111","#222222"); self.panel.record("#333333","#444444")
-        self.assertEqual(self.panel.entries[0].new_color,"#444444")
+        self.panel.record(DATA_HISTORY_GREY_1,DATA_HISTORY_GREY_2); self.panel.record(DATA_HISTORY_GREY_3,DATA_HISTORY_GREY_4)
+        self.assertEqual(self.panel.entries[0].new_color,DATA_HISTORY_GREY_4)
 
     def test_now_returns_string(self):
         self.assertIsInstance(ColorHistoryEntry.now(),str)
@@ -940,8 +955,8 @@ class TestSettingsManager(unittest.TestCase):
             self.assertIsInstance(c,str); self.assertTrue(c.startswith("#"))
 
     def test_set_default_color(self):
-        self.mgr.set_default_slot_color_for_theme("dark","#123456")
-        self.assertEqual(self.mgr.default_slot_color_for_theme("dark"),"#123456")
+        self.mgr.set_default_slot_color_for_theme("dark",DATA_SETTINGS_SLOT_COLOR)
+        self.assertEqual(self.mgr.default_slot_color_for_theme("dark"),DATA_SETTINGS_SLOT_COLOR)
 
     def test_slot_border_style_string(self):    self.assertIsInstance(self.mgr.slot_border_style,str)
     def test_slot_size_preference_valid(self):  self.assertIn(self.mgr.slot_size_preference,("auto","small","medium","large"))
@@ -1254,7 +1269,7 @@ class TestSessionState(unittest.TestCase):
     def test_groups_roundtrip(self):
         s = PaletteSessionState(
             timestamp="2025-01-01",
-            slots=[{"color":"#ff0000","locked":False,"has_image":False,"is_default_color":False}],
+            slots=[{"color":DATA_SLOT_RED,"locked":False,"has_image":False,"is_default_color":False}],
             groups=[{"name":"Reds","slot_count":1,"collapsed":False}],
         )
         s2 = PaletteSessionState.from_dict(s.to_dict())
@@ -1262,7 +1277,7 @@ class TestSessionState(unittest.TestCase):
 
     def test_color_history_preserved(self):
         s = self._state(1)
-        s.color_history=[{"old":"#000","new":"#fff","slot_index":0}]
+        s.color_history=[{"old":DATA_HISTORY_BLACK_SHORT,"new":DATA_HISTORY_WHITE_SHORT,"slot_index":0}]
         s2 = PaletteSessionState.from_dict(s.to_dict())
         self.assertEqual(len(s2.color_history),1)
 
@@ -1496,16 +1511,16 @@ class TestMainWindowIntegration(unittest.TestCase):
 
     # --- search -------------------------------------------------------------
     def test_search_highlights(self):
-        self.win.add_slot_with_color(self._qc(255,0,0)); self.win._on_search_changed("ff0000")
+        self.win.add_slot_with_color(self._qc(255,0,0)); self.win._on_search_changed(DATA_QUERY_RED_BARE)
         self.assertTrue(any(w.slot._search_highlight for w in self.win.slots_widgets))
 
     def test_search_clear(self):
-        self.win._on_search_changed("ff0000"); self.win._on_search_cleared()
+        self.win._on_search_changed(DATA_QUERY_RED_BARE); self.win._on_search_cleared()
         self.assertFalse(any(w.slot._search_highlight for w in self.win.slots_widgets))
         self.assertFalse(any(w.slot._search_dimmed for w in self.win.slots_widgets))
 
     def test_search_empty_clears(self):
-        self.win._on_search_changed("ff0000"); self.win._on_search_changed("")
+        self.win._on_search_changed(DATA_QUERY_RED_BARE); self.win._on_search_changed("")
         self.assertFalse(any(w.slot._search_dimmed for w in self.win.slots_widgets))
 
     # --- export / import round-trip -----------------------------------------
@@ -1524,7 +1539,7 @@ class TestMainWindowIntegration(unittest.TestCase):
     # --- color history ------------------------------------------------------
     def test_record_color_change(self):
         before=len(self.win.color_history_panel.entries)
-        self.win.record_color_change("#000000","#ffffff",slot_index=0)
+        self.win.record_color_change(DATA_HISTORY_BLACK,DATA_HISTORY_WHITE,slot_index=0)
         self.assertEqual(len(self.win.color_history_panel.entries),before+1)
 
     # --- session state ------------------------------------------------------
@@ -1667,8 +1682,8 @@ class TestEdgeCases(unittest.TestCase):
                 slots=[{"r":r,"g":g,"b":b,"a":255,"hex_text":hex_str,
                         "locked":False,"is_default_color":False}],
                 metadata={}, groups=[])
-        s0 = _make(0,   0, 0, "#000000")
-        s1 = _make(255, 0, 0, "#ff0000")
+        s0 = _make(0,   0, 0, DATA_SLOT_BLACK)
+        s1 = _make(255, 0, 0, DATA_SLOT_RED)
         mgr.push(s0)
         mgr.push(s1)
         # Undo from s1 should return s1 (top of stack) and put s1 on redo

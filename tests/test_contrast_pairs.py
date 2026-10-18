@@ -60,7 +60,7 @@ INK_PAIRS = (
 # gap in the audit, not a pass.
 #
 # IMAGE used to resolve 3, but one was a duplicate -- tab_pane_bg held the same
-# #1a1a1a as dialog_bg -- so deleting that key on 2026-08-28 removed a repeated
+# BRAND_BLACK as dialog_bg -- so deleting that key on 2026-08-28 removed a repeated
 # measurement rather than any coverage.
 RESOLVING = {"DARK": 3, "LIGHT": 3, "IMAGE": 2}
 

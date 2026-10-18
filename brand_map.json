@@ -1,0 +1,89 @@
+{
+  "about": "Where each colour in ui/colors.py comes from. A string is a name in rnv-brand (TABLE.key, or one of its own constants, in engine/brand.py); an object is a value this application owns, with the reason. Edit this file, then run: python tools/sync_colors.py",
+  "app": "RNV Color Palette Manager",
+  "colour_file": "ui/colors.py",
+  "colours": {
+    "BRAND_GOLD": "APP.accent",
+    "BRAND_DARK_GOLD": "APP.accent-light-mode",
+    "TRUE_BLACK": "PERMANENT.black",
+    "WHITE": "PERMANENT.white",
+    "BRAND_BLACK": "APP.panel",
+    "APP_CARD": "APP.card",
+    "APP_BORDER": "APP.border",
+    "APP_TEXT": "APP.text",
+    "APP_TEXT_DIM": "APP.text-dim",
+    "APP_PANEL_HOVER": "APP.panel-hover",
+    "GREY_44": {
+      "app": "#444444",
+      "why": "grey(4) on the register's ink grid, which the register states as a rule and does not name. The pressed plate and the scrollbar handle (RNV-COLLAPSE-505050)."
+    },
+    "APP_HOVER_LIGHT": "APP.hover-light",
+    "APP_SURFACE_LIGHT_3": "APP.surface-light-3",
+    "GREY_EE": {
+      "app": "#eeeeee",
+      "why": "grey(14) on the ink grid. Static light surfaces, a list header and a scroll ground, that share hover-light's hex without being a hover."
+    },
+    "GREY_CC": {
+      "app": "#cccccc",
+      "why": "grey(12) on the ink grid. The light-mode border."
+    },
+    "GREY_88": {
+      "app": "#888888",
+      "why": "grey(8) on the ink grid. Muted text on dark; a scrollbar handle's hover on light."
+    },
+    "GREY_55": {
+      "app": "#555555",
+      "why": "grey(5) on the ink grid. Disabled text and a checkbox edge on dark."
+    },
+    "SELECTION_OVERLAY_COLOR": {
+      "app": "rgba(0,120,215,200)",
+      "why": "The blue overlay drawn during gradient and contrast selection, painted where no theme palette reaches."
+    },
+    "GREY_66": {
+      "app": "#666666",
+      "why": "grey(6) on the ink grid. Muted text in light mode."
+    },
+    "SEARCH_HIGHLIGHT_COLOR": {
+      "app": [0, 255, 100],
+      "why": "The bright green border on slots that match a search."
+    },
+    "SLOT_BORDER_THICK_COLOR": {
+      "app": [60, 60, 60],
+      "why": "The thick slot border."
+    },
+    "STATUS_ERROR_TEXT": "STATUS.error-text",
+    "STATUS_ERROR_TEXT_LIGHT": "STATUS.error-text-light",
+    "SVG_EXPORT_BG": {
+      "app": "#ffffff",
+      "why": "Data, not chrome: the background of an exported SVG palette file. White by meaning, so it does not follow the brand's white."
+    },
+    "SVG_EXPORT_STROKE": {
+      "app": "#000000",
+      "why": "Data, not chrome: the swatch stroke in an exported SVG palette file."
+    },
+    "DATA_DEFAULT_COLOR": {
+      "app": "#000000",
+      "why": "Data, not chrome: the value a colour record starts with."
+    },
+    "SESSION_FALLBACK_COLOR": {
+      "app": "#a9a9a9",
+      "why": "Data: the grey a restored session or a reset setting falls back to."
+    },
+    "SESSION_FALLBACK_COLOR_IMAGE": {
+      "app": "#000000",
+      "why": "Data: the image-mode fallback for a reset setting."
+    },
+    "CLIPBOARD_PREVIEW_COLOR": {
+      "app": "#4a90d9",
+      "why": "Data, not chrome: the example the settings dialog previews the hex and rgb() clipboard formats with, text shown to the person (#56 A)."
+    },
+    "TRANSPARENT_RGBA": {
+      "app": [0, 0, 0, 0],
+      "why": "Fully transparent: ghost pixmaps and cleared palettes."
+    },
+    "DEFAULT_SLOT_COLOR": {
+      "app": "#a9a9a9",
+      "why": "The colour a new slot starts with in dark and light mode."
+    }
+  }
+}

@@ -17,6 +17,8 @@ from pathlib import Path
 
 import pytest
 
+from colour_values import (
+    REGISTER_APP_SURFACE_LIGHT_2, RETIRED_GREY_F0, RETIRED_GREY_F8, RETIRED_GREY_FA)
 from ui import colors as C
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -30,7 +32,8 @@ HEX = re.compile(r"#[0-9a-fA-F]{6}$")
 SPLIT = {}
 SPLIT_ABSENT = ['platform_btn_hover_bg', 'pressed_bg']
 # old hex -> new hex
-COLLAPSE = {'#fafafa': '#fbfbfb', '#f8f8f8': '#fbfbfb', '#f0f0f0': '#eeeeee'}
+COLLAPSE = {RETIRED_GREY_FA: REGISTER_APP_SURFACE_LIGHT_2, RETIRED_GREY_F8: REGISTER_APP_SURFACE_LIGHT_2,
+            RETIRED_GREY_F0: C.GREY_EE}
 # Hexes that legitimately carry two constant names here, with the role each
 # one plays. A pair listed here is a decision on the record; anything else
 # sharing a hex is a duplicate until someone says otherwise.

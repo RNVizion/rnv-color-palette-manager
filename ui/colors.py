@@ -7,6 +7,13 @@ ThemeManager imports these dictionaries rather than defining them inline.
 
 Version: 3.0 (Full color centralization - all UI, data, and export colors)
 """
+# RNV-COLOUR-SYNC (2026-10-16). Every colour value below whose line ends
+# "# brand: <name>" or "# app-owned" is written by tools/sync_colors.py from
+# brand_map.json: a brand name's value from rnv-brand at the commit pinned in
+# tests/requirements-dev.txt, an app-owned value from the map, with its reason.
+# To change one, change the map and run `python tools/sync_colors.py`. A value
+# edited here is put back by the next sync, and tests/test_colours_in_sync.py
+# fails until then. COLORS.md is the chart of them.
 from __future__ import annotations
 
 from typing import Final, Literal
@@ -123,10 +130,10 @@ def translucent_tuple(hex_color: str, alpha: int) -> tuple[int, int, int, int]:
     return (int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16), _alpha_byte(alpha))
 
 
-BRAND_GOLD: Final[str] = "#d2bc93"
+BRAND_GOLD: Final[str] = "#d2bc93"  # brand: APP.accent
 """Primary brand gold - dark-mode accents, hovers, group titles, highlights."""
 
-BRAND_DARK_GOLD: Final[str] = "#8c7337"
+BRAND_DARK_GOLD: Final[str] = "#8c7337"  # brand: APP.accent-light-mode
 """Light-mode gold - fills, borders, pressed. Darker BECAUSE the ground is
 lighter, which is the opposite of what the old name suggested."""
 
@@ -176,24 +183,24 @@ GOLD_PROVENANCE: Final[dict[str, str]] = {
 # rewiring those is the grey-ramp derivation pass. Mixing a mechanical
 # substitution into a value change makes both unreadable.
 
-TRUE_BLACK: Final[str] = "#000000"
+TRUE_BLACK: Final[str] = "#000000"  # brand: PERMANENT.black
 """engine/brand.py TRUE_BLACK, and APP["window"]. Primary text in light mode,
 and the label on a pressed control in dark. grey(0)."""
 
-WHITE: Final[str] = "#ffffff"
+WHITE: Final[str] = "#ffffff"  # brand: PERMANENT.white
 """engine/brand.py WHITE. Control surface in light mode. grey(15)."""
 
-BRAND_BLACK: Final[str] = "#1a1a1a"
+BRAND_BLACK: Final[str] = "#1a1a1a"  # brand: APP.panel
 """engine/brand.py BRAND_BLACK, and APP["panel"]. Charcoal; a permanent.
 Not on the ink grid (n = 1.53) and not required to be -- it is a surface."""
 
-APP_CARD: Final[str] = "#2a2a2a"
+APP_CARD: Final[str] = "#2a2a2a"  # brand: APP.card
 """engine/brand.py APP["card"]. A surface, not on the grid (n = 2.47)."""
 
-APP_BORDER: Final[str] = "#333333"
+APP_BORDER: Final[str] = "#333333"  # brand: APP.border
 """engine/brand.py APP["border"]. grey(3). An edge, so the grid governs it."""
 
-APP_TEXT: Final[str] = "#dddddd"
+APP_TEXT: Final[str] = "#dddddd"  # brand: APP.text
 """engine/brand.py APP["text"]. grey(13). Primary ink in dark and image mode.
 
 MOVED FROM #e0e0e0 ON 2026-08-28, with the brand rather than after it.
@@ -204,10 +211,10 @@ the ink half moved. Contrast falls 0.21 to 0.45 and the floor afterwards is
 7.17:1 on the pressed plate #444444, the darkest ground it is drawn on.
 """
 
-APP_TEXT_DIM: Final[str] = "#aaaaaa"
+APP_TEXT_DIM: Final[str] = "#aaaaaa"  # brand: APP.text-dim
 """engine/brand.py APP["text-dim"]. grey(10)."""
 
-APP_PANEL_HOVER: Final[str] = "#3a3a3a"
+APP_PANEL_HOVER: Final[str] = "#3a3a3a"  # brand: APP.panel-hover
 """engine/brand.py APP["panel-hover"]. The n=+2 rung of the dark surface
 ladder, and the dark interaction plate.
 
@@ -235,11 +242,11 @@ border is an edge. The ladder was complete when the question was first asked.
 # application's own image scrollbar_handle, until this date. The comment also
 # sat between APP_PANEL_HOVER and that constant's docstring, so the text
 # describing the panel-hover rung read as GREY_44's.
-GREY_44: Final[str] = "#444444"
+GREY_44: Final[str] = "#444444"  # app-owned
 """grey(4) on the ink grid. The pressed plate, and the scrollbar handle in
 every mode -- in image mode at SCROLLBAR_HANDLE_ALPHA."""
 
-APP_HOVER_LIGHT: Final[str] = "#eeeeee"
+APP_HOVER_LIGHT: Final[str] = "#eeeeee"  # brand: APP.hover-light
 """engine/brand.py APP["hover-light"]. grey(14). The light interaction plate.
 
 THIS ONE MOVES A PIXEL, and it is the only thing in this pass that does.
@@ -266,7 +273,7 @@ afford to lose. A boundary is not a plate.
 # palettes already carried as literals. Nothing here is a new colour.
 # Registered values take the register's key; ramp greys take their byte.
 
-APP_SURFACE_LIGHT_3: Final[str] = "#f5f5f5"
+APP_SURFACE_LIGHT_3: Final[str] = "#f5f5f5"  # brand: APP.surface-light-3
 """engine/brand.py APP["surface-light-3"]. The light window and panel
 ground -- what a dialog sits on in light mode.
 
@@ -279,19 +286,19 @@ Every key that carries it is a surface, so it is not split."""
 # RNV-NAMED-AND-USED (2026-10-04): a ramp step at #e0e0e0 stood here, for two
 # light keys nothing read. It went with them.
 
-GREY_EE: Final[str] = "#eeeeee"
+GREY_EE: Final[str] = "#eeeeee"  # app-owned
 """grey(14) on the ramp, #eeeeee. Static surfaces that share a hex with
 APP_HOVER_LIGHT without being a hover: a list header, a scroll ground.
 Same split rnv-text-transformer ruled for its diff headers."""
 
-GREY_CC: Final[str] = "#cccccc"
+GREY_CC: Final[str] = "#cccccc"  # app-owned
 """grey(12) on the ramp, #cccccc. The light-mode border."""
 
-GREY_88: Final[str] = "#888888"
+GREY_88: Final[str] = "#888888"  # app-owned
 """grey(8) on the ramp, #888888. Muted text on dark, a scrollbar handle
 hover on light."""
 
-GREY_55: Final[str] = "#555555"
+GREY_55: Final[str] = "#555555"  # app-owned
 """grey(5) on the ramp, #555555. Disabled text and a checkbox edge on dark."""
 
 # ==================== Composite alphas ====================
@@ -375,7 +382,7 @@ the thing it classifies."""
 
 # ==================== Semantic UI Constants ====================
 # Used directly in code that cannot access a theme dict (e.g. paintEvent)
-SELECTION_OVERLAY_COLOR: Final[str] = "rgba(0,120,215,200)"
+SELECTION_OVERLAY_COLOR: Final[str] = "rgba(0,120,215,200)"  # app-owned
 
 # ── Neutral greys, named for what they are ──
 # RNV-INK-RULE (2026-09-02). This was a role name on a value four
@@ -387,7 +394,7 @@ SELECTION_OVERLAY_COLOR: Final[str] = "rgba(0,120,215,200)"
 # with the other two light strays. The dialog now paints GREY_EE, defined
 # with the ramp steps above. THIS MOVES A PIXEL in that dialog -- the
 # one place in this script that does.
-GREY_66: Final[str] = "#666666"
+GREY_66: Final[str] = "#666666"  # app-owned
 
 
 # ── Which ink goes on this ground ──
@@ -459,7 +466,7 @@ def prefers_dark_ink(background: "str | tuple[int, int, int]") -> bool:
 
 """Blue overlay used during gradient / contrast selection modes."""
 
-SEARCH_HIGHLIGHT_COLOR: Final[tuple[int,int,int]] = (0, 255, 100)
+SEARCH_HIGHLIGHT_COLOR: Final[tuple[int,int,int]] = (0, 255, 100)  # app-owned
 """Bright green border drawn on search-matching slots."""
 
 SEARCH_DIM_OVERLAY: Final[tuple[int,int,int,int]] = translucent_tuple(
@@ -470,7 +477,7 @@ SLOT_BORDER_THIN_COLOR: Final[tuple[int,int,int]] = _to_rgb(GREY_44)
 """Border color for thin slot border style. GREY_44: it was (80, 80, 80),
 #505050, until the 2026-09-25 ruling collapsed it (RNV-COLLAPSE-505050)."""
 
-SLOT_BORDER_THICK_COLOR: Final[tuple[int,int,int]] = (60, 60, 60)
+SLOT_BORDER_THICK_COLOR: Final[tuple[int,int,int]] = (60, 60, 60)  # app-owned
 """Border color for thick slot border style."""
 
 SIZE_OVERLAY_BG: Final[str] = translucent_rgba(TRUE_BLACK, SIZE_OVERLAY_ALPHA)
@@ -485,7 +492,7 @@ spelling -- every consumer is a stylesheet, where it is valid."""
 # the three, so it carries none: the register holds them, as STATUS["success"],
 # STATUS["warning"] and STATUS["error"].
 
-STATUS_ERROR_TEXT: Final[str] = "#dd6f77"
+STATUS_ERROR_TEXT: Final[str] = "#dd6f77"  # brand: STATUS.error-text
 """Inline error/warning label text on a DARK ground (e.g. batch export
 validation). MIRRORS the register's STATUS["error-text"].
 
@@ -509,7 +516,7 @@ uniformity. That argument was right when the register had no name for this
 job. It now does, and a fourth spelling of a registered colour costs more
 than the headroom does."""
 
-STATUS_ERROR_TEXT_LIGHT: Final[str] = "#ae4650"
+STATUS_ERROR_TEXT_LIGHT: Final[str] = "#ae4650"  # brand: STATUS.error-text-light
 """The same label on a LIGHT ground. MIRRORS STATUS["error-text-light"].
 
 STATUS_ERROR_TEXT reads 2.8367 on #f5f5f5 -- below the 4.5 text floor and
@@ -567,26 +574,35 @@ HISTORY_SWATCH_BORDER: Final[tuple[int, int, int]] = _to_rgb(GREY_44)
 # These colors are used in non-themed contexts (file export, data defaults,
 # transparent fills) and exist here for single-source-of-truth consistency.
 
-SVG_EXPORT_BG: Final[str] = "#ffffff"
+SVG_EXPORT_BG: Final[str] = "#ffffff"  # app-owned
 """Background rectangle fill in exported SVG palette files."""
 
-SVG_EXPORT_STROKE: Final[str] = "#000000"
+SVG_EXPORT_STROKE: Final[str] = "#000000"  # app-owned
 """Swatch stroke color in exported SVG palette files."""
 
-DATA_DEFAULT_COLOR: Final[str] = "#000000"
+DATA_DEFAULT_COLOR: Final[str] = "#000000"  # app-owned
 """Default hex value for data records (e.g. color history entries)."""
 
-SESSION_FALLBACK_COLOR: Final[str] = "#a9a9a9"
+SESSION_FALLBACK_COLOR: Final[str] = "#a9a9a9"  # app-owned
 """Default grey hex for session restore and settings defaults."""
 
-SESSION_FALLBACK_COLOR_IMAGE: Final[str] = "#000000"
+SESSION_FALLBACK_COLOR_IMAGE: Final[str] = "#000000"  # app-owned
 """Black hex fallback for image mode settings defaults."""
 
-TRANSPARENT_RGBA: Final[tuple[int, int, int, int]] = (0, 0, 0, 0)
+# RNV-COLOUR-SYNC (2026-10-17), #56 A: the one colour value the
+# application's own code still wrote out, named here at the value it had,
+# so no label moves. Data, the application's own, and a brand move never
+# touches it.
+CLIPBOARD_PREVIEW_COLOR: Final[str] = "#4a90d9"  # app-owned
+"""The example the settings dialog previews the hex and rgb() clipboard
+formats with (ui/settings_dialog.py, _update_clipboard_preview): text shown
+to the person, not chrome. App-owned."""
+
+TRANSPARENT_RGBA: Final[tuple[int, int, int, int]] = (0, 0, 0, 0)  # app-owned
 """Fully transparent RGBA - used for ghost pixmaps, palette clears, etc."""
 
 # ==================== Default Slot Colors ====================
-DEFAULT_SLOT_COLOR: Final[str] = "#a9a9a9"
+DEFAULT_SLOT_COLOR: Final[str] = "#a9a9a9"  # app-owned
 """Default color for new color slots in Dark/Light mode (darkgrey)."""
 
 DEFAULT_SLOT_COLOR_IMAGE_RGB: Final[tuple[int, int, int, int]] = translucent_tuple(
@@ -830,6 +846,7 @@ __all__ = [
     "DATA_DEFAULT_COLOR",
     "SESSION_FALLBACK_COLOR",
     "SESSION_FALLBACK_COLOR_IMAGE",
+    "CLIPBOARD_PREVIEW_COLOR",
     "TRANSPARENT_RGBA",
     # Functions
     "translucent",

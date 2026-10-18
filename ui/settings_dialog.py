@@ -25,13 +25,14 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, pyqtSignal
 from PyQt6.QtGui import QColor
 
+from core.color_math import ColorMath
 from core.palette_metadata import PaletteMetadata
 from utils.logger import Logger, get_logger_instance
 from utils.font_loader import get_font_family
 from ui.colors import (
     BRAND_GOLD, BRAND_DARK_GOLD, BRAND_DARK_GOLD_DEEP, BRAND_GOLD_HOVER,
     TRUE_BLACK, WHITE,
-    SESSION_FALLBACK_COLOR, GREY_66,
+    SESSION_FALLBACK_COLOR, GREY_66, CLIPBOARD_PREVIEW_COLOR,
 )
 
 if TYPE_CHECKING:
@@ -777,11 +778,18 @@ class SettingsDialog(QDialog):
             fmt = self.combo_clipboard.currentText()
         match fmt:
             case "hex":
-                self.lbl_clipboard_preview.setText("Example: #4a90d9")
+                self.lbl_clipboard_preview.setText(f"Example: {CLIPBOARD_PREVIEW_COLOR}")
             case "rgb":
-                self.lbl_clipboard_preview.setText("Example: rgb(74, 144, 217)")
+                sample = QColor(CLIPBOARD_PREVIEW_COLOR)
+                self.lbl_clipboard_preview.setText(
+                    f"Example: rgb({sample.red()}, {sample.green()}, {sample.blue()})")
             case "hsl":
-                self.lbl_clipboard_preview.setText("Example: hsl(211 deg, 64%, 57%)")
+                # #58 A: made the way a copy makes it (core/color_slot.py), so
+                # the example is what the clipboard will hold.
+                sample = QColor(CLIPBOARD_PREVIEW_COLOR)
+                h, l, s = ColorMath.rgb_to_hsl((sample.red(), sample.green(), sample.blue()))
+                self.lbl_clipboard_preview.setText(
+                    f"Example: hsl({h * 360:.0f}, {s * 100:.0f}%, {l * 100:.0f}%)")
             case _:
                 self.lbl_clipboard_preview.setText("")
 

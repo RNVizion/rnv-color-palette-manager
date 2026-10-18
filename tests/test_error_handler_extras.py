@@ -25,6 +25,9 @@ from __future__ import annotations
 
 import pytest
 
+from colour_values import (
+    DATA_HEX_INPUT_ORANGE, DATA_HEX_INPUT_ORANGE_BARE, DATA_HEX_INPUT_ORANGE_SHORT,
+    INVALID_HEX_FOUR_DIGITS, INVALID_HEX_NOT_HEX)
 from utils.error_handler import (
     ErrorCategory,
     ErrorHandler,
@@ -118,18 +121,18 @@ def test_validate_file_path_extension_check_is_case_insensitive(tmp_path):
 # ═══════════════════════════════════════════════════════════════════════════
 
 def test_validate_hex_color_accepts_6_digit_with_hash():
-    valid, msg = ValidationHelper.validate_hex_color("#FF8800")
+    valid, msg = ValidationHelper.validate_hex_color(DATA_HEX_INPUT_ORANGE)
     assert valid is True
     assert msg == ""
 
 
 def test_validate_hex_color_accepts_6_digit_without_hash():
-    valid, msg = ValidationHelper.validate_hex_color("FF8800")
+    valid, msg = ValidationHelper.validate_hex_color(DATA_HEX_INPUT_ORANGE_BARE)
     assert valid is True
 
 
 def test_validate_hex_color_accepts_3_digit_short_form():
-    valid, msg = ValidationHelper.validate_hex_color("#F80")
+    valid, msg = ValidationHelper.validate_hex_color(DATA_HEX_INPUT_ORANGE_SHORT)
     assert valid is True
 
 
@@ -141,14 +144,14 @@ def test_validate_hex_color_rejects_empty_string():
 
 def test_validate_hex_color_rejects_wrong_length():
     """Anything other than 3 or 6 hex chars is invalid."""
-    valid, msg = ValidationHelper.validate_hex_color("#FF88")  # 4 chars
+    valid, msg = ValidationHelper.validate_hex_color(INVALID_HEX_FOUR_DIGITS)  # 4 chars
     assert valid is False
     assert "length" in msg.lower()
 
 
 def test_validate_hex_color_rejects_non_hex_chars():
     """Letters outside [0-9a-fA-F] make it invalid."""
-    valid, msg = ValidationHelper.validate_hex_color("#GG8800")
+    valid, msg = ValidationHelper.validate_hex_color(INVALID_HEX_NOT_HEX)
     assert valid is False
     assert "hex" in msg.lower() or "character" in msg.lower()
 

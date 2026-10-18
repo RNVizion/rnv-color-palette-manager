@@ -38,6 +38,7 @@ from __future__ import annotations
 
 import pytest
 
+from colour_values import EXAMPLE_BENCH_PURPLE
 from core.color_math import ColorMath
 
 
@@ -57,7 +58,7 @@ def test_bench_rgb_to_hex(benchmark):
 
 def test_bench_hex_to_rgb(benchmark):
     """hex_to_rgb runs on every palette import."""
-    benchmark(ColorMath.hex_to_rgb, "#7B2DC8")
+    benchmark(ColorMath.hex_to_rgb, EXAMPLE_BENCH_PURPLE)
 
 
 def test_bench_rgb_to_hsv(benchmark):

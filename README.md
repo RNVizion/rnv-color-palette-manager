@@ -192,6 +192,8 @@ RNV_Color_Palette_Manager/
 ├── LICENSE                         # MIT license
 ├── .gitignore                      # Python / IDE / OS ignores
 ├── pyproject.toml                  # PEP 621 project metadata
+├── brand_map.json                  # Where each colour comes from: rnv-brand or the app
+├── COLORS.md                       # This app's colour chart, written by the sync
 ├── requirements.txt                # Quick-install dependencies
 ├── RNV_Color_Palette_Manager.py    # Main application entry point
 ├── RNV_Color_Palette_Manager.spec  # PyInstaller build spec
@@ -207,6 +209,7 @@ RNV_Color_Palette_Manager/
 │
 ├── .github/
 │   └── workflows/
+│       ├── brand-sync.yml          # Daily: colours from rnv-brand; a PR only if one moved
 │       ├── tests.yml               # CI: Windows test suite on push/PR
 │       └── tests-linux.yml         # CI: Linux test suite on push/PR
 │
@@ -271,6 +274,9 @@ RNV_Color_Palette_Manager/
 │   ├── test_session_manager.py          # SessionManager + state tests
 │   ├── test_perf_color_math.py          # Color math benchmarks
 │   └── test_perf_palette_io.py          # Palette I/O benchmarks
+│
+├── tools/                          # Maintenance scripts
+│   └── sync_colors.py              # Writes ui/colors.py and COLORS.md from the brand
 │
 └── resources/                      # Bundled assets
     ├── button_images/               # Button icon images (base/hover/pressed)

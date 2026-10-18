@@ -1,36 +1,41 @@
 """The retired plate, the dark rung, and the translucent overlays.
 
-WHAT THIS PASS DID. rnv-brand retired #d0d0d0 as a light interaction ground and
-registered APP["hover-light"] in its place -- first as #e8e8e8 on 2026-08-29,
-then as #eeeeee on 2026-08-30. rev 22 had already registered APP["panel-hover"]
-#3a3a3a, which was app-owned here. Two light entries change VALUE; everything
+WHAT THIS PASS DID. rnv-brand retired RETIRED_GREY_D0 as a light interaction
+ground and registered APP["hover-light"] in its place -- first as
+REGISTER_GOLD_TEXT_GROUND_FLOOR on 2026-08-29, then as APP_HOVER_LIGHT on
+2026-08-30. rev 22 had already registered APP["panel-hover"], APP_PANEL_HOVER,
+which was app-owned here. Two light entries change VALUE; everything
 else changes only how it is spelled.
 
 THE DEFECT THIS CLOSES. ui/about_dialog.py draws the hover ground from
 dialog_btn_hover_bg and the hover label from accent_ink, in the same rule. In
-light that was BRAND_DARK_GOLD_DEEP #7e6529 on #d0d0d0 -- 3.6013:1 against a
+light that was BRAND_DARK_GOLD_DEEP on RETIRED_GREY_D0 -- 3.6013:1 against a
 4.5 floor. It had been wrong as long as the plate existed and carried a STRICT
 xfail since 2026-08-28, written so that fixing it would fail the test and force
 the note to be rewritten rather than let the exemption outlive the defect.
 
-WHY #eeeeee AND NOT #e8e8e8, WHICH ALSO CLEARS. #e8e8e8 clears by 0.0334 and is
+WHY APP_HOVER_LIGHT AND NOT REGISTER_GOLD_TEXT_GROUND_FLOOR, WHICH ALSO CLEARS.
+REGISTER_GOLD_TEXT_GROUND_FLOOR clears by 0.0334 and is
 the ground BRAND_DARK_GOLD_DEEP is derived against -- rev 24 registered it as
 GOLD_TEXT_GROUND_FLOOR. A plate on that value fails the moment the gold moves
-one step: -13 instead of -14 gives 4.4675. #eeeeee clears by 0.2875 and is
+one step: -13 instead of -14 gives 4.4675. APP_HOVER_LIGHT clears by 0.2875 and is
 grey(14) exactly. A boundary is not a plate.
 
 THE OVERLAYS. Qt spells a translucent colour #AARRGGBB. The 2026-08-29 wiring
-pass swept for six-digit literals, so #ED000000 never matched #000000 and three
+pass swept for six-digit literals, so RETIRED_WINDOW_OVERLAY_LITERAL never
+matched TRUE_BLACK and three
 registered values sat in IMAGE_MODE_COLORS -- a DARK dict here -- while the
 guard reported clean.
 """
 from __future__ import annotations
 
 import ast
+import json
 import pathlib
 
 import pytest
 
+from colour_values import REGISTER_GOLD_TEXT_GROUND_FLOOR, RETIRED_GREY_D0
 from ui import colors
 from ui.colors import (DARK_THEME_COLORS as DARK,
                        IMAGE_MODE_COLORS as IMAGE,
@@ -39,14 +44,20 @@ from ui.colors import (DARK_THEME_COLORS as DARK,
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SRC = ROOT / 'ui/colors.py'
 
+#: RNV-COLOUR-SYNC, 2026-10-16. Where each colour comes from, as brand_map.json
+#: says. The values are held by tests/test_colours_in_sync.py, against the
+#: register at the pin; what this file holds is the name each one takes.
+BRAND_MAP = json.loads((ROOT / "brand_map.json").read_text(encoding="utf-8"))["colours"]
+
 GRID_STEP = 0x11
 LADDER_STEP = 0x10
 TEXT_FLOOR = 4.5
 
-#: Constant name -> the APP key it mirrors, and the value both hold.
+#: Constant name -> the APP key it mirrors. RNV-COLOUR-SYNC, 2026-10-16: the
+#: value both held was written here too; it is written from the register now.
 NEW = {
-    'APP_PANEL_HOVER': ('panel-hover', '#3a3a3a'),
-    'APP_HOVER_LIGHT': ('hover-light', '#eeeeee'),
+    'APP_PANEL_HOVER': 'panel-hover',
+    'APP_HOVER_LIGHT': 'hover-light',
 }
 
 #: Overlay constant -> (the six-digit constant it composites, its APP key).
@@ -72,10 +83,10 @@ PALETTES = {'DARK_THEME_COLORS': DARK, 'IMAGE_MODE_COLORS': IMAGE,
             'LIGHT_THEME_COLORS': LIGHT}
 
 #: The value the register retired as a light interaction ground.
-RETIRED = '#d0d0d0'
+RETIRED = RETIRED_GREY_D0
 
 #: The value the plate must not BE, however close it looks.
-FLOOR = '#e8e8e8'
+FLOOR = REGISTER_GOLD_TEXT_GROUND_FLOOR
 
 
 def grey(n: int) -> str:
@@ -135,13 +146,15 @@ def test_the_wiring_map_is_not_empty():
 
 def test_the_new_constants_hold_the_registered_values():
     """The local half of the mirror. Runs everywhere, including where
-    engine.brand is not importable."""
-    drift = {n: getattr(colors, n) for n, (_, v) in NEW.items()
-             if getattr(colors, n) != v}
+    engine.brand is not importable.
+
+    RNV-COLOUR-SYNC, 2026-10-16: it held each value written out. It holds now
+    that brand_map.json takes each from its APP key; the value is written from
+    there, and tests/test_colours_in_sync.py holds it."""
+    drift = {n: BRAND_MAP.get(n) for n, key in NEW.items()
+             if BRAND_MAP.get(n) != f'APP.{key}'}
     assert not drift, (
-        f'these constants no longer hold their registered values: {drift}\n'
-        f'If the brand moved, update this file in the same commit that updates '
-        f'ui/colors.py -- never one without the other.')
+        f'brand_map.json does not take these from their APP keys: {drift}')
 
 
 def test_the_new_constants_match_rnv_brand():
@@ -150,7 +163,7 @@ def test_the_new_constants_match_rnv_brand():
         'engine.brand',
         reason='rnv-brand not importable here; the local pin is doing the work')
     drift = []
-    for name, (key, _) in NEW.items():
+    for name, key in NEW.items():
         theirs, mine = brand.APP[key], getattr(colors, name)
         if mine.lower() != theirs.lower():
             drift.append(f'{name}: ours {mine}, theirs APP[{key!r}] {theirs}')
@@ -169,7 +182,7 @@ def test_provenance_is_declared_for_everything_this_pass_named():
 # ------------------------------------------------------------- the retirement
 
 def test_the_retired_value_is_gone_from_every_palette():
-    """#d0d0d0 is ruled out as a light interaction ground, not merely replaced
+    """RETIRED_GREY_D0 is ruled out as a light interaction ground, not merely replaced
     in the two places that prompted the ruling."""
     looked, found = 0, []
     for dict_name, live in PALETTES.items():
@@ -197,7 +210,7 @@ def test_gold_carries_on_the_plate_in_every_mode():
 
 
 def test_the_plate_is_a_step_on_the_ink_grid():
-    assert colors.APP_HOVER_LIGHT == grey(14) == '#eeeeee'
+    assert colors.APP_HOVER_LIGHT == grey(14)
 
 
 def test_the_plate_is_not_the_gold_text_floor():
@@ -235,7 +248,7 @@ def test_the_floor_is_not_used_as_a_hover_anywhere():
 # ------------------------------------------------------------------ the ladder
 
 def test_the_dark_rungs_are_exact_steps_on_the_ladder():
-    """BRAND_BLACK + n * 0x10. #3a3a3a was app-owned on the argument that the
+    """BRAND_BLACK + n * 0x10. APP_PANEL_HOVER was app-owned on the argument that the
     ladder might not be real. It is, and this is what says so."""
     base = int(colors.BRAND_BLACK.lstrip('#'), 16)
     for n, name in ((0, 'BRAND_BLACK'), (1, 'APP_CARD'), (2, 'APP_PANEL_HOVER')):
@@ -245,7 +258,7 @@ def test_the_dark_rungs_are_exact_steps_on_the_ladder():
 
 
 def test_the_border_is_an_edge_and_not_a_rung():
-    """The distinction that made the ladder look incomplete. #333333 is grey(3)
+    """The distinction that made the ladder look incomplete. APP_BORDER is grey(3)
     on the ink grid, which governs inks and edges; it was never a surface."""
     assert colors.APP_BORDER == grey(3)
     base = int(colors.BRAND_BLACK.lstrip('#'), 16)

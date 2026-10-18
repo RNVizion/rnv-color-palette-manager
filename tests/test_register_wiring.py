@@ -25,6 +25,7 @@ dark palettes is now a name, so the next register move carries.
 from __future__ import annotations
 
 import ast
+import json
 import pathlib
 
 import pytest
@@ -36,10 +37,18 @@ from ui.colors import (DARK_THEME_COLORS as DARK,
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SRC = ROOT / 'ui/colors.py'
 
+#: RNV-COLOUR-SYNC, 2026-10-16. Where each colour comes from, as brand_map.json
+#: says. The values are held by tests/test_colours_in_sync.py, against the
+#: register at the pin; what this file holds is the name each one takes.
+BRAND_MAP = json.loads((ROOT / "brand_map.json").read_text(encoding="utf-8"))["colours"]
+
 #: The register, as this app mirrors it. Value-keyed, because the substitution
 #: was value-keyed: any dark entry holding one of these must now name it.
-REGISTERED = {'TRUE_BLACK': '#000000', 'BRAND_BLACK': '#1a1a1a', 'APP_CARD': '#2a2a2a', 'APP_BORDER': '#333333',
-              'APP_PANEL_HOVER': '#3a3a3a', 'APP_HOVER_LIGHT': '#eeeeee'}
+#: RNV-COLOUR-SYNC, 2026-10-16: each value read from the constant, where it
+#: was written out, so the sweep looks for what the register holds today.
+REGISTERED = {name: getattr(colors, name) for name in (
+    'TRUE_BLACK', 'BRAND_BLACK', 'APP_CARD', 'APP_BORDER', 'APP_PANEL_HOVER',
+    'APP_HOVER_LIGHT')}
 
 DARK_DICTS = ('DARK_THEME_COLORS', 'IMAGE_MODE_COLORS')
 LIGHT_DICTS = ('LIGHT_THEME_COLORS',)
@@ -78,10 +87,10 @@ def test_the_palettes_this_file_reads_still_exist():
 def test_the_register_map_is_not_empty():
     """A sweep with nothing to look for passes forever."""
     assert len(REGISTERED) >= 4
-    for name, value in REGISTERED.items():
-        assert getattr(colors, name) == value, (
-            f'{name} is {getattr(colors, name)}, not {value} -- the map this '
-            f'file sweeps for has gone stale against the constants')
+    for name in REGISTERED:
+        assert isinstance(BRAND_MAP.get(name), str), (
+            f'{name} is not taken from the register in brand_map.json -- the '
+            f'map this file sweeps for holds a value the register does not')
 
 
 # ------------------------------------------------------------ the substitution
@@ -99,8 +108,9 @@ def test_no_registered_value_is_spelled_as_a_literal_in_dark():
                 # Qt spells a translucent colour #AARRGGBB. This sweep compared
                 # whole strings, so an eight-digit spelling of a registered
                 # value never matched a six-digit register entry --
-                # IMAGE_MODE_COLORS kept three of them (#ED000000 twice and
-                # #ED1A1A1A) while this test reported clean and the pass it
+                # IMAGE_MODE_COLORS kept three of them (RETIRED_WINDOW_OVERLAY_LITERAL
+                # twice and RETIRED_PANEL_OVERLAY_LITERAL) while this test
+                # reported clean and the pass it
                 # guards claimed completeness. Both lengths normalise to the
                 # RGB half now.
                 spelled = value.value.lower()
@@ -194,14 +204,15 @@ def test_the_ruled_light_value_is_actually_wired():
 def test_the_light_groove_takes_the_ramp_step_not_the_hover():
     """RNV-LIGHT-WIRING (2026-09-06). This replaces
     test_the_unruled_light_surface_is_still_a_literal, which pinned scroll_bg
-    as a bare #eeeeee and said in its own docstring that it had to be deleted
+    as a bare literal, GREY_EE's value, and said in its own docstring that it
+    had to be deleted
     deliberately once the light ladder was ruled. Rev 27 ruled it; this is
     that deliberate act, in the commit that wires it.
 
     The RULING it protected has not changed and is not being relaxed. A
     scrollbar groove is a resting surface, not an interaction plate, so it
     takes the ramp-step name GREY_EE and NOT the register role name
-    APP_HOVER_LIGHT, even though both resolve to #eeeeee. That is the same
+    APP_HOVER_LIGHT, even though both resolve to the same value. That is the same
     split rnv-text-transformer ruled for its diff headers.
 
     So the assertion gets stronger, not weaker: before, any constant at all
@@ -217,6 +228,6 @@ def test_the_light_groove_takes_the_ramp_step_not_the_hover():
                 f'scroll_bg names {value.id}. A groove is a resting surface, '
                 f'not a hover -- it takes the ramp step GREY_EE. Sharing a hex '
                 f'with APP_HOVER_LIGHT is not sharing a role.')
-            assert colors.LIGHT_THEME_COLORS['scroll_bg'] == '#eeeeee'
+            assert colors.LIGHT_THEME_COLORS['scroll_bg'] == colors.GREY_EE
             return
     raise AssertionError('LIGHT_THEME_COLORS has no scroll_bg')

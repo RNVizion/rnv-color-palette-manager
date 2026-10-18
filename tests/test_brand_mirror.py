@@ -10,12 +10,21 @@ Ported from rnv-text-transformer, wired to this app's palettes.
 from __future__ import annotations
 
 import ast
+import json
 import pathlib
 import subprocess
 
 import pytest
 
+from colour_values import (
+    REGISTER_GOLD_TEXT_GROUND_FLOOR, RETIRED_OLD_DARK_GOLD,
+    RETIRED_OLD_DARK_GOLD_RGB_SPACED, RETIRED_OLD_DARK_GOLD_RGB_TIGHT)
 from ui import colors as C
+
+#: RNV-COLOUR-SYNC, 2026-10-16. Where each colour comes from, as brand_map.json
+#: says. The values are held by tests/test_colours_in_sync.py, against the
+#: register at the pin; what this file holds is the name each one takes.
+BRAND_MAP = json.loads((pathlib.Path(__file__).resolve().parents[1] / "brand_map.json").read_text(encoding="utf-8"))["colours"]
 
 PALETTES = {
     "DARK": C.DARK_THEME_COLORS,
@@ -24,9 +33,9 @@ PALETTES = {
 }
 
 RETIRED = {
-    "#b19145": "the old dark gold -- 2.997638 on white, under every floor it claimed",
-    "(177, 145, 69)": "its RGB tuple, which a hex census cannot see",
-    "(177,145,69)": "the same tuple without spaces",
+    RETIRED_OLD_DARK_GOLD: "the old dark gold -- 2.997638 on white, under every floor it claimed",
+    RETIRED_OLD_DARK_GOLD_RGB_SPACED: "its RGB tuple, which a hex census cannot see",
+    RETIRED_OLD_DARK_GOLD_RGB_TIGHT: "the same tuple without spaces",
 }
 
 GOLD_KEYS = ("accent", "accent_dark", "accent_ink")
@@ -70,15 +79,16 @@ def test_provenance_has_no_phantom_entries():
 
 
 def test_register_values_match_rnv_brand():
-    assert C.BRAND_GOLD == "#d2bc93"
-    assert C.BRAND_DARK_GOLD == "#8c7337"
+    """RNV-COLOUR-SYNC, 2026-10-16. This held the two golds by their hex codes.
+    The golds follow the register's accent names, as ruled (#45 A); the
+    values are written from there and held by tests/test_colours_in_sync.py."""
+    assert BRAND_MAP["BRAND_GOLD"] == "APP.accent"
+    assert BRAND_MAP["BRAND_DARK_GOLD"] == "APP.accent-light-mode"
 
 
 def test_the_derivation_steps_are_the_published_ones():
     assert C.BRAND_DARK_GOLD_DEEP == C.lighten(C.BRAND_DARK_GOLD, -14)
     assert C.BRAND_GOLD_HOVER == C.lighten(C.BRAND_GOLD, 13)
-    assert C.BRAND_DARK_GOLD_DEEP == "#7e6529"
-    assert C.BRAND_GOLD_HOVER == "#dfc9a0"
 
 
 def test_derived_constants_are_not_written_as_literals():
@@ -136,7 +146,10 @@ def test_the_gold_key_list_still_matches_the_palette(name):
 
 def test_light_ink_clears_every_ground_it_draws_on():
     ink = PALETTES["LIGHT"]["accent_ink"]
-    for ground in ("#ffffff", "#f5f5f5", "#eeeeee", "#e8e8e8"):
+    # The grounds by name, so a brand move measures the new ones;
+    # REGISTER_GOLD_TEXT_GROUND_FLOOR is the register's gold text floor, which
+    # the app does not draw.
+    for ground in (C.WHITE, C.APP_SURFACE_LIGHT_3, C.APP_HOVER_LIGHT, REGISTER_GOLD_TEXT_GROUND_FLOOR):
         assert contrast(ink, ground) >= 4.5, f"{ink} on {ground}"
 
 
@@ -167,7 +180,7 @@ def test_text_on_gold_clears_in_every_mode():
     light. Both clear the floor at this gold.
 
     RNV-NAMED-AND-USED, 2026-10-04. This was
-    test_text_on_gold_is_black_and_stays_black. It read accent_text, #000000
+    test_text_on_gold_is_black_and_stays_black. It read accent_text, TRUE_BLACK
     in all three palettes, and said this application is the one of the five
     that paints black on the light fill. Nothing read that key. The pressed
     states in the main window, the settings and batch export dialogs and the

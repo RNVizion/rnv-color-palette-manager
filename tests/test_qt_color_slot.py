@@ -205,3 +205,39 @@ def test_right_click_invokes_context_menu(main_window, fresh_slot, qtbot):
     ) as mock_menu:
         qtbot.mouseClick(fresh_slot.slot, Qt.MouseButton.RightButton)
         assert mock_menu.called
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# CLIPBOARD: the example Settings shows is what a copy writes (#58 A)
+# ═══════════════════════════════════════════════════════════════════════════
+
+@pytest.mark.parametrize("fmt", ["hex", "rgb", "hsl"])
+def test_the_settings_example_is_what_a_copy_writes(main_window, qtbot, fmt):
+    """RNV-COLOUR-SYNC, #58 A (2026-10-18). Settings shows an example of each
+    clipboard format, in CLIPBOARD_PREVIEW_COLOR. A slot of that colour,
+    copied in the same format, puts on the clipboard exactly what follows
+    "Example: ". The HSL example was written by hand until this date, and
+    was not what a copy writes."""
+    from PyQt6.QtWidgets import QApplication
+
+    from ui.colors import CLIPBOARD_PREVIEW_COLOR
+    from ui.settings_dialog import SettingsDialog
+    from utils.settings_manager import SettingsManager
+
+    main_window.select_slot(None)
+    main_window.add_slot_with_color(QColor(CLIPBOARD_PREVIEW_COLOR))
+    widget = main_window.slots_widgets[-1]
+    try:
+        widget._copy_color(fmt)
+        copied = QApplication.clipboard().text()
+        qtbot.wait(900)  # the "Copied!" flash reverts before the slot goes
+    finally:
+        main_window.select_slot(None)
+        main_window.undo()
+    dialog = SettingsDialog(settings=SettingsManager(), theme_manager=main_window.theme_manager)
+    try:
+        dialog._update_clipboard_preview(fmt)
+        shown = dialog.lbl_clipboard_preview.text()
+    finally:
+        dialog.deleteLater()
+    assert copied and shown == f"Example: {copied}", (fmt, shown, copied)

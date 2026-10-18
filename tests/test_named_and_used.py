@@ -42,6 +42,9 @@ import re
 
 import pytest
 
+from colour_values import (EXAMPLE_CLEAR_RGBA, EXAMPLE_SWEEP_PROBE_HEX,
+                           EXAMPLE_SWEEP_PROBE_RGBA)
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 #: Where this application writes its colours: the one place a literal belongs.
@@ -66,10 +69,6 @@ MIN_CONSTANTS = 30
 DATA = {
     ("ui/color_search.py", "*"):
         "the CSS colour names a search understands, and the example in the search box: data",
-    ("ui/settings_dialog.py", "#4a90d9"):
-        "the example a clipboard format is previewed with, as hex: text shown to the person",
-    ("ui/settings_dialog.py", "rgb(74, 144, 217)"):
-        "the same example, as rgb(): text shown to the person",
     ("core/color_math.py", "(0, 0, 0)"):
         "what safe_rgb() hands back for channels it cannot use: a fallback, as data",
     ("core/color_extractor.py", "[0, 0, 0]"):
@@ -257,8 +256,8 @@ def test_the_sweep_reads_every_spelling():
     seen = {(kind, literal) for _line, kind, literal in _written("probe.py", (
         "from PyQt6.QtGui import QColor\n"
         "from PyQt6.QtCore import Qt\n"
-        "a = 'background-color: #ffcccc; border: 2px solid red;'\n"
-        "b = f'color: rgba(255, 255, 255, 230); padding: {4}px'\n"
+        f"a = 'background-color: {EXAMPLE_SWEEP_PROBE_HEX}; border: 2px solid red;'\n"
+        f"b = f'color: {EXAMPLE_SWEEP_PROBE_RGBA}; padding: {{4}}px'\n"
         "c = QColor(128, 128, 128)\n"
         "d = Qt.GlobalColor.darkGreen\n"
         "e = QColor('yellow')\n"
@@ -268,7 +267,8 @@ def test_the_sweep_reads_every_spelling():
         "g = {'ground': 'black'}\n"
         "h = Image.new('RGB', (8, 8), 'Gray')\n"
         "c.setAlpha(171)\n"))}
-    assert seen == {("hex", "#ffcccc"), ("name", "border: red"), ("func", "rgba(255, 255, 255, 230)"),
+    assert seen == {("hex", EXAMPLE_SWEEP_PROBE_HEX), ("name", "border: red"),
+                    ("func", EXAMPLE_SWEEP_PROBE_RGBA),
                     ("qcolor", "QColor(128, 128, 128)"), ("global", "Qt.GlobalColor.darkGreen"),
                     ("name", "yellow"), ("tuple", "(0, 0, 0)"), ("tuple", "(255, 255, 255)"),
                     ("list", "[200, 200, 200]"), ("name", "white"), ("name", "black"), ("name", "Gray"),
@@ -276,7 +276,7 @@ def test_the_sweep_reads_every_spelling():
     quiet = _written("probe.py", (
         "from PyQt6.QtGui import QColor\n"
         "from PyQt6.QtCore import Qt\n"
-        "a = 'background: transparent; border: none; color: rgba(0, 0, 0, 0);'\n"
+        f"a = 'background: transparent; border: none; color: {EXAMPLE_CLEAR_RGBA};'\n"
         "b = QColor(0, 0, 0, 0)\n"
         "b.setAlpha(0)\n"
         "b.setAlpha(255)\n"
@@ -284,7 +284,7 @@ def test_the_sweep_reads_every_spelling():
         "d = [int(h[i:i + 2], 16) for i in (0, 2, 4)]\n"
         "margins = (10, 10, 10, 10)\n"
         "sizes = [16, 32, 48]\n"
-        "'''a bare string is prose: color: red, #ffcccc'''\n"
+        f"'''a bare string is prose: color: red, {EXAMPLE_SWEEP_PROBE_HEX}'''\n"
         "if d in (5, 10, 20) or d == (0, 0, 0) or a == 'red':\n"
         "    pass\n"
         "for size in [16, 32, 48]:\n"

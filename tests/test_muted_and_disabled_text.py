@@ -3,17 +3,17 @@ Muted and disabled text: aligned to the ecosystem, and honest about which of
 them anything actually paints.
 
 `text_disabled` is live -- the batch export dialog and the menu bar both read
-it. It is now #555555 dark / #aaaaaa light, matching the other four apps. Both
-sit below every contrast floor and are meant to: WCAG 1.4.3 exempts text in an
+it. It is now GREY_55 dark / APP_TEXT_DIM light, matching the other four apps.
+Both sit below every contrast floor and are meant to: WCAG 1.4.3 exempts text in an
 inactive component, and disabled text that reads as clearly as enabled text is
 not doing its job.
 
 `text_secondary` is live since 2026-09-27 (RNV-MUTED-DESCRIPTIONS, ruling 1 of
 the colour chart). Until then nothing painted it: the settings dialog read it
 into a local it never used, and six labels in two dialogs wrote `color: grey`
-instead -- #808080 in every mode. They are named "muted_text" now and each
-dialog's stylesheet draws that name in text_secondary: #888888 in dark and
-image, #666666 in light, the muted text all five applications paint. The
+instead -- RETIRED_CSS_GREY in every mode. They are named "muted_text" now and each
+dialog's stylesheet draws that name in text_secondary: GREY_88 in dark and
+image, GREY_66 in light, the muted text all five applications paint. The
 tests below hold the wiring, the values, and the colour each label ends up
 drawn in.
 """
@@ -24,7 +24,7 @@ import re
 
 import pytest
 
-from ui.colors import (DARK_THEME_COLORS, IMAGE_MODE_COLORS,
+from ui.colors import (DARK_THEME_COLORS, GREY_66, GREY_88, IMAGE_MODE_COLORS,
                        LIGHT_THEME_COLORS)
 
 THEMES = {
@@ -162,8 +162,8 @@ def test_the_settings_local_is_now_used():
 def test_the_muted_values_are_the_ones_the_fleet_already_uses():
     """Ruling 1 was conditional: two values are fine if every app splits it by
     mode, and only with values already in use. Both halves, held here."""
-    assert THEMES["DARK"]["text_secondary"] == THEMES["IMAGE"]["text_secondary"] == "#888888"
-    assert THEMES["LIGHT"]["text_secondary"] == "#666666"
+    assert THEMES["DARK"]["text_secondary"] == THEMES["IMAGE"]["text_secondary"] == GREY_88
+    assert THEMES["LIGHT"]["text_secondary"] == GREY_66
 
 
 def _manager(mode: str):
@@ -184,7 +184,7 @@ def _ink(widget) -> str:
 def test_the_muted_labels_draw_in_text_secondary(qapp, mode):
     """Built the way the app builds them, in each mode. Settings draws image
     mode from the dark palette, as its _apply_theme() chooses; batch export
-    draws it from the image palette. Both hold #888888 there."""
+    draws it from the image palette. Both hold GREY_88 there."""
     from PyQt6.QtWidgets import QLabel
 
     from ui.batch_export_dialog import BatchExportDialog

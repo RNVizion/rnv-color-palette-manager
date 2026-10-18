@@ -2,15 +2,15 @@
 
 A colour here used to be one of two things -- a name, or a literal -- and this
 file adds the third the application always had and never declared.
-rgba(51, 51, 51, 100) is not a colour beside APP_BORDER; it IS APP_BORDER at
-alpha 100, and until 2026-09-25 nothing related the two. Now it is written
-translucent(APP_BORDER, SCROLLBAR_BORDER_ALPHA), and a change to APP_BORDER
-reaches it.
+RETIRED_SCROLLBAR_BORDER_LITERAL is not a colour beside APP_BORDER; it IS
+APP_BORDER at alpha 100, and until 2026-09-25 nothing related the two. Now it
+is written translucent(APP_BORDER, SCROLLBAR_BORDER_ALPHA), and a change to
+APP_BORDER reaches it.
 
-WHY THAT MATTERS HERE, MEASURED. RNV-COLLAPSE-505050 ruled #505050 onto
-GREY_44 on 2026-09-02. IMAGE_MODE_COLORS went on painting the main scrollbar
-handle with it for three weeks, spelled rgba(80, 80, 80, 100), while the guard
-for that ruling reported clean. A written-down derivative is orphaned the
+WHY THAT MATTERS HERE, MEASURED. RNV-COLLAPSE-505050 ruled RETIRED_GREY_50
+onto GREY_44 on 2026-09-02. IMAGE_MODE_COLORS went on painting the main
+scrollbar handle with it for three weeks, spelled RETIRED_GREY_50_RGBA_100,
+while the guard for that ruling reported clean. A written-down derivative is orphaned the
 moment its source moves, and nothing says so.
 
 THE OVERLAYS WERE THE OTHER HALF OF THE SAME IDEA. IMAGE_OVERLAY_ALPHA was the
@@ -19,7 +19,7 @@ asserting that their digits agreed. Ruled 2026-09-24: derived values are
 DERIVED, not asserted. They compose from it now.
 
 WHAT MOVES A PIXEL: ONE THING, BY RULING. The image-mode scrollbar handle goes
-from #505050 at 100 to GREY_44 at 150. Everything else here is the same colour
+from RETIRED_GREY_50 at 100 to GREY_44 at 150. Everything else here is the same colour
 at the same alpha, respelled so that it follows its base -- and
 test_nothing_moved_that_was_not_ruled holds each value to the constant and the
 byte it is made of.
@@ -30,6 +30,13 @@ import ast
 import pathlib
 import re
 
+from colour_values import (
+    EXAMPLE_BLACK, EXAMPLE_BLACK_RGBA_200, EXAMPLE_CHARCOAL, EXAMPLE_CHARCOAL_AT_ED,
+    EXAMPLE_CHARCOAL_BARE_UPPER, EXAMPLE_CHARCOAL_RGBA_191, EXAMPLE_MID_GREY,
+    EXAMPLE_TAN, EXAMPLE_TAN_AT_33, INVALID_BASE_EIGHT_DIGITS,
+    INVALID_BASE_FIVE_DIGITS, INVALID_BASE_NOT_HEX, RETIRED_GREY_50_DIGITS,
+    RETIRED_SCROLLBAR_BORDER_LITERAL, RETIRED_SIZE_OVERLAY_LITERAL,
+    RETIRED_SLOT_IMAGE_LITERAL)
 from ui import colors
 from ui.colors import (DARK_THEME_COLORS as DARK,
                        LIGHT_THEME_COLORS as LIGHT,
@@ -49,9 +56,9 @@ HELPERS = ("translucent", "translucent_rgba")
 ALPHAS = {
     "IMAGE_OVERLAY_ALPHA": (0xED, '"ED", the image chrome overlays'),
     "SCROLLBAR_HANDLE_ALPHA": (0x96, "ruled 2026-09-24; was 100"),
-    "SCROLLBAR_BORDER_ALPHA": (0x64, "rgba(51, 51, 51, 100)"),
-    "SIZE_OVERLAY_ALPHA": (0xC8, "rgba(0, 0, 0, 200)"),
-    "SLOT_IMAGE_ALPHA": (0xAB, "rgba(0, 0, 0, 171)"),
+    "SCROLLBAR_BORDER_ALPHA": (0x64, RETIRED_SCROLLBAR_BORDER_LITERAL),
+    "SIZE_OVERLAY_ALPHA": (0xC8, RETIRED_SIZE_OVERLAY_LITERAL),
+    "SLOT_IMAGE_ALPHA": (0xAB, RETIRED_SLOT_IMAGE_LITERAL),
 }
 
 #: What each derived value is made of: the constant its colour comes from, and
@@ -161,15 +168,15 @@ def test_translucent_composes_alpha_first():
 
     Lower case, whatever case it is given, like rnv-icon-builder's helper of
     the same name: RNV-LOWER-EIGHT."""
-    assert translucent("#1a1a1a", 0xED) == "#ed1a1a1a"
-    assert translucent("1A1A1A", 0xED) == "#ed1a1a1a"
-    assert translucent("#d2bc93", 0x33) == "#33d2bc93"
+    assert translucent(EXAMPLE_CHARCOAL, 0xED) == EXAMPLE_CHARCOAL_AT_ED
+    assert translucent(EXAMPLE_CHARCOAL_BARE_UPPER, 0xED) == EXAMPLE_CHARCOAL_AT_ED
+    assert translucent(EXAMPLE_TAN, 0x33) == EXAMPLE_TAN_AT_33
 
 
 def test_translucent_rgba_is_the_same_colour_in_the_other_spelling():
-    assert translucent_rgba("#1a1a1a", 191) == "rgba(26, 26, 26, 191)"
-    assert translucent_rgba("#000000", 0xC8) == "rgba(0, 0, 0, 200)"
-    for base in ("#1a1a1a", "#d2bc93", "#444444"):
+    assert translucent_rgba(EXAMPLE_CHARCOAL, 191) == EXAMPLE_CHARCOAL_RGBA_191
+    assert translucent_rgba(EXAMPLE_BLACK, 0xC8) == EXAMPLE_BLACK_RGBA_200
+    for base in (EXAMPLE_CHARCOAL, EXAMPLE_TAN, EXAMPLE_MID_GREY):
         for alpha in (0, 0x64, 0xED, 255):
             assert (decompose(translucent(base, alpha))
                     == decompose(translucent_rgba(base, alpha))
@@ -180,12 +187,12 @@ def test_the_helpers_refuse_what_they_cannot_compose():
     for helper in (translucent, translucent_rgba):
         for bad in (-1, 256, 999, 0.5, True):
             try:
-                helper("#1a1a1a", bad)
+                helper(EXAMPLE_CHARCOAL, bad)
             except (ValueError, TypeError):
                 pass
             else:
                 raise AssertionError(f"{helper.__name__} took alpha {bad!r}")
-        for bad in ("#1a1a1", "#1a1a1a1a", "nonsense", "#gggggg"):
+        for bad in (INVALID_BASE_FIVE_DIGITS, INVALID_BASE_EIGHT_DIGITS, "nonsense", INVALID_BASE_NOT_HEX):
             try:
                 helper(bad, 0xED)
             except ValueError:
@@ -279,8 +286,8 @@ def test_no_composed_literal_is_left_in_the_application():
 
     Alpha 0 is not a colour and is not counted; a base no constant here names
     has no row to follow, and is not counted either -- SELECTION_OVERLAY_COLOR
-    is Windows' accent blue, #0078d7, which is a question for the register and
-    not a derivation this file can check."""
+    is Windows' accent blue, which is a question for the register and not a
+    derivation this file can check."""
     named = _named_colours()
     strays, files = [], 0
     for path in sorted(ROOT.rglob("*.py")):
@@ -321,7 +328,7 @@ def test_the_scrollbar_handle_is_grey_44_at_150():
     assert decompose(IMAGE["scrollbar_handle"]) == (
         colors.GREY_44, colors.SCROLLBAR_HANDLE_ALPHA)
     assert colors.SCROLLBAR_HANDLE_ALPHA == 150
-    assert "505050" not in IMAGE["scrollbar_handle"]
+    assert RETIRED_GREY_50_DIGITS not in IMAGE["scrollbar_handle"]
 
 
 def test_nothing_moved_that_was_not_ruled():
@@ -330,14 +337,14 @@ def test_nothing_moved_that_was_not_ruled():
 
     BY NAME, NOT BY HEX, and that is the point of the round. A register move
     is meant to pass straight through these values; a test that pinned
-    '#333333' would fail the first time one did, and ask a person to edit it
+    APP_BORDER's hex would fail the first time one did, and ask a person to edit it
     by hand -- the exact job derivation exists to remove. What this DOES catch
     is a value quietly re-made from something else: a different base, or a
     different byte, which the decomposition check above would accept as long
     as the source and the value agreed with each other.
 
-    The byte-for-byte before-and-after -- '#ED000000', '#ED1A1A1A',
-    'rgba(0, 0, 0, 200)' -- was checked once, by the delivery script, against
+    The byte-for-byte before-and-after -- RETIRED_WINDOW_OVERLAY_LITERAL,
+    RETIRED_PANEL_OVERLAY_LITERAL, RETIRED_SIZE_OVERLAY_LITERAL -- was checked once, by the delivery script, against
     the edited module before it was written. That is evidence for the round,
     not a rule for the repository."""
     live = {where: value for where, _call, value in _derived()}
@@ -425,7 +432,8 @@ def _lower8_trees():
 def test_eight_digit_hex_is_lower_case():
     """RNV-LOWER-EIGHT, 2026-09-25. The register writes hex in lower case --
     Notation, ruled 2026-08-15, Brand Book decision #19 -- and on 2026-09-25
-    Chris ruled that eight digits are hex too: #ed1a1a1a, never #ED1A1A1A.
+    Chris ruled that eight digits are hex too: APP_PANEL_OVERLAY, never
+    RETIRED_PANEL_OVERLAY_LITERAL.
     Qt reads either case, so no pixel moved when this application's helper
     changed.
 
@@ -540,12 +548,12 @@ def test_the_integer_sweep_reads_both_notations():
     probe = ast.parse("A = (0, 0, 0, 50)\n"
                       "class K:\n    B = QColor(68, 68, 68)\n"
                       "def f():\n    c = (0, 0, 0)\n")
-    assert sorted(_int_spelled(probe)) == [("A", "#000000", 50), ("B", "#444444", 255)]
+    assert sorted(_int_spelled(probe)) == [("A", EXAMPLE_BLACK, 50), ("B", EXAMPLE_MID_GREY, 255)]
 
 
 def test_every_tuple_constant_is_derived_by_name():
     """RNV-TUPLE-ROUND, 2026-09-26. A colour spelled in integers is a colour
-    every string sweep in the fleet was blind to, and #505050 sat in two of
+    every string sweep in the fleet was blind to, and RETIRED_GREY_50 sat in two of
     them for three weeks after it was ruled away. Each constant here is now
     its helper called on a named base and a named alpha, and it evaluates to
     exactly that pair -- held BY NAME, so a register move passes through."""

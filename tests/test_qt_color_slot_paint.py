@@ -22,6 +22,8 @@ import pytest
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QColor, QImage, QPixmap
 
+from colour_values import DATA_IMAGE_YELLOW, DATA_SLOT_RED
+
 
 # ═══════════════════════════════════════════════════════════════════════════
 # HELPERS
@@ -86,7 +88,7 @@ def test_paint_renders_solid_red(make_slot):
     center = image.pixelColor(50, 50)
 
     assert _color_close(center, QColor(255, 0, 0)), (
-        f"Center pixel is {center.name()}, expected close to #ff0000"
+        f"Center pixel is {center.name()}, expected close to {DATA_SLOT_RED}"
     )
 
 
@@ -124,7 +126,7 @@ def test_paint_uses_image_pixmap_when_set(make_slot):
 
     assert _color_close(center, QColor(255, 255, 0)), (
         f"Center pixel is {center.name()}, expected close to yellow "
-        f"(#ffff00). image_pixmap may not be drawn."
+        f"({DATA_IMAGE_YELLOW}). image_pixmap may not be drawn."
     )
 
 

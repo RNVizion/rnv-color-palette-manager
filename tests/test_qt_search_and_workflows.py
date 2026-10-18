@@ -26,6 +26,7 @@ from unittest import mock
 import pytest
 from PyQt6.QtGui import QColor
 
+from colour_values import DATA_QUERY_RED
 from conftest import _load_main_window, _trigger_shortcut
 
 
@@ -205,7 +206,7 @@ def test_parse_color_query_handles_hex(qapp):
     """parse_color_query should parse #RRGGBB format."""
     from ui.color_search import parse_color_query
 
-    result = parse_color_query("#ff0000")
+    result = parse_color_query(DATA_QUERY_RED)
     assert result == (255, 0, 0)
 
 

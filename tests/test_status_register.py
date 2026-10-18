@@ -10,12 +10,22 @@ This guard is the thing that stops the second opinion coming back.
 """
 from __future__ import annotations
 
+import json
 import re
 from pathlib import Path
 
+from colour_values import (
+    RETIRED_BOOTSTRAP_AMBER, RETIRED_BOOTSTRAP_GREEN, RETIRED_BOOTSTRAP_RED,
+    RETIRED_ERROR_TEXT_LIGHT_ORPHAN, RETIRED_ERROR_TEXT_ORPHAN, RETIRED_MATERIAL_GREEN,
+    RETIRED_OWN_DARK_ERROR_TEXT)
 from ui import colors
 
 ROOT = Path(__file__).resolve().parent.parent
+
+#: RNV-COLOUR-SYNC, 2026-10-16. Where each colour comes from, as brand_map.json
+#: says. The values are held by tests/test_colours_in_sync.py, against the
+#: register at the pin; what this file holds is the name each one takes.
+BRAND_MAP = json.loads((ROOT / "brand_map.json").read_text(encoding="utf-8"))["colours"]
 
 
 def _palettes():
@@ -41,13 +51,16 @@ def _contrast(a, b):
 
 
 STRAYS = {
-    "#4caf50",   # Material green, ruled out 2026-09-02
-    "#ff6b6b",   # this app's own dark error text, ruled out 2026-09-02
+    RETIRED_MATERIAL_GREEN, # Material green, ruled out 2026-09-02
+    RETIRED_OWN_DARK_ERROR_TEXT, # this app's own dark error text, ruled out 2026-09-02
     # RNV-STATUS-FAMILY (2026-09-03), the Bootstrap family and its
-    # two orphans. #e56b77 and #c82131 were derived from #dc3545;
-    # with the base retired they are values derived from something
-    # no longer in the palette, which is the #c4a458 failure.
-    "#28a745", "#ffc107", "#dc3545", "#e56b77", "#c82131",
+    # two orphans. RETIRED_ERROR_TEXT_ORPHAN and
+    # RETIRED_ERROR_TEXT_LIGHT_ORPHAN were derived from
+    # RETIRED_BOOTSTRAP_RED; with the base retired they are values
+    # derived from something no longer in the palette, which is the
+    # RETIRED_OLD_HOVER_GOLD failure.
+    RETIRED_BOOTSTRAP_GREEN, RETIRED_BOOTSTRAP_AMBER, RETIRED_BOOTSTRAP_RED,
+    RETIRED_ERROR_TEXT_ORPHAN, RETIRED_ERROR_TEXT_LIGHT_ORPHAN,
 }
 
 
@@ -64,15 +77,18 @@ def test_the_three_ruled_values_are_the_register_s():
     # RNV-STATUS-FAMILY (2026-09-03): the register replaced all
     # three. The green and the red were one olive under
     # deuteranopia at about 4 apart; the amber read 1.63 on
-    # #ffffff against a 3:1 fill floor. Still pinned by value --
+    # WHITE against a 3:1 fill floor. Still pinned by value --
     # an app that picks its own status colour has an opinion
     # about what success means, which is the register's job.
     # RNV-NAMED-AND-USED, 2026-10-04: the three fills were pinned
     # here. This application draws none of them and no longer
     # carries them; what it draws is the error text below.
-    # #e56b77 was derived from #dc3545 and orphaned when the
+    # RETIRED_ERROR_TEXT_ORPHAN was derived from RETIRED_BOOTSTRAP_RED and
+    # orphaned when the
     # base was retired, so it moves with it.
-    assert colors.STATUS_ERROR_TEXT == "#dd6f77"
+    # RNV-COLOUR-SYNC, 2026-10-16: pinned by the register name brand_map.json
+    # writes it from; tests/test_colours_in_sync.py holds the value.
+    assert BRAND_MAP["STATUS_ERROR_TEXT"] == "STATUS.error-text"
 
 
 # RNV-NAMED-AND-USED, 2026-10-04: a test stood here holding the palettes'
@@ -83,10 +99,10 @@ def test_the_three_ruled_values_are_the_register_s():
 def test_the_dark_error_text_still_clears_on_every_dark_ground():
     """The 2026-09-02 move cost 0.87 of headroom and this is the
     check that said it could afford it. RNV-STATUS-FAMILY
-    (2026-09-03) takes a little more: #dd6f77 reads 4.5210 on
-    APP card against #e56b77's 4.5801 -- still above the floor,
+    (2026-09-03) takes a little more: STATUS_ERROR_TEXT reads 4.5210 on
+    APP card against RETIRED_ERROR_TEXT_ORPHAN's 4.5801 -- still above the floor,
     on the grounds this app
     actually paints."""
-    for ground in ("#000000", "#1a1a1a", "#2a2a2a"):
+    for ground in (colors.TRUE_BLACK, colors.BRAND_BLACK, colors.APP_CARD):
         assert _contrast(colors.STATUS_ERROR_TEXT, ground) >= 4.5, (
             f"error text {colors.STATUS_ERROR_TEXT} on {ground} is short")

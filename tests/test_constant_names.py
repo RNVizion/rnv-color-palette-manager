@@ -11,13 +11,20 @@ branch was carrying the mode all along; only the arms needed naming honestly.
 from __future__ import annotations
 
 import io
+import json
 import re
 import tokenize
 from pathlib import Path
 
+from colour_values import EXAMPLE_BLACK, EXAMPLE_WHITE, RETIRED_WINDOWS_BLUE
 from ui import colors
 
 ROOT = Path(__file__).resolve().parent.parent
+
+#: RNV-COLOUR-SYNC, 2026-10-16. Where each colour comes from, as brand_map.json
+#: says. The values are held by tests/test_colours_in_sync.py, against the
+#: register at the pin; what this file holds is the name each one takes.
+BRAND_MAP = json.loads((ROOT / "brand_map.json").read_text(encoding="utf-8"))["colours"]
 RETIRED = ('ACCENT_PRESSED_TEXT_DARK', 'ACCENT_PRESSED_TEXT_LIGHT', 'TEXTEDIT_BG_DARK', 'TEXTEDIT_BG_LIGHT', 'SELECTION_OVERLAY_TEXT', 'IMAGE_PREVIEW_BORDER', 'IMAGE_PREVIEW_BG', 'DARK_GOLD_DEEP', 'SLOT_SELECTED_COLOR', 'CHECKBOX_ACCENT', 'SVG_EXPORT_TEXT_DARK', 'SVG_EXPORT_TEXT_LIGHT', 'GREY_60')
 SKIP = {".git", "build", "dist", ".venv", "__pycache__"}
 
@@ -68,18 +75,20 @@ def test_the_retired_names_are_gone():
 
 def test_the_values_they_named_are_still_here():
     """A rename that loses a value is not a rename. These are the colours the
-    eleven role names were standing in front of."""
-    assert colors.TRUE_BLACK == "#000000"
-    assert colors.WHITE == "#ffffff"
-    assert colors.GREY_66 == "#666666"
+    eleven role names were standing in front of.
+
+    RNV-COLOUR-SYNC, 2026-10-16: each was held here by its hex code. Each is
+    held in brand_map.json now, a brand name or the app's own value, and
+    tests/test_colours_in_sync.py holds the value the file writes."""
+    for name in ("TRUE_BLACK", "WHITE", "GREY_66", "GREY_EE"):
+        assert name in BRAND_MAP, f"brand_map.json does not hold {name}"
     # RNV-GOLD-HOVER (2026-09-12): the dark scrollbar handle on hover was this
     # ramp step's only consumer, here and in the transformer. The hover is the
     # brand gold now, so the step had nothing left to paint.
     assert not hasattr(colors, "GREY_60")
     # RNV-LIGHT-WIRING (2026-09-06): GREY_F0 collapsed onto GREY_EE.
-    assert colors.GREY_EE == "#eeeeee"
     assert not hasattr(colors, "GREY_F0")
-    assert colors.BRAND_DARK_GOLD_DEEP == "#7e6529"
+    assert colors.BRAND_DARK_GOLD_DEEP == colors.lighten(colors.BRAND_DARK_GOLD, -14)
 
 
 def test_the_checkbox_still_uses_the_mode_selected_gold():
@@ -102,15 +111,16 @@ def test_no_windows_blue_anywhere():
     """The value it held is on no ladder, no grid and no brand."""
     strays = []
     for path, text in _sources():
-        if re.search(r"""['"]#0078d4['"]""", text, re.I):
+        if re.search(r"""['"]""" + re.escape(RETIRED_WINDOWS_BLUE) + r"""['"]""",
+                     text, re.I):
             strays.append(str(path.relative_to(ROOT)))
-    assert not strays, f"#0078d4 is back in: {strays}"
+    assert not strays, f"{RETIRED_WINDOWS_BLUE} is back in: {strays}"
 
 
 def test_the_ink_rule_is_a_real_contrast_measurement():
-    assert colors.contrast_ink("#ffffff") == colors.TRUE_BLACK
-    assert colors.contrast_ink("#000000") == colors.WHITE
-    assert round(colors.contrast_ratio("#ffffff", "#000000"), 2) == 21.0
+    assert colors.contrast_ink(EXAMPLE_WHITE) == colors.TRUE_BLACK
+    assert colors.contrast_ink(EXAMPLE_BLACK) == colors.WHITE
+    assert round(colors.contrast_ratio(EXAMPLE_WHITE, EXAMPLE_BLACK), 2) == 21.0
 
 
 def test_the_exported_svg_labels_follow_the_rule():
