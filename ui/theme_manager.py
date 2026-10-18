@@ -12,7 +12,7 @@ from PyQt6.QtCore import QByteArray
 from PyQt6.QtGui import QPixmap
 from PIL import Image
 
-from ui.colors import (
+from utils.colors import (
     ThemeName,
     ThemeDict,
     DARK_THEME_COLORS,

@@ -227,7 +227,6 @@ RNV_Color_Palette_Manager/
 ├── ui/                             # Qt widgets & theming
 │   ├── __init__.py
 │   ├── py.typed
-│   ├── colors.py                   # Single source of truth for theme colors
 │   ├── theme_manager.py            # Dark / Light / Image mode switching
 │   ├── image_button.py             # Custom button with image-mode support
 │   ├── image_upload_dialog.py      # Image upload workflow
@@ -242,6 +241,7 @@ RNV_Color_Palette_Manager/
 ├── utils/                          # Infrastructure & helpers
 │   ├── __init__.py
 │   ├── py.typed
+│   ├── colors.py                   # Single source of truth for theme colors
 │   ├── config.py                   # Central config & resource paths
 │   ├── logger.py                   # Colored console + file logging
 │   ├── font_loader.py              # Custom font loading with fallback
@@ -276,7 +276,7 @@ RNV_Color_Palette_Manager/
 │   └── test_perf_palette_io.py          # Palette I/O benchmarks
 │
 ├── tools/                          # Maintenance scripts
-│   └── sync_colors.py              # Writes ui/colors.py and COLORS.md from the brand
+│   └── sync_colors.py              # Writes utils/colors.py and COLORS.md from the brand
 │
 └── resources/                      # Bundled assets
     ├── button_images/               # Button icon images (base/hover/pressed)
@@ -331,7 +331,7 @@ For the full guide to the test architecture, patterns for testing PyQt6 widgets 
 
 ## Design Principles
 
-- **Single source of truth for colors** — all theme values originate from `ui/colors.py`; no hardcoded color literals elsewhere in the codebase
+- **Single source of truth for colors** — all theme values originate from `utils/colors.py`; no hardcoded color literals elsewhere in the codebase
 - **Strict package boundaries** — `core/` contains color science with no Qt dependencies beyond widgets, `ui/` handles presentation, `utils/` provides infrastructure
 - **Type-annotated throughout** — modern Python 3.13 type hints on all public APIs
 - **Fail-safe by default** — every file operation is wrapped in error handling; session state is auto-saved for crash recovery

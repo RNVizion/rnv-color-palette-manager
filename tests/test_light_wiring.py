@@ -19,10 +19,10 @@ import pytest
 
 from color_values import (
     REGISTER_APP_SURFACE_LIGHT_2, RETIRED_GRAY_F0, RETIRED_GRAY_F8, RETIRED_GRAY_FA)
-from ui import colors as C
+from utils import colors as C
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / 'ui/colors.py'
+SOURCE = ROOT / 'utils/colors.py'
 PALETTES = ['DARK_THEME_COLORS', 'LIGHT_THEME_COLORS', 'IMAGE_MODE_COLORS']
 HEX = re.compile(r"#[0-9a-fA-F]{6}$")
 

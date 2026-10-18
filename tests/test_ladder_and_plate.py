@@ -36,13 +36,13 @@ import pathlib
 import pytest
 
 from color_values import REGISTER_GOLD_TEXT_GROUND_FLOOR, RETIRED_GRAY_D0
-from ui import colors
-from ui.colors import (DARK_THEME_COLORS as DARK,
-                       IMAGE_MODE_COLORS as IMAGE,
-                       LIGHT_THEME_COLORS as LIGHT)
+from utils import colors
+from utils.colors import (DARK_THEME_COLORS as DARK,
+                          IMAGE_MODE_COLORS as IMAGE,
+                          LIGHT_THEME_COLORS as LIGHT)
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-SRC = ROOT / 'ui/colors.py'
+SRC = ROOT / 'utils/colors.py'
 
 #: RNV-COLOR-SYNC, 2026-10-16. Where each color comes from, as brand_map.json
 #: says. The values are held by tests/test_colors_in_sync.py, against the
@@ -113,7 +113,7 @@ def _dict_node(name: str) -> ast.Dict:
             target = node.targets[0] if isinstance(node, ast.Assign) else node.target
             if getattr(target, 'id', None) == name and isinstance(node.value, ast.Dict):
                 return node.value
-    raise AssertionError(f'{name} is not a dict literal in ui/colors.py')
+    raise AssertionError(f'{name} is not a dict literal in utils/colors.py')
 
 
 def _entry(node: ast.Dict, key: str):
@@ -129,7 +129,7 @@ def test_everything_this_file_reads_still_exists():
     """Renaming a key must fail loudly here rather than let the rest of this
     file pass quietly over nothing."""
     for name in list(NEW) + list(OVERLAYS):
-        assert hasattr(colors, name), f'ui.colors has no {name}'
+        assert hasattr(colors, name), f'utils.colors has no {name}'
     for dict_name, keys in WIRED.items():
         assert dict_name in PALETTES, dict_name
         for key in keys:

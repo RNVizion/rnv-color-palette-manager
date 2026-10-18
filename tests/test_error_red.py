@@ -45,7 +45,7 @@ from color_values import (
     REGISTER_STATUS_ERROR, RETIRED_BOOTSTRAP_AMBER, RETIRED_BOOTSTRAP_GREEN,
     RETIRED_BOOTSTRAP_RED, RETIRED_ERROR_TEXT_LIGHT_ORPHAN, RETIRED_ERROR_TEXT_ORPHAN,
     RETIRED_MATERIAL_RED)
-from ui import colors
+from utils import colors
 
 #: RNV-COLOR-SYNC, 2026-10-16. Where each color comes from, as brand_map.json
 #: says. The values are held by tests/test_colors_in_sync.py, against the

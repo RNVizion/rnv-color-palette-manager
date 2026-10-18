@@ -104,7 +104,7 @@ Current coverage (after Phase 13):
 | `core/accessibility.py` | 100% |
 | `core/color_harmonies.py` | 100% |
 | `core/palette_metadata.py` | 100% |
-| `ui/colors.py` | 100% |
+| `utils/colors.py` | 100% |
 | `utils/undo_manager.py` | 99% |
 | `core/color_math.py` | 96% |
 | `ui/slot_group.py` | 97% |

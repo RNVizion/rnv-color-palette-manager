@@ -18,7 +18,7 @@ from PyQt6.QtCore import Qt, QSize, QPoint
 from PyQt6.QtGui import QPainter, QColor, QCursor
 
 from utils.logger import Logger, get_logger_instance
-from ui.colors import DATA_DEFAULT_COLOR, HISTORY_SWATCH_BORDER
+from utils.colors import DATA_DEFAULT_COLOR, HISTORY_SWATCH_BORDER
 
 logger: Logger = get_logger_instance(__name__)
 

@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import pytest
 
-from ui import colors as C
+from utils import colors as C
 
 TEXT_FLOOR = 4.5
 

@@ -52,7 +52,7 @@ from ui.slot_group import SlotGroupInfo, SlotGroupData, SlotGroupHeader
 from ui.color_search import ColorSearchBar, parse_color_query, MATCH_THRESHOLD
 from ui.batch_export_dialog import BatchExportDialog, BatchExportResult
 from core.color_math import ColorMath
-from ui.colors import (
+from utils.colors import (
     BRAND_GOLD, BRAND_DARK_GOLD, BRAND_DARK_GOLD_DEEP, BRAND_GOLD_HOVER, DARK_THEME_COLORS,
     TRUE_BLACK, WHITE,
     SELECTION_OVERLAY_COLOR, WHITE,

@@ -18,7 +18,7 @@ from color_values import (
     RETIRED_BOOTSTRAP_AMBER, RETIRED_BOOTSTRAP_GREEN, RETIRED_BOOTSTRAP_RED,
     RETIRED_ERROR_TEXT_LIGHT_ORPHAN, RETIRED_ERROR_TEXT_ORPHAN, RETIRED_MATERIAL_GREEN,
     RETIRED_OWN_DARK_ERROR_TEXT)
-from ui import colors
+from utils import colors
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -29,7 +29,7 @@ BRAND_MAP = json.loads((ROOT / "brand_map.json").read_text(encoding="utf-8"))["c
 
 
 def _palettes():
-    from ui.colors import DARK_THEME_COLORS as D, LIGHT_THEME_COLORS as L, IMAGE_MODE_COLORS as I; P={'dark':D,'light':L,'image':I}
+    from utils.colors import DARK_THEME_COLORS as D, LIGHT_THEME_COLORS as L, IMAGE_MODE_COLORS as I; P={'dark':D,'light':L,'image':I}
     return P
 
 

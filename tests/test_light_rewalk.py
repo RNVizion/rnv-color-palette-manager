@@ -24,7 +24,7 @@ import pytest
 from color_values import (
     EXAMPLE_BLACK, EXAMPLE_WHITE, REGISTER_APP_PRESSED_LIGHT,
     REGISTER_APP_SURFACE_LIGHT_2, REGISTER_GOLD_TEXT_GROUND_FLOOR)
-from ui import colors as C
+from utils import colors as C
 
 #: RNV-COLOR-SYNC, 2026-10-16. Where each color comes from, as brand_map.json
 #: says. The values are held by tests/test_colors_in_sync.py, against the

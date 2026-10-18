@@ -17,8 +17,8 @@ from __future__ import annotations
 
 import pytest
 
-from ui.colors import (DARK_THEME_COLORS, IMAGE_MODE_COLORS,
-                       LIGHT_THEME_COLORS)
+from utils.colors import (DARK_THEME_COLORS, IMAGE_MODE_COLORS,
+                          LIGHT_THEME_COLORS)
 
 THEMES = {
     "DARK": DARK_THEME_COLORS,

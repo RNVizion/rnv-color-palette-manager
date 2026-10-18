@@ -17,7 +17,7 @@ import tokenize
 from pathlib import Path
 
 from color_values import EXAMPLE_BLACK, EXAMPLE_WHITE, RETIRED_WINDOWS_BLUE
-from ui import colors
+from utils import colors
 
 ROOT = Path(__file__).resolve().parent.parent
 

@@ -15,7 +15,7 @@ from PyQt6.QtGui import QPixmap
 from PIL import Image
 
 from utils.logger import Logger, get_logger_instance
-from ui.colors import GRAY_66, GRAY_EE
+from utils.colors import GRAY_66, GRAY_EE
 
 logger: Logger = get_logger_instance(__name__)
 

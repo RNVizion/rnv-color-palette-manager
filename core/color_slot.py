@@ -24,7 +24,7 @@ from core.color_harmonies import ColorHarmonies
 from core.color_math import ColorMath
 from core.accessibility import Accessibility
 from utils.config import get_button_image_paths, MAX_SLOTS
-from ui.colors import (
+from utils.colors import (
     SLOT_BORDER_THIN_COLOR, SLOT_BORDER_THICK_COLOR,
     SEARCH_HIGHLIGHT_COLOR, SEARCH_DIM_OVERLAY,
     BRAND_GOLD_RGB, BRAND_DARK_GOLD_RGB,

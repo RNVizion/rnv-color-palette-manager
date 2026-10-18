@@ -73,13 +73,13 @@ DIALOG_FILES = ("ui/about_dialog.py", "ui/batch_export_dialog.py",
 
 def _values(pins):
     """Each key's constant, as the value it holds."""
-    from ui import colors
+    from utils import colors
     return {key: getattr(colors, name) for key, name in pins.items()}
 
 
 def _palettes():
-    from ui.colors import (DARK_THEME_COLORS, LIGHT_THEME_COLORS,
-                           IMAGE_MODE_COLORS)
+    from utils.colors import (DARK_THEME_COLORS, LIGHT_THEME_COLORS,
+                              IMAGE_MODE_COLORS)
     return {"dark": DARK_THEME_COLORS, "light": LIGHT_THEME_COLORS,
             "image": IMAGE_MODE_COLORS}
 

@@ -24,8 +24,8 @@ import re
 
 import pytest
 
-from ui.colors import (DARK_THEME_COLORS, GRAY_66, GRAY_88, IMAGE_MODE_COLORS,
-                       LIGHT_THEME_COLORS)
+from utils.colors import (DARK_THEME_COLORS, GRAY_66, GRAY_88, IMAGE_MODE_COLORS,
+                          LIGHT_THEME_COLORS)
 
 THEMES = {
     "DARK": DARK_THEME_COLORS,
@@ -33,7 +33,7 @@ THEMES = {
     "IMAGE": IMAGE_MODE_COLORS,
 }
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-COLORS_PY = ROOT / "ui" / "colors.py"
+COLORS_PY = ROOT / "utils" / "colors.py"
 
 # The two dialogs that paint the key, and the only files that read it.
 PAINTED_IN = ["ui/batch_export_dialog.py", "ui/settings_dialog.py"]

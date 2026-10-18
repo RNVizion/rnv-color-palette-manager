@@ -40,7 +40,7 @@ from PyQt6.QtGui import QColor, QPalette
 from PyQt6.QtWidgets import QApplication, QDialog, QFileDialog, QMessageBox, QWidget
 
 from color_values import EXAMPLE_BLACK, EXAMPLE_BLACK_SHORT, EXAMPLE_WHITE
-from ui.colors import BRAND_DARK_GOLD, BRAND_GOLD, TRUE_BLACK, WHITE
+from utils.colors import BRAND_DARK_GOLD, BRAND_GOLD, TRUE_BLACK, WHITE
 
 @pytest.fixture
 def window(qapp):

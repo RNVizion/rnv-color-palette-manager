@@ -25,7 +25,7 @@ from PyQt6.QtCore import QSettings, QByteArray
 
 from utils.config import APP_AUTHOR, APP_NAME
 from utils.logger import Logger, get_logger_instance
-from ui.colors import SESSION_FALLBACK_COLOR, SESSION_FALLBACK_COLOR_IMAGE
+from utils.colors import SESSION_FALLBACK_COLOR, SESSION_FALLBACK_COLOR_IMAGE
 
 logger: Logger = get_logger_instance(__name__)
 

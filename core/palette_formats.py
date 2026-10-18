@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from core.color_math import ColorMath
 from core.palette_metadata import PaletteMetadata
 from utils.logger import Logger, get_logger_instance
-from ui.colors import SVG_EXPORT_BG, SVG_EXPORT_STROKE, contrast_ink
+from utils.colors import SVG_EXPORT_BG, SVG_EXPORT_STROKE, contrast_ink
 
 # Type alias for color with weight
 type ColorWeight = tuple[tuple[int, int, int], int]

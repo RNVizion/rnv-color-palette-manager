@@ -17,7 +17,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, pyqtSignal
 
 from utils.logger import Logger, get_logger_instance
-from ui.colors import (
+from utils.colors import (
     STATUS_ERROR_TEXT,
     STATUS_ERROR_TEXT_LIGHT,
     TRUE_BLACK,

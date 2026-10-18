@@ -15,7 +15,7 @@ from PyQt6.QtGui import QPainter, QColor, QPixmap
 
 from core.accessibility import Accessibility
 from utils.config import ICONS_DIR
-from ui.colors import PREVIEW_GRID_BORDER
+from utils.colors import PREVIEW_GRID_BORDER
 
 if TYPE_CHECKING:
     from core.color_slot import ColorSlot

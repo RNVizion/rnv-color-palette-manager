@@ -29,7 +29,7 @@ from core.color_math import ColorMath
 from core.palette_metadata import PaletteMetadata
 from utils.logger import Logger, get_logger_instance
 from utils.font_loader import get_font_family
-from ui.colors import (
+from utils.colors import (
     BRAND_GOLD, BRAND_DARK_GOLD, BRAND_DARK_GOLD_DEEP, BRAND_GOLD_HOVER,
     TRUE_BLACK, WHITE,
     SESSION_FALLBACK_COLOR, GRAY_66, CLIPBOARD_PREVIEW_COLOR,

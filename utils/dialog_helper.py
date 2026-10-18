@@ -130,8 +130,7 @@ class DialogHelper:
     @staticmethod
     def _get_style_dark() -> str:
         """Get dark theme dialog stylesheet."""
-        # Lazy import to avoid circular dependency (utils -> ui -> utils)
-        from ui.colors import (
+        from utils.colors import (
             DARK_THEME_COLORS as colors,
             TRUE_BLACK,
         )
@@ -189,7 +188,7 @@ class DialogHelper:
     @staticmethod
     def _get_style_light() -> str:
         """Get light theme dialog stylesheet."""
-        from ui.colors import (
+        from utils.colors import (
             LIGHT_THEME_COLORS as colors,
             WHITE,
         )

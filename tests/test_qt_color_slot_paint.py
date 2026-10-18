@@ -146,7 +146,7 @@ def test_paint_no_border_by_default(make_slot):
 
 def test_paint_thin_border_is_drawn(make_slot):
     """border_style='thin' draws a 1px border at row/col 0."""
-    from ui.colors import SLOT_BORDER_THIN_COLOR
+    from utils.colors import SLOT_BORDER_THIN_COLOR
 
     slot = make_slot(color=QColor(255, 255, 255))
     slot.border_style = "thin"
@@ -168,7 +168,7 @@ def test_paint_thick_border_is_drawn(make_slot):
     so the actual border outline pixels are at row/col 1 (inside) and
     row/col 2 (outside). Sample (1, 1) — the inner edge of the outline.
     """
-    from ui.colors import SLOT_BORDER_THICK_COLOR
+    from utils.colors import SLOT_BORDER_THICK_COLOR
 
     slot = make_slot(color=QColor(255, 255, 255))
     slot.border_style = "thick"
@@ -200,7 +200,7 @@ def test_paint_border_style_setter_rejects_invalid(make_slot):
 
 def test_paint_selected_draws_gold_border(make_slot):
     """A selected slot draws a 3px gold border."""
-    from ui.colors import BRAND_GOLD_RGB
+    from utils.colors import BRAND_GOLD_RGB
 
     slot = make_slot(color=QColor(50, 50, 50))
     slot._selected = True
@@ -217,7 +217,7 @@ def test_paint_selected_draws_gold_border(make_slot):
 
 def test_paint_unselected_does_not_draw_gold_border(make_slot):
     """An unselected slot does NOT draw the gold selection border."""
-    from ui.colors import BRAND_GOLD_RGB
+    from utils.colors import BRAND_GOLD_RGB
 
     fill = QColor(50, 50, 50)
     slot = make_slot(color=fill)
@@ -241,7 +241,7 @@ def test_paint_unselected_does_not_draw_gold_border(make_slot):
 
 def test_paint_search_highlight_draws_glow_border(make_slot):
     """_search_highlight=True draws a glow border around the slot."""
-    from ui.colors import SEARCH_HIGHLIGHT_COLOR
+    from utils.colors import SEARCH_HIGHLIGHT_COLOR
 
     slot = make_slot(color=QColor(0, 0, 0))
     slot._search_highlight = True

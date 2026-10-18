@@ -19,7 +19,7 @@ import pytest
 from color_values import (
     REGISTER_GOLD_TEXT_GROUND_FLOOR, RETIRED_OLD_DARK_GOLD,
     RETIRED_OLD_DARK_GOLD_RGB_SPACED, RETIRED_OLD_DARK_GOLD_RGB_TIGHT)
-from ui import colors as C
+from utils import colors as C
 
 #: RNV-COLOR-SYNC, 2026-10-16. Where each color comes from, as brand_map.json
 #: says. The values are held by tests/test_colors_in_sync.py, against the
@@ -209,8 +209,11 @@ def test_text_on_gold_clears_in_every_mode():
 
 def _sources():
     root = pathlib.Path(C.__file__).resolve().parent.parent
-    out = subprocess.run(["git", "ls-files"], cwd=root,
-                         capture_output=True, text=True).stdout.split()
+    # --others --exclude-standard: a file a change adds is read before it is
+    # committed, as the commit will hold it. The color file's move to
+    # utils/colors.py (#63 A, 2026-10-18) is such a change.
+    out = subprocess.run(["git", "ls-files", "--cached", "--others", "--exclude-standard"],
+                         cwd=root, capture_output=True, text=True).stdout.split()
     for rel in out:
         path = root / rel
         if path.suffix.lower() not in (".py", ".qss", ".css", ".md"):
@@ -256,7 +259,7 @@ def test_retired_values_do_not_appear():
 def test_the_retired_scan_is_still_looking():
     files = list(_sources())
     assert len(files) > 15, f"the scan found only {len(files)} files"
-    assert any(rel == "ui/colors.py" for rel, _ in files), \
+    assert any(rel == "utils/colors.py" for rel, _ in files), \
         "the scan is not reading the color file"
 
 

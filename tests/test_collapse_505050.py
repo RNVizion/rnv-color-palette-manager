@@ -43,7 +43,7 @@ from color_values import (
     EXAMPLE_SHORT_GRAY_EXPANDED, INVALID_HEX_FIVE_DIGITS, RETIRED_GRAY_50,
     RETIRED_GRAY_50_ARGB_96, RETIRED_GRAY_50_ARGB_FF_UPPER, RETIRED_GRAY_50_RGB,
     RETIRED_GRAY_50_RGBA_100, RETIRED_GRAY_50_RGBA_FRACTION)
-from ui.colors import GRAY_44
+from utils.colors import GRAY_44
 
 ROOT = Path(__file__).resolve().parent.parent
 OLD_HEX = RETIRED_GRAY_50
@@ -51,7 +51,7 @@ NEW_HEX = GRAY_44
 CONST = "GRAY_44"
 EXPECT = {'dark': ['scroll_handle', 'scrollbar_handle'],
           'image': ['scroll_handle', 'scrollbar_handle']}
-PALETTE_FILE = "ui/colors.py"
+PALETTE_FILE = "utils/colors.py"
 DICT_NAMES = {'dark': 'DARK_THEME_COLORS', 'image': 'IMAGE_MODE_COLORS',
               'light': 'LIGHT_THEME_COLORS'}
 
@@ -95,8 +95,8 @@ def colors_in(text: str) -> set[str]:
 
 
 def _palettes():
-    from ui.colors import (DARK_THEME_COLORS, IMAGE_MODE_COLORS,
-                           LIGHT_THEME_COLORS)
+    from utils.colors import (DARK_THEME_COLORS, IMAGE_MODE_COLORS,
+                              LIGHT_THEME_COLORS)
     return {'dark': DARK_THEME_COLORS, 'image': IMAGE_MODE_COLORS,
             'light': LIGHT_THEME_COLORS}
 
@@ -303,7 +303,7 @@ def test_the_integer_spellings_are_exactly_the_ones_awaiting_a_ruling():
 def test_the_ruled_tuples_hold_the_new_value_through_the_constant():
     """The two tuples the 2026-09-25 ruling collapsed. GRAY_44, and written as
     _to_rgb(GRAY_44), so a later move of GRAY_44 reaches them too."""
-    from ui import colors
+    from utils import colors
     tree = ast.parse((ROOT / PALETTE_FILE).read_text(encoding="utf-8-sig"))
     values = {}
     for node in tree.body:

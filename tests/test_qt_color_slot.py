@@ -220,7 +220,7 @@ def test_the_settings_example_is_what_a_copy_writes(main_window, qtbot, fmt):
     was not what a copy writes."""
     from PyQt6.QtWidgets import QApplication
 
-    from ui.colors import CLIPBOARD_PREVIEW_COLOR
+    from utils.colors import CLIPBOARD_PREVIEW_COLOR
     from ui.settings_dialog import SettingsDialog
     from utils.settings_manager import SettingsManager
 

@@ -26,7 +26,7 @@ core  ←  ui  ←  utils
 
 ## `colors.py` as the Single Source of Truth
 
-All theme color values originate from `ui/colors.py`. No other file in the codebase contains hardcoded color literals — not even for SVG exports, session-restore fallbacks, or transparency overlays. Every hex string, every RGB tuple, every `rgba(…)` CSS value lives in one file.
+All theme color values originate from `utils/colors.py`. No other file in the codebase contains hardcoded color literals — not even for SVG exports, session-restore fallbacks, or transparency overlays. Every hex string, every RGB tuple, every `rgba(…)` CSS value lives in one file.
 
 **Why:** before the centralization pass, the codebase had ~60–65 hardcoded color literals scattered across 15 files. Changing the brand gold required a project-wide find-and-replace that inevitably missed edge cases — a light-mode tooltip would still show the old color, or an exported SVG would look wrong. After centralization, adjusting the accent color is a one-line edit.
 

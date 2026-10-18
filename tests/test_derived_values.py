@@ -37,15 +37,15 @@ from color_values import (
     INVALID_BASE_FIVE_DIGITS, INVALID_BASE_NOT_HEX, RETIRED_GRAY_50_DIGITS,
     RETIRED_SCROLLBAR_BORDER_LITERAL, RETIRED_SIZE_OVERLAY_LITERAL,
     RETIRED_SLOT_IMAGE_LITERAL)
-from ui import colors
-from ui.colors import (DARK_THEME_COLORS as DARK,
-                       LIGHT_THEME_COLORS as LIGHT,
-                       IMAGE_MODE_COLORS as IMAGE,
-                       translucent,
-                       translucent_rgba)
+from utils import colors
+from utils.colors import (DARK_THEME_COLORS as DARK,
+                          LIGHT_THEME_COLORS as LIGHT,
+                          IMAGE_MODE_COLORS as IMAGE,
+                          translucent,
+                          translucent_rgba)
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-SRC = ROOT / "ui" / "colors.py"
+SRC = ROOT / "utils" / "colors.py"
 PALETTES = {"DARK_THEME_COLORS": DARK, "LIGHT_THEME_COLORS": LIGHT,
             "IMAGE_MODE_COLORS": IMAGE}
 HELPERS = ("translucent", "translucent_rgba")
@@ -102,7 +102,7 @@ def decompose(value: str) -> tuple[str, int] | None:
 
 def _derived():
     """(where, call node, resolved value) for every helper call at module level
-    in ui/colors.py -- a constant, or a value in a module-level dict."""
+    in utils/colors.py -- a constant, or a value in a module-level dict."""
     tree = ast.parse(SRC.read_text(encoding="utf-8-sig"))
     out = []
     for node in tree.body:
@@ -203,7 +203,7 @@ def test_the_helpers_refuse_what_they_cannot_compose():
 
 def test_the_alphas_are_the_declared_bytes():
     for name, (byte, _was) in ALPHAS.items():
-        assert hasattr(colors, name), f"ui.colors has no {name}"
+        assert hasattr(colors, name), f"utils.colors has no {name}"
         value = getattr(colors, name)
         assert type(value) is int, f"{name} is {value!r}, not an int byte"
         assert value == byte, f"{name} is {value:#x}, declared {byte:#x}"
@@ -233,7 +233,7 @@ def test_every_derived_value_names_constants_that_exist():
             if not isinstance(arg, ast.Name):
                 bad.append(f"{where}: the {pos} is {ast.unparse(arg)}, not a name")
             elif not hasattr(colors, arg.id):
-                bad.append(f"{where}: the {pos} names {arg.id}, which ui.colors "
+                bad.append(f"{where}: the {pos} names {arg.id}, which utils.colors "
                            f"does not define")
         if isinstance(base, ast.Name) and hasattr(colors, base.id):
             if not re.fullmatch(r"#[0-9a-fA-F]{6}", str(getattr(colors, base.id))):
@@ -381,7 +381,7 @@ def test_what_qcolor_reads_it_can_read():
 
 # ------------------------------------------------ eight-digit hex, lower case
 
-LOWER8_MODULES = ('ui.colors', 'ui.theme_manager')
+LOWER8_MODULES = ('utils.colors', 'ui.theme_manager')
 #: Found when this was written; below the floor, the sweep has gone blind.
 LOWER8_FLOOR = 8
 LOWER8_FILES = 30
@@ -466,9 +466,9 @@ def test_eight_digit_hex_is_lower_case():
 import importlib as _importlib
 
 #: Where the derived constants live, and where their bases and alphas live.
-TUPLE_HOME = 'ui/colors.py'
-TUPLE_HOME_MODULE = 'ui.colors'
-TUPLE_BASES_MODULE = 'ui.colors'
+TUPLE_HOME = 'utils/colors.py'
+TUPLE_HOME_MODULE = 'utils.colors'
+TUPLE_BASES_MODULE = 'utils.colors'
 #: Each derived constant, by NAME: (helper, base, alpha or None). A register
 #: move passes straight through; a value re-made from something else fails.
 TUPLES_MADE_OF = {'SEARCH_DIM_OVERLAY': ('translucent_tuple', 'TRUE_BLACK', 'SEARCH_DIM_ALPHA'), 'SLOT_BORDER_THIN_COLOR': ('_to_rgb', 'GRAY_44', None), 'PREVIEW_GRID_BORDER': ('_to_rgb', 'TRUE_BLACK', None), 'HISTORY_SWATCH_BORDER': ('_to_rgb', 'GRAY_44', None), 'DEFAULT_SLOT_COLOR_IMAGE_RGB': ('translucent_tuple', 'TRUE_BLACK', 'SLOT_IMAGE_ALPHA')}

@@ -55,7 +55,7 @@ from core.color_harmonies  import ColorHarmonies
 from core.accessibility    import Accessibility
 from core.palette_formats  import PaletteFormats, ImportResult
 from core.palette_metadata import PaletteMetadata
-from ui.colors             import (
+from utils.colors          import (
     get_theme_colors, is_dark_theme,
     BRAND_GOLD, BRAND_DARK_GOLD, BRAND_GOLD_RGB, BRAND_DARK_GOLD_RGB,
     BRAND_DARK_GOLD_RGB, SLOT_BORDER_THIN_COLOR, SLOT_BORDER_THICK_COLOR,
@@ -380,7 +380,7 @@ class TestAccessibility(unittest.TestCase):
 # 4. COLORS MODULE
 # ══════════════════════════════════════════════════════════════════════════════
 class TestColorsModule(unittest.TestCase):
-    """ui/colors.py — theme dicts, brand constants, get_theme_colors."""
+    """utils/colors.py — theme dicts, brand constants, get_theme_colors."""
 
     # RNV-NAMED-AND-USED 2026-10-04: nine keys nothing read went from the
     # palettes, and from this list with them. Ruled: "for the locked key test

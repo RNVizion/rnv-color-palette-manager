@@ -32,7 +32,7 @@ from PyQt6.QtWidgets import (
 from utils.config import APP_NAME, APP_VERSION, ICONS_DIR
 from utils.font_loader import get_font_family
 from utils.logger import Logger, get_logger_instance
-from ui.colors import BRAND_GOLD, TRUE_BLACK, WHITE
+from utils.colors import BRAND_GOLD, TRUE_BLACK, WHITE
 
 logger: Logger = get_logger_instance("AboutDialog")
 
@@ -43,7 +43,7 @@ def _ink(dialog) -> str:
     These two sites hardcoded BRAND_GOLD, so light mode drew #d2bc93 on a light
     panel at 1.70:1.
     """
-    from ui.colors import get_theme_colors
+    from utils.colors import get_theme_colors
     return get_theme_colors(getattr(dialog, "_theme_name", "dark"))["accent_ink"]
 
 
@@ -477,7 +477,7 @@ Professional color palette creation for artists, designers, and developers<br>
         """Apply the current theme to the dialog.
         All colors pulled from the theme dict — no hardcoded values.
         """
-        from ui.colors import get_theme_colors
+        from utils.colors import get_theme_colors
         font_family = get_font_family()
 
         theme = get_theme_colors(self._theme_name)

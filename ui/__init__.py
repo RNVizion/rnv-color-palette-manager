@@ -4,17 +4,6 @@ Contains theme manager, buttons, dialogs, and UI widgets.
 """
 from __future__ import annotations
 
-from ui.colors import (
-    DARK_THEME_COLORS,
-    LIGHT_THEME_COLORS,
-    IMAGE_MODE_COLORS,
-    get_theme_colors,
-    is_dark_theme,
-    ThemeName,
-    ThemeDict,
-    BRAND_GOLD,
-    BRAND_DARK_GOLD,
-)
 from ui.theme_manager import ThemeManager
 from ui.image_button import ImageButton
 from ui.image_upload_dialog import ImageUploadDialog
@@ -27,17 +16,6 @@ from ui.color_search import ColorSearchBar
 from ui.batch_export_dialog import BatchExportDialog, BatchExportResult
 
 __all__ = [
-    # Theme dictionaries & helpers
-    "DARK_THEME_COLORS",
-    "LIGHT_THEME_COLORS",
-    "IMAGE_MODE_COLORS",
-    "get_theme_colors",
-    "is_dark_theme",
-    "ThemeName",
-    "ThemeDict",
-    # Brand colors
-    "BRAND_GOLD",
-    "BRAND_DARK_GOLD",
     # Theme manager
     "ThemeManager",
     # Buttons & widgets
