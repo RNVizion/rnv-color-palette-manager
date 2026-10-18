@@ -3,7 +3,7 @@
 Ruled by Chris on 2026-09-02, reading the STATUS family across the fleet.
 Three values disagreed with the register; all three collapse.
 
-A status colour is not decoration. It carries MEANING -- success, warning,
+A status color is not decoration. It carries MEANING -- success, warning,
 error -- and the meaning is the same in every RNV product, which is why the
 register owns the value and an application must not have a second opinion.
 This guard is the thing that stops the second opinion coming back.
@@ -14,7 +14,7 @@ import json
 import re
 from pathlib import Path
 
-from colour_values import (
+from color_values import (
     RETIRED_BOOTSTRAP_AMBER, RETIRED_BOOTSTRAP_GREEN, RETIRED_BOOTSTRAP_RED,
     RETIRED_ERROR_TEXT_LIGHT_ORPHAN, RETIRED_ERROR_TEXT_ORPHAN, RETIRED_MATERIAL_GREEN,
     RETIRED_OWN_DARK_ERROR_TEXT)
@@ -22,10 +22,10 @@ from ui import colors
 
 ROOT = Path(__file__).resolve().parent.parent
 
-#: RNV-COLOUR-SYNC, 2026-10-16. Where each colour comes from, as brand_map.json
-#: says. The values are held by tests/test_colours_in_sync.py, against the
+#: RNV-COLOR-SYNC, 2026-10-16. Where each color comes from, as brand_map.json
+#: says. The values are held by tests/test_colors_in_sync.py, against the
 #: register at the pin; what this file holds is the name each one takes.
-BRAND_MAP = json.loads((ROOT / "brand_map.json").read_text(encoding="utf-8"))["colours"]
+BRAND_MAP = json.loads((ROOT / "brand_map.json").read_text(encoding="utf-8"))["colors"]
 
 
 def _palettes():
@@ -72,13 +72,13 @@ def test_the_strays_are_gone_from_every_palette():
 
 
 def test_the_three_ruled_values_are_the_register_s():
-    """Not "some green" -- THE green. An app that picks its own status colour
+    """Not "some green" -- THE green. An app that picks its own status color
     has an opinion about what success means, which is the register's job."""
     # RNV-STATUS-FAMILY (2026-09-03): the register replaced all
     # three. The green and the red were one olive under
     # deuteranopia at about 4 apart; the amber read 1.63 on
     # WHITE against a 3:1 fill floor. Still pinned by value --
-    # an app that picks its own status colour has an opinion
+    # an app that picks its own status color has an opinion
     # about what success means, which is the register's job.
     # RNV-NAMED-AND-USED, 2026-10-04: the three fills were pinned
     # here. This application draws none of them and no longer
@@ -86,8 +86,8 @@ def test_the_three_ruled_values_are_the_register_s():
     # RETIRED_ERROR_TEXT_ORPHAN was derived from RETIRED_BOOTSTRAP_RED and
     # orphaned when the
     # base was retired, so it moves with it.
-    # RNV-COLOUR-SYNC, 2026-10-16: pinned by the register name brand_map.json
-    # writes it from; tests/test_colours_in_sync.py holds the value.
+    # RNV-COLOR-SYNC, 2026-10-16: pinned by the register name brand_map.json
+    # writes it from; tests/test_colors_in_sync.py holds the value.
     assert BRAND_MAP["STATUS_ERROR_TEXT"] == "STATUS.error-text"
 
 

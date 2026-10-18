@@ -1,15 +1,15 @@
-"""Derived values: a colour that is a named colour AT AN ALPHA.
+"""Derived values: a color that is a named color AT AN ALPHA.
 
-A colour here used to be one of two things -- a name, or a literal -- and this
+A color here used to be one of two things -- a name, or a literal -- and this
 file adds the third the application always had and never declared.
-RETIRED_SCROLLBAR_BORDER_LITERAL is not a colour beside APP_BORDER; it IS
+RETIRED_SCROLLBAR_BORDER_LITERAL is not a color beside APP_BORDER; it IS
 APP_BORDER at alpha 100, and until 2026-09-25 nothing related the two. Now it
 is written translucent(APP_BORDER, SCROLLBAR_BORDER_ALPHA), and a change to
 APP_BORDER reaches it.
 
-WHY THAT MATTERS HERE, MEASURED. RNV-COLLAPSE-505050 ruled RETIRED_GREY_50
-onto GREY_44 on 2026-09-02. IMAGE_MODE_COLORS went on painting the main
-scrollbar handle with it for three weeks, spelled RETIRED_GREY_50_RGBA_100,
+WHY THAT MATTERS HERE, MEASURED. RNV-COLLAPSE-505050 ruled RETIRED_GRAY_50
+onto GRAY_44 on 2026-09-02. IMAGE_MODE_COLORS went on painting the main
+scrollbar handle with it for three weeks, spelled RETIRED_GRAY_50_RGBA_100,
 while the guard for that ruling reported clean. A written-down derivative is orphaned the
 moment its source moves, and nothing says so.
 
@@ -19,7 +19,7 @@ asserting that their digits agreed. Ruled 2026-09-24: derived values are
 DERIVED, not asserted. They compose from it now.
 
 WHAT MOVES A PIXEL: ONE THING, BY RULING. The image-mode scrollbar handle goes
-from RETIRED_GREY_50 at 100 to GREY_44 at 150. Everything else here is the same colour
+from RETIRED_GRAY_50 at 100 to GRAY_44 at 150. Everything else here is the same color
 at the same alpha, respelled so that it follows its base -- and
 test_nothing_moved_that_was_not_ruled holds each value to the constant and the
 byte it is made of.
@@ -30,11 +30,11 @@ import ast
 import pathlib
 import re
 
-from colour_values import (
+from color_values import (
     EXAMPLE_BLACK, EXAMPLE_BLACK_RGBA_200, EXAMPLE_CHARCOAL, EXAMPLE_CHARCOAL_AT_ED,
-    EXAMPLE_CHARCOAL_BARE_UPPER, EXAMPLE_CHARCOAL_RGBA_191, EXAMPLE_MID_GREY,
+    EXAMPLE_CHARCOAL_BARE_UPPER, EXAMPLE_CHARCOAL_RGBA_191, EXAMPLE_MID_GRAY,
     EXAMPLE_TAN, EXAMPLE_TAN_AT_33, INVALID_BASE_EIGHT_DIGITS,
-    INVALID_BASE_FIVE_DIGITS, INVALID_BASE_NOT_HEX, RETIRED_GREY_50_DIGITS,
+    INVALID_BASE_FIVE_DIGITS, INVALID_BASE_NOT_HEX, RETIRED_GRAY_50_DIGITS,
     RETIRED_SCROLLBAR_BORDER_LITERAL, RETIRED_SIZE_OVERLAY_LITERAL,
     RETIRED_SLOT_IMAGE_LITERAL)
 from ui import colors
@@ -61,14 +61,14 @@ ALPHAS = {
     "SLOT_IMAGE_ALPHA": (0xAB, RETIRED_SLOT_IMAGE_LITERAL),
 }
 
-#: What each derived value is made of: the constant its colour comes from, and
+#: What each derived value is made of: the constant its color comes from, and
 #: its alpha byte. See test_nothing_moved_that_was_not_ruled for why by name.
 MADE_OF = {
     "APP_WINDOW_OVERLAY": ("TRUE_BLACK", 0xED),
     "APP_PANEL_OVERLAY": ("BRAND_BLACK", 0xED),
     "SIZE_OVERLAY_BG": ("TRUE_BLACK", 0xC8),
     "IMAGE_MODE_COLORS['scrollbar_border']": ("APP_BORDER", 0x64),
-    "IMAGE_MODE_COLORS['scrollbar_handle']": ("GREY_44", 0x96),  # the ruled one
+    "IMAGE_MODE_COLORS['scrollbar_handle']": ("GRAY_44", 0x96),  # the ruled one
 }
 
 #: The one derived value spelled rgba(), and why. rgba() is valid in a
@@ -125,7 +125,7 @@ def _derived():
     return out
 
 
-def _named_colours() -> set[str]:
+def _named_colors() -> set[str]:
     """Every six-digit value this module names -- the bases a composed literal
     could have been written against."""
     return {v.lower() for n, v in vars(colors).items()
@@ -163,7 +163,7 @@ def _bare_strings(tree: ast.AST) -> set[int]:
 # ------------------------------------------------------------ guard the guard
 
 def test_translucent_composes_alpha_first():
-    """#AARRGGBB, not #RRGGBBAA. Taking the wrong end gives a real colour and
+    """#AARRGGBB, not #RRGGBBAA. Taking the wrong end gives a real color and
     the wrong one, which is the failure that does not look like a failure.
 
     Lower case, whatever case it is given, like rnv-icon-builder's helper of
@@ -173,10 +173,10 @@ def test_translucent_composes_alpha_first():
     assert translucent(EXAMPLE_TAN, 0x33) == EXAMPLE_TAN_AT_33
 
 
-def test_translucent_rgba_is_the_same_colour_in_the_other_spelling():
+def test_translucent_rgba_is_the_same_color_in_the_other_spelling():
     assert translucent_rgba(EXAMPLE_CHARCOAL, 191) == EXAMPLE_CHARCOAL_RGBA_191
     assert translucent_rgba(EXAMPLE_BLACK, 0xC8) == EXAMPLE_BLACK_RGBA_200
-    for base in (EXAMPLE_CHARCOAL, EXAMPLE_TAN, EXAMPLE_MID_GREY):
+    for base in (EXAMPLE_CHARCOAL, EXAMPLE_TAN, EXAMPLE_MID_GRAY):
         for alpha in (0, 0x64, 0xED, 255):
             assert (decompose(translucent(base, alpha))
                     == decompose(translucent_rgba(base, alpha))
@@ -237,7 +237,7 @@ def test_every_derived_value_names_constants_that_exist():
                            f"does not define")
         if isinstance(base, ast.Name) and hasattr(colors, base.id):
             if not re.fullmatch(r"#[0-9a-fA-F]{6}", str(getattr(colors, base.id))):
-                bad.append(f"{where}: the base {base.id} is not a six-digit colour")
+                bad.append(f"{where}: the base {base.id} is not a six-digit color")
         if isinstance(alpha, ast.Name) and alpha.id not in ALPHAS:
             bad.append(f"{where}: the alpha {alpha.id} is not a declared "
                        f"composite alpha")
@@ -282,13 +282,13 @@ def test_the_rgba_spelling_is_used_only_where_the_lock_pins_it():
 def test_no_composed_literal_is_left_in_the_application():
     """The completeness half. Every EVALUATED string in the application's own
     source -- not tests, not docstrings, not this round's delivery script --
-    that spells a named colour at an alpha. A literal cannot follow its base.
+    that spells a named color at an alpha. A literal cannot follow its base.
 
-    Alpha 0 is not a colour and is not counted; a base no constant here names
+    Alpha 0 is not a color and is not counted; a base no constant here names
     has no row to follow, and is not counted either -- SELECTION_OVERLAY_COLOR
     is Windows' accent blue, which is a question for the register and not a
     derivation this file can check."""
-    named = _named_colours()
+    named = _named_colors()
     strays, files = [], 0
     for path in sorted(ROOT.rglob("*.py")):
         rel = path.relative_to(ROOT)
@@ -323,16 +323,16 @@ def test_no_composed_literal_is_left_in_the_application():
 
 # --------------------------------------------------- what moved, and what not
 
-def test_the_scrollbar_handle_is_grey_44_at_150():
+def test_the_scrollbar_handle_is_gray_44_at_150():
     """RNV-COLLAPSE-505050 and the alpha, both ruled 2026-09-24."""
     assert decompose(IMAGE["scrollbar_handle"]) == (
-        colors.GREY_44, colors.SCROLLBAR_HANDLE_ALPHA)
+        colors.GRAY_44, colors.SCROLLBAR_HANDLE_ALPHA)
     assert colors.SCROLLBAR_HANDLE_ALPHA == 150
-    assert RETIRED_GREY_50_DIGITS not in IMAGE["scrollbar_handle"]
+    assert RETIRED_GRAY_50_DIGITS not in IMAGE["scrollbar_handle"]
 
 
 def test_nothing_moved_that_was_not_ruled():
-    """Each derived value, held to what it is MADE OF: the constant its colour
+    """Each derived value, held to what it is MADE OF: the constant its color
     comes from and its alpha byte, as of 2026-09-25.
 
     BY NAME, NOT BY HEX, and that is the point of the round. A register move
@@ -369,9 +369,9 @@ def test_what_qcolor_reads_it_can_read():
     QColor(*DEFAULT_SLOT_COLOR_IMAGE_RGB), so the tuple is what is held."""
     from PyQt6.QtGui import QColor
     for value, alpha in ((IMAGE["window_bg"], 0xED), (IMAGE["scroll_bg"], 0xED)):
-        colour = QColor(value)
-        assert colour.isValid(), f"QColor({value!r}) is invalid"
-        assert colour.alpha() == alpha, f"{value} reads at alpha {colour.alpha()}"
+        color = QColor(value)
+        assert color.isValid(), f"QColor({value!r}) is invalid"
+        assert color.alpha() == alpha, f"{value} reads at alpha {color.alpha()}"
     slot = QColor(*colors.DEFAULT_SLOT_COLOR_IMAGE_RGB)
     assert slot.isValid() and slot.alpha() == colors.SLOT_IMAGE_ALPHA == 0xAB, (
         f"a new slot in image mode reads at alpha {slot.alpha()}")
@@ -388,7 +388,7 @@ LOWER8_FILES = 30
 
 
 def _lower8_values():
-    """(where, value) for every eight-digit hex string the colour modules
+    """(where, value) for every eight-digit hex string the color modules
     build -- their constants, the dicts they hold, and their classes' dicts
     -- as they EVALUATE, which is what a derived value is."""
     import importlib
@@ -438,7 +438,7 @@ def test_eight_digit_hex_is_lower_case():
     changed.
 
     Both halves: every eight-digit value the application BUILDS, as its
-    colour modules evaluate, and every eight-digit literal it WRITES in code.
+    color modules evaluate, and every eight-digit literal it WRITES in code.
     Docstrings are prose, and a sentence that names an upper-case value as
     history keeps its case."""
     built = list(_lower8_values())
@@ -461,7 +461,7 @@ def test_eight_digit_hex_is_lower_case():
     assert not written, "written in upper case:\n  " + "\n  ".join(written)
 
 
-# ------------------------------------------------- colours spelled in integers
+# ------------------------------------------------- colors spelled in integers
 
 import importlib as _importlib
 
@@ -471,7 +471,7 @@ TUPLE_HOME_MODULE = 'ui.colors'
 TUPLE_BASES_MODULE = 'ui.colors'
 #: Each derived constant, by NAME: (helper, base, alpha or None). A register
 #: move passes straight through; a value re-made from something else fails.
-TUPLES_MADE_OF = {'SEARCH_DIM_OVERLAY': ('translucent_tuple', 'TRUE_BLACK', 'SEARCH_DIM_ALPHA'), 'SLOT_BORDER_THIN_COLOR': ('_to_rgb', 'GREY_44', None), 'PREVIEW_GRID_BORDER': ('_to_rgb', 'TRUE_BLACK', None), 'HISTORY_SWATCH_BORDER': ('_to_rgb', 'GREY_44', None), 'DEFAULT_SLOT_COLOR_IMAGE_RGB': ('translucent_tuple', 'TRUE_BLACK', 'SLOT_IMAGE_ALPHA')}
+TUPLES_MADE_OF = {'SEARCH_DIM_OVERLAY': ('translucent_tuple', 'TRUE_BLACK', 'SEARCH_DIM_ALPHA'), 'SLOT_BORDER_THIN_COLOR': ('_to_rgb', 'GRAY_44', None), 'PREVIEW_GRID_BORDER': ('_to_rgb', 'TRUE_BLACK', None), 'HISTORY_SWATCH_BORDER': ('_to_rgb', 'GRAY_44', None), 'DEFAULT_SLOT_COLOR_IMAGE_RGB': ('translucent_tuple', 'TRUE_BLACK', 'SLOT_IMAGE_ALPHA')}
 #: The alpha bytes behind them, each the one its literal already carried.
 TUPLE_ALPHAS = {'SEARCH_DIM_ALPHA': 140, 'SLOT_IMAGE_ALPHA': 171}
 #: Module- and class-level constants spelled in integers ON PURPOSE -- data a
@@ -484,7 +484,7 @@ _WRAP = None
 
 def _int_spelled(tree):
     """(name, #rrggbb, alpha) for every module- or class-level constant whose
-    value spells a colour in integers: a tuple or list of three or four int
+    value spells a color in integers: a tuple or list of three or four int
     literals, or QColor/QPen/QBrush called with them. Locals inside functions
     are state, not constants, and are not read."""
     bodies = [tree.body] + [n.body for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
@@ -548,12 +548,12 @@ def test_the_integer_sweep_reads_both_notations():
     probe = ast.parse("A = (0, 0, 0, 50)\n"
                       "class K:\n    B = QColor(68, 68, 68)\n"
                       "def f():\n    c = (0, 0, 0)\n")
-    assert sorted(_int_spelled(probe)) == [("A", EXAMPLE_BLACK, 50), ("B", EXAMPLE_MID_GREY, 255)]
+    assert sorted(_int_spelled(probe)) == [("A", EXAMPLE_BLACK, 50), ("B", EXAMPLE_MID_GRAY, 255)]
 
 
 def test_every_tuple_constant_is_derived_by_name():
-    """RNV-TUPLE-ROUND, 2026-09-26. A colour spelled in integers is a colour
-    every string sweep in the fleet was blind to, and RETIRED_GREY_50 sat in two of
+    """RNV-TUPLE-ROUND, 2026-09-26. A color spelled in integers is a color
+    every string sweep in the fleet was blind to, and RETIRED_GRAY_50 sat in two of
     them for three weeks after it was ruled away. Each constant here is now
     its helper called on a named base and a named alpha, and it evaluates to
     exactly that pair -- held BY NAME, so a register move passes through."""
@@ -596,10 +596,10 @@ def test_the_tuple_alphas_are_the_declared_bytes():
             f"{name} is {value!r}, declared {byte:#x}")
 
 
-def test_no_named_colour_is_spelled_in_integers():
+def test_no_named_color_is_spelled_in_integers():
     """The completeness half. Every module- or class-level constant in the
-    application that spells a NAMED colour in integers. Alpha 0 draws no
-    colour; a base no constant names has no row to follow; and INT_DATA is
+    application that spells a NAMED color in integers. Alpha 0 draws no
+    color; a base no constant names has no row to follow; and INT_DATA is
     data a person starts from, each with its reason."""
     bases = _importlib.import_module(TUPLE_BASES_MODULE)
     named = {v.lower() for n, v in vars(bases).items()
@@ -613,5 +613,5 @@ def test_no_named_colour_is_spelled_in_integers():
                 continue
             strays.append(f"{rel}: {name} = {rgb} at alpha {alpha}")
     assert files >= TUPLE_FILES, f"only {files} files swept -- the walk has gone blind"
-    assert not strays, ("named colours still spelled in integers, where no "
+    assert not strays, ("named colors still spelled in integers, where no "
                         "register move reaches them:\n  " + "\n  ".join(strays))

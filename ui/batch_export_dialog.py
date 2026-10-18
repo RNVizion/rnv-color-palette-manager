@@ -351,12 +351,12 @@ class BatchExportDialog(QDialog):
     # ------------------------------------------------------------------
 
     def _error_text_color(self) -> str:
-        """The error label's colour for the theme currently in force.
+        """The error label's color for the theme currently in force.
 
         Follows the idiom _apply_theme already uses for ACCENT_PRESSED_TEXT:
         ask the theme manager, fall back to the dark value. Both call sites go
         through here so they cannot drift apart -- which is how one of two
-        sibling sites ends up rendering a retired colour.
+        sibling sites ends up rendering a retired color.
         """
         if self._theme_manager and self._theme_manager.current_theme == 'light':
             return STATUS_ERROR_TEXT_LIGHT

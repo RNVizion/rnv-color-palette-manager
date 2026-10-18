@@ -14,7 +14,7 @@ from utils.logger import Logger, get_logger_instance
 
 logger: Logger = get_logger_instance(__name__)
 
-# Type alias for a serialised slot snapshot
+# Type alias for a serialized slot snapshot
 type SlotSnapshot = dict[str, Any]
 
 

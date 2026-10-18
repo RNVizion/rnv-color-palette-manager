@@ -1,6 +1,6 @@
 """The retired plate, the dark rung, and the translucent overlays.
 
-WHAT THIS PASS DID. rnv-brand retired RETIRED_GREY_D0 as a light interaction
+WHAT THIS PASS DID. rnv-brand retired RETIRED_GRAY_D0 as a light interaction
 ground and registered APP["hover-light"] in its place -- first as
 REGISTER_GOLD_TEXT_GROUND_FLOOR on 2026-08-29, then as APP_HOVER_LIGHT on
 2026-08-30. rev 22 had already registered APP["panel-hover"], APP_PANEL_HOVER,
@@ -9,7 +9,7 @@ else changes only how it is spelled.
 
 THE DEFECT THIS CLOSES. ui/about_dialog.py draws the hover ground from
 dialog_btn_hover_bg and the hover label from accent_ink, in the same rule. In
-light that was BRAND_DARK_GOLD_DEEP on RETIRED_GREY_D0 -- 3.6013:1 against a
+light that was BRAND_DARK_GOLD_DEEP on RETIRED_GRAY_D0 -- 3.6013:1 against a
 4.5 floor. It had been wrong as long as the plate existed and carried a STRICT
 xfail since 2026-08-28, written so that fixing it would fail the test and force
 the note to be rewritten rather than let the exemption outlive the defect.
@@ -19,9 +19,9 @@ REGISTER_GOLD_TEXT_GROUND_FLOOR clears by 0.0334 and is
 the ground BRAND_DARK_GOLD_DEEP is derived against -- rev 24 registered it as
 GOLD_TEXT_GROUND_FLOOR. A plate on that value fails the moment the gold moves
 one step: -13 instead of -14 gives 4.4675. APP_HOVER_LIGHT clears by 0.2875 and is
-grey(14) exactly. A boundary is not a plate.
+gray(14) exactly. A boundary is not a plate.
 
-THE OVERLAYS. Qt spells a translucent colour #AARRGGBB. The 2026-08-29 wiring
+THE OVERLAYS. Qt spells a translucent color #AARRGGBB. The 2026-08-29 wiring
 pass swept for six-digit literals, so RETIRED_WINDOW_OVERLAY_LITERAL never
 matched TRUE_BLACK and three
 registered values sat in IMAGE_MODE_COLORS -- a DARK dict here -- while the
@@ -35,7 +35,7 @@ import pathlib
 
 import pytest
 
-from colour_values import REGISTER_GOLD_TEXT_GROUND_FLOOR, RETIRED_GREY_D0
+from color_values import REGISTER_GOLD_TEXT_GROUND_FLOOR, RETIRED_GRAY_D0
 from ui import colors
 from ui.colors import (DARK_THEME_COLORS as DARK,
                        IMAGE_MODE_COLORS as IMAGE,
@@ -44,16 +44,16 @@ from ui.colors import (DARK_THEME_COLORS as DARK,
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 SRC = ROOT / 'ui/colors.py'
 
-#: RNV-COLOUR-SYNC, 2026-10-16. Where each colour comes from, as brand_map.json
-#: says. The values are held by tests/test_colours_in_sync.py, against the
+#: RNV-COLOR-SYNC, 2026-10-16. Where each color comes from, as brand_map.json
+#: says. The values are held by tests/test_colors_in_sync.py, against the
 #: register at the pin; what this file holds is the name each one takes.
-BRAND_MAP = json.loads((ROOT / "brand_map.json").read_text(encoding="utf-8"))["colours"]
+BRAND_MAP = json.loads((ROOT / "brand_map.json").read_text(encoding="utf-8"))["colors"]
 
 GRID_STEP = 0x11
 LADDER_STEP = 0x10
 TEXT_FLOOR = 4.5
 
-#: Constant name -> the APP key it mirrors. RNV-COLOUR-SYNC, 2026-10-16: the
+#: Constant name -> the APP key it mirrors. RNV-COLOR-SYNC, 2026-10-16: the
 #: value both held was written here too; it is written from the register now.
 NEW = {
     'APP_PANEL_HOVER': 'panel-hover',
@@ -83,13 +83,13 @@ PALETTES = {'DARK_THEME_COLORS': DARK, 'IMAGE_MODE_COLORS': IMAGE,
             'LIGHT_THEME_COLORS': LIGHT}
 
 #: The value the register retired as a light interaction ground.
-RETIRED = RETIRED_GREY_D0
+RETIRED = RETIRED_GRAY_D0
 
 #: The value the plate must not BE, however close it looks.
 FLOOR = REGISTER_GOLD_TEXT_GROUND_FLOOR
 
 
-def grey(n: int) -> str:
+def gray(n: int) -> str:
     v = n * GRID_STEP
     return '#%02x%02x%02x' % (v, v, v)
 
@@ -148,9 +148,9 @@ def test_the_new_constants_hold_the_registered_values():
     """The local half of the mirror. Runs everywhere, including where
     engine.brand is not importable.
 
-    RNV-COLOUR-SYNC, 2026-10-16: it held each value written out. It holds now
+    RNV-COLOR-SYNC, 2026-10-16: it held each value written out. It holds now
     that brand_map.json takes each from its APP key; the value is written from
-    there, and tests/test_colours_in_sync.py holds it."""
+    there, and tests/test_colors_in_sync.py holds it."""
     drift = {n: BRAND_MAP.get(n) for n, key in NEW.items()
              if BRAND_MAP.get(n) != f'APP.{key}'}
     assert not drift, (
@@ -182,7 +182,7 @@ def test_provenance_is_declared_for_everything_this_pass_named():
 # ------------------------------------------------------------- the retirement
 
 def test_the_retired_value_is_gone_from_every_palette():
-    """RETIRED_GREY_D0 is ruled out as a light interaction ground, not merely replaced
+    """RETIRED_GRAY_D0 is ruled out as a light interaction ground, not merely replaced
     in the two places that prompted the ruling."""
     looked, found = 0, []
     for dict_name, live in PALETTES.items():
@@ -210,7 +210,7 @@ def test_gold_carries_on_the_plate_in_every_mode():
 
 
 def test_the_plate_is_a_step_on_the_ink_grid():
-    assert colors.APP_HOVER_LIGHT == grey(14)
+    assert colors.APP_HOVER_LIGHT == gray(14)
 
 
 def test_the_plate_is_not_the_gold_text_floor():
@@ -258,9 +258,9 @@ def test_the_dark_rungs_are_exact_steps_on_the_ladder():
 
 
 def test_the_border_is_an_edge_and_not_a_rung():
-    """The distinction that made the ladder look incomplete. APP_BORDER is grey(3)
+    """The distinction that made the ladder look incomplete. APP_BORDER is gray(3)
     on the ink grid, which governs inks and edges; it was never a surface."""
-    assert colors.APP_BORDER == grey(3)
+    assert colors.APP_BORDER == gray(3)
     base = int(colors.BRAND_BLACK.lstrip('#'), 16)
     rungs = {base + n * (LADDER_STEP * 0x010101) for n in range(-1, 3)}
     assert int(colors.APP_BORDER.lstrip('#'), 16) not in rungs
@@ -281,7 +281,7 @@ def test_every_overlay_is_its_base_at_the_declared_alpha():
         assert int(overlay[1:3], 16) == colors.IMAGE_OVERLAY_ALPHA, (
             f'{name} composites at {overlay[1:3]}, not IMAGE_OVERLAY_ALPHA')
         assert overlay[3:].lower() == base[1:].lower(), (
-            f'{name} is {overlay}, whose colour half is not {base_name} '
+            f'{name} is {overlay}, whose color half is not {base_name} '
             f'{base}. An overlay that stops tracking its base is the exact '
             f'drift this naming exists to prevent.')
 

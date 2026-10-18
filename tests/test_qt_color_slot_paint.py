@@ -22,7 +22,7 @@ import pytest
 from PyQt6.QtCore import QSize, Qt
 from PyQt6.QtGui import QColor, QImage, QPixmap
 
-from colour_values import DATA_IMAGE_YELLOW, DATA_SLOT_RED
+from color_values import DATA_IMAGE_YELLOW, DATA_SLOT_RED
 
 
 # ═══════════════════════════════════════════════════════════════════════════

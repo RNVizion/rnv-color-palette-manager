@@ -213,8 +213,8 @@ def test_right_click_invokes_context_menu(main_window, fresh_slot, qtbot):
 
 @pytest.mark.parametrize("fmt", ["hex", "rgb", "hsl"])
 def test_the_settings_example_is_what_a_copy_writes(main_window, qtbot, fmt):
-    """RNV-COLOUR-SYNC, #58 A (2026-10-18). Settings shows an example of each
-    clipboard format, in CLIPBOARD_PREVIEW_COLOR. A slot of that colour,
+    """RNV-COLOR-SYNC, #58 A (2026-10-18). Settings shows an example of each
+    clipboard format, in CLIPBOARD_PREVIEW_COLOR. A slot of that color,
     copied in the same format, puts on the clipboard exactly what follows
     "Example: ". The HSL example was written by hand until this date, and
     was not what a copy writes."""

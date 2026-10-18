@@ -3,18 +3,18 @@ Muted and disabled text: aligned to the ecosystem, and honest about which of
 them anything actually paints.
 
 `text_disabled` is live -- the batch export dialog and the menu bar both read
-it. It is now GREY_55 dark / APP_TEXT_DIM light, matching the other four apps.
+it. It is now GRAY_55 dark / APP_TEXT_DIM light, matching the other four apps.
 Both sit below every contrast floor and are meant to: WCAG 1.4.3 exempts text in an
 inactive component, and disabled text that reads as clearly as enabled text is
 not doing its job.
 
 `text_secondary` is live since 2026-09-27 (RNV-MUTED-DESCRIPTIONS, ruling 1 of
-the colour chart). Until then nothing painted it: the settings dialog read it
-into a local it never used, and six labels in two dialogs wrote `color: grey`
-instead -- RETIRED_CSS_GREY in every mode. They are named "muted_text" now and each
-dialog's stylesheet draws that name in text_secondary: GREY_88 in dark and
-image, GREY_66 in light, the muted text all five applications paint. The
-tests below hold the wiring, the values, and the colour each label ends up
+the color chart). Until then nothing painted it: the settings dialog read it
+into a local it never used, and six labels in two dialogs wrote `color: gray`
+instead -- RETIRED_CSS_GRAY in every mode. They are named "muted_text" now and each
+dialog's stylesheet draws that name in text_secondary: GRAY_88 in dark and
+image, GRAY_66 in light, the muted text all five applications paint. The
+tests below hold the wiring, the values, and the color each label ends up
 drawn in.
 """
 from __future__ import annotations
@@ -24,7 +24,7 @@ import re
 
 import pytest
 
-from ui.colors import (DARK_THEME_COLORS, GREY_66, GREY_88, IMAGE_MODE_COLORS,
+from ui.colors import (DARK_THEME_COLORS, GRAY_66, GRAY_88, IMAGE_MODE_COLORS,
                        LIGHT_THEME_COLORS)
 
 THEMES = {
@@ -70,7 +70,7 @@ def test_the_text_hierarchy_dims_in_order(name):
     moves them together and this still passes.
     """
     theme = THEMES[name]
-    ground = theme["card_bg"]            # a flat colour in all three palettes
+    ground = theme["card_bg"]            # a flat color in all three palettes
     primary = _contrast(theme["text_color"], ground)
     muted = _contrast(theme["text_secondary"], ground)
     disabled = _contrast(theme["text_disabled"], ground)
@@ -162,8 +162,8 @@ def test_the_settings_local_is_now_used():
 def test_the_muted_values_are_the_ones_the_fleet_already_uses():
     """Ruling 1 was conditional: two values are fine if every app splits it by
     mode, and only with values already in use. Both halves, held here."""
-    assert THEMES["DARK"]["text_secondary"] == THEMES["IMAGE"]["text_secondary"] == GREY_88
-    assert THEMES["LIGHT"]["text_secondary"] == GREY_66
+    assert THEMES["DARK"]["text_secondary"] == THEMES["IMAGE"]["text_secondary"] == GRAY_88
+    assert THEMES["LIGHT"]["text_secondary"] == GRAY_66
 
 
 def _manager(mode: str):
@@ -184,7 +184,7 @@ def _ink(widget) -> str:
 def test_the_muted_labels_draw_in_text_secondary(qapp, mode):
     """Built the way the app builds them, in each mode. Settings draws image
     mode from the dark palette, as its _apply_theme() chooses; batch export
-    draws it from the image palette. Both hold GREY_88 there."""
+    draws it from the image palette. Both hold GRAY_88 there."""
     from PyQt6.QtWidgets import QLabel
 
     from ui.batch_export_dialog import BatchExportDialog
@@ -217,11 +217,11 @@ def test_the_muted_labels_draw_in_text_secondary(qapp, mode):
         batch.deleteLater()
 
 
-def test_no_label_is_written_in_a_css_grey():
+def test_no_label_is_written_in_a_css_gray():
     """The literal the ruling retired, anywhere the application EVALUATES a
     string. Docstrings and comments may still name it; code may not."""
     import ast
-    css_grey = re.compile(r"color\s*:\s*(gray|grey)\b", re.I)
+    css_gray = re.compile(r"color\s*:\s*(gray|grey)\b", re.I)
     found, files = [], 0
     for path in sorted(ROOT.rglob("*.py")):
         rel = path.relative_to(ROOT)
@@ -240,6 +240,6 @@ def test_no_label_is_written_in_a_css_grey():
                 if isinstance(st, ast.Expr) and isinstance(st.value, ast.Constant)}
         found += [f"{rel}:{node.lineno}" for node in ast.walk(tree)
                   if isinstance(node, ast.Constant) and isinstance(node.value, str)
-                  and id(node) not in docs and css_grey.search(node.value)]
+                  and id(node) not in docs and css_gray.search(node.value)]
     assert files >= 20, f"only {files} files swept -- the walk has gone blind"
-    assert not found, "CSS grey still written as a colour:\n  " + "\n  ".join(found)
+    assert not found, "CSS gray still written as a color:\n  " + "\n  ".join(found)

@@ -1,7 +1,7 @@
 """
 Contrast pairing guard.   RNV-GOLD-GUARD-FILE-NAMES-RETIRED-VALUES-BY-DESIGN
 
-The rest of the suite asserts hex EQUALITY. That cannot catch a legible colour
+The rest of the suite asserts hex EQUALITY. That cannot catch a legible color
 placed on the wrong ground, which is how every gold failure in these apps
 survived: the value was correct on both sides, the pairing was not.
 
@@ -99,7 +99,7 @@ def test_the_audit_finds_something_to_audit(theme):
 
 
 def test_no_accepted_entry_is_stale():
-    """A dead exemption is a licence waiting for a future defect."""
+    """A dead exemption is a license waiting for a future defect."""
     live = set()
     for theme, palette in PALETTES.items():
         for ink, ground in INK_PAIRS:

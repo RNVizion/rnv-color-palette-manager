@@ -1,14 +1,14 @@
-"""Every colour value the tests need that is not one of the application's own.
+"""Every color value the tests need that is not one of the application's own.
 
-RNV-COLOUR-SYNC (#53 A), 2026-10-17. The application's colours, brand and its
+RNV-COLOR-SYNC (#53 A), 2026-10-17. The application's colors, brand and its
 own, are named in ui/colors.py, which brand_map.json names, and a test reads
-them from there. Every other colour value a test or the root suite writes is
-named here, once, with why, grouped by kind. tests/test_colour_values.py holds
-this file: no colour value is written anywhere else, each name says what kind
+them from there. Every other color value a test or the root suite writes is
+named here, once, with why, grouped by kind. tests/test_color_values.py holds
+this file: no color value is written anywhere else, each name says what kind
 it is and why, each is used, and each REGISTER_ value is the brand's at the pin.
 
-Tests under tests/ read it as `from colour_values import ...`; the root suite,
-run from the repository root, as `from tests.colour_values import ...`.
+Tests under tests/ read it as `from color_values import ...`; the root suite,
+run from the repository root, as `from tests.color_values import ...`.
 
 RNV-COLLAPSE-GUARD
     tests/test_collapse_505050.py sweeps every evaluated string for #505050 in
@@ -25,7 +25,7 @@ RNV-NAME-GUARD
 """
 
 # ---------------------------------------------------------------------------
-# Examples: samples given to a helper, a reader or the colour maths
+# Examples: samples given to a helper, a reader or the color math
 # ---------------------------------------------------------------------------
 
 EXAMPLE_BLACK = "#000000"
@@ -67,12 +67,12 @@ EXAMPLE_GREEN = "#00ff00"
 EXAMPLE_BLUE = "#0000ff"
 """(0, 0, 255) as rgb_to_hex writes it."""
 
-EXAMPLE_SHORT_GREY = "#555"
-"""A three-digit grey the collapse guard's decoder must expand. The point is
-the shorthand, not the grey."""
+EXAMPLE_SHORT_GRAY = "#555"
+"""A three-digit gray the collapse guard's decoder must expand. The point is
+the shorthand, not the gray."""
 
-EXAMPLE_SHORT_GREY_EXPANDED = "#555555"
-"""What the decoder must make of EXAMPLE_SHORT_GREY. It equals GREY_55 and does
+EXAMPLE_SHORT_GRAY_EXPANDED = "#555555"
+"""What the decoder must make of EXAMPLE_SHORT_GRAY. It equals GRAY_55 and does
 not mean it."""
 
 EXAMPLE_ARGB_ALPHA_FIRST = "#96444444"
@@ -81,16 +81,16 @@ It equals image mode's scrollbar handle today; the test is of the decoder, so
 it must not follow the palette."""
 
 EXAMPLE_ARGB_ALPHA_FIRST_DECODED = "#444444"
-"""The colour EXAMPLE_ARGB_ALPHA_FIRST holds once its alpha is taken off the
+"""The color EXAMPLE_ARGB_ALPHA_FIRST holds once its alpha is taken off the
 front."""
 
 EXAMPLE_ARGB_ALPHA_FIRST_MISREAD = "#964444"
 """What EXAMPLE_ARGB_ALPHA_FIRST becomes if the first six digits are taken
-instead of the last: a real colour and the wrong one."""
+instead of the last: a real color and the wrong one."""
 
 EXAMPLE_HAND_EDIT = "#123456"
-"""A value a person might type over a colour file line by hand, which the sync
-must put back; and the colour of a constant the map does not hold."""
+"""A value a person might type over a color file line by hand, which the sync
+must put back; and the color of a constant the map does not hold."""
 
 EXAMPLE_HAND_EDIT_FALLBACK = "#654321"
 """The hand edit to use when the line already holds EXAMPLE_HAND_EDIT."""
@@ -128,9 +128,9 @@ follow it: the composed value the test expects is written out."""
 EXAMPLE_TAN_AT_33 = "#33d2bc93"
 """translucent(EXAMPLE_TAN, 0x33)."""
 
-EXAMPLE_MID_GREY = "#444444"
+EXAMPLE_MID_GRAY = "#444444"
 """A base for the alpha helpers' round trip, and what the integer sweep reads
-from its probe's QColor(68, 68, 68). It equals GREY_44 and does not mean it."""
+from its probe's QColor(68, 68, 68). It equals GRAY_44 and does not mean it."""
 
 EXAMPLE_ARGB_BLACK_AT_ED = "#ed000000"
 """An eight-digit #AARRGGBB the ARGB reader in tests/test_error_red.py must not
@@ -158,7 +158,7 @@ the sweep reports it in."""
 
 EXAMPLE_CLEAR_RGBA = "rgba(0, 0, 0, 0)"
 """Clear: alpha 0, how a widget is told to paint nothing. The named-and-used
-sweep's quiet probe holds it, and the sweep must not report it as a colour."""
+sweep's quiet probe holds it, and the sweep must not report it as a color."""
 
 EXAMPLE_STATUS_ERROR_LIGHTENED = "#b44753"
 """lighten(REGISTER_STATUS_ERROR, -20): what the retired rule for the light
@@ -168,7 +168,7 @@ answer, which is why the light error text is registered, not derived."""
 
 EXAMPLE_BENCH_PURPLE = "#7B2DC8"
 """The input to the hex_to_rgb benchmark, in upper case: (123, 45, 200), the
-colour the other conversion benchmarks use."""
+color the other conversion benchmarks use."""
 
 # ---------------------------------------------------------------------------
 # Data: what a user, the search box, a record or the settings supply
@@ -209,57 +209,57 @@ DATA_HEX_INPUT_ORANGE_SHORT = "#F80"
 """The same orange typed in three digits, which validate_hex_color accepts."""
 
 DATA_HISTORY_BLACK = "#000000"
-"""A slot change's colour in a colour-history record. It equals TRUE_BLACK and
+"""A slot change's color in a color-history record. It equals TRUE_BLACK and
 does not mean it: a record holds what the user chose."""
 
 DATA_HISTORY_WHITE = "#ffffff"
-"""A slot change's colour in a colour-history record. It equals WHITE and does
+"""A slot change's color in a color-history record. It equals WHITE and does
 not mean it."""
 
 DATA_HISTORY_BLACK_SHORT = "#000"
-"""Black as a colour-history record or a session's history holds it, in three
+"""Black as a color-history record or a session's history holds it, in three
 digits."""
 
 DATA_HISTORY_WHITE_SHORT = "#fff"
-"""White as a colour-history record or a session's history holds it, in three
+"""White as a color-history record or a session's history holds it, in three
 digits."""
 
 DATA_HISTORY_SLATE = "#aabbcc"
-"""A slot change's old colour in a colour-history record."""
+"""A slot change's old color in a color-history record."""
 
 DATA_HISTORY_NAVY = "#112233"
-"""A slot change's new colour in a colour-history record."""
+"""A slot change's new color in a color-history record."""
 
 DATA_HISTORY_PALE_BLUE = "#ddeeff"
-"""A slot change's new colour in a history entry's round trip."""
+"""A slot change's new color in a history entry's round trip."""
 
 DATA_HISTORY_DARK_RED = "#aa0000"
-"""A slot change's old colour, for the history's list round trip."""
+"""A slot change's old color, for the history's list round trip."""
 
 DATA_HISTORY_GREEN = "#00aa00"
-"""A slot change's new colour, for the history's list round trip."""
+"""A slot change's new color, for the history's list round trip."""
 
-DATA_HISTORY_GREY_1 = "#111111"
-"""The first of four distinct history colours, recorded oldest first, for the
+DATA_HISTORY_GRAY_1 = "#111111"
+"""The first of four distinct history colors, recorded oldest first, for the
 newest-first check."""
 
-DATA_HISTORY_GREY_2 = "#222222"
-"""The second of the four history colours."""
+DATA_HISTORY_GRAY_2 = "#222222"
+"""The second of the four history colors."""
 
-DATA_HISTORY_GREY_3 = "#333333"
-"""The third of the four history colours. It equals APP_BORDER and does not
+DATA_HISTORY_GRAY_3 = "#333333"
+"""The third of the four history colors. It equals APP_BORDER and does not
 mean it."""
 
-DATA_HISTORY_GREY_4 = "#444444"
-"""The last of the four history colours, which must come back first. It equals
-GREY_44 and does not mean it."""
+DATA_HISTORY_GRAY_4 = "#444444"
+"""The last of the four history colors, which must come back first. It equals
+GRAY_44 and does not mean it."""
 
 DATA_SETTINGS_SLOT_COLOR = "#123456"
-"""A default slot colour a person sets for dark mode, round-tripped through
+"""A default slot color a person sets for dark mode, round-tripped through
 SettingsManager."""
 
 DATA_SLOT_RED = "#ff0000"
-"""A red slot's colour: what a saved session and an undo state hold beside its
+"""A red slot's color: what a saved session and an undo state hold beside its
 channels (255, 0, 0), and what a slot made from those channels must paint."""
 
 DATA_SLOT_BLACK = "#000000"
@@ -267,7 +267,7 @@ DATA_SLOT_BLACK = "#000000"
 
 DATA_IMAGE_YELLOW = "#ffff00"
 """The fill of an image set on a slot, from its channels (255, 255, 0), which the
-slot must paint in place of its own colour."""
+slot must paint in place of its own color."""
 
 # ---------------------------------------------------------------------------
 # Retired: values the application no longer uses, kept so a test can say so
@@ -289,33 +289,33 @@ RETIRED_OLD_HOVER_GOLD = "#c4a458"
 moved, the tint stayed behind: a value derived from something no longer in the
 palette, the failure every "derived, not written" rule in this fleet cites."""
 
-RETIRED_GREY_E0 = "#e0e0e0"
+RETIRED_GRAY_E0 = "#e0e0e0"
 """APP["text"] until 2026-08-28, and two light surfaces nothing read: one hex
 doing two jobs. The ink moved to APP_TEXT; the surfaces went on 2026-10-04."""
 
-RETIRED_GREY_50 = "#505050"
-"""The handle and plate grey ruled onto GREY_44 (RNV-COLLAPSE-505050), the
+RETIRED_GRAY_50 = "#505050"
+"""The handle and plate gray ruled onto GRAY_44 (RNV-COLLAPSE-505050), the
 collapse guard's OLD_HEX."""
 
-RETIRED_GREY_50_DIGITS = "505050"
+RETIRED_GRAY_50_DIGITS = "505050"
 """Its six digits, which no spelling of image mode's scrollbar handle may hold."""
 
-RETIRED_GREY_50_ARGB_96 = "#96505050"
-"""The retired grey at alpha 0x96, alpha first, for the decoder's self-test."""
+RETIRED_GRAY_50_ARGB_96 = "#96505050"
+"""The retired gray at alpha 0x96, alpha first, for the decoder's self-test."""
 
-RETIRED_GREY_50_ARGB_FF_UPPER = "#FF505050"
-"""The retired grey opaque, alpha first, in upper case on purpose: the decoder
+RETIRED_GRAY_50_ARGB_FF_UPPER = "#FF505050"
+"""The retired gray opaque, alpha first, in upper case on purpose: the decoder
 must read either case."""
 
-RETIRED_GREY_50_RGBA_100 = "rgba(80, 80, 80, 100)"
+RETIRED_GRAY_50_RGBA_100 = "rgba(80, 80, 80, 100)"
 """The exact spelling image mode painted its scrollbar handle in until
 2026-09-25, while the first version of the collapse guard reported it gone."""
 
-RETIRED_GREY_50_RGBA_FRACTION = "rgba(80,80,80,0.6)"
-"""The retired grey as a compact rgba() with a fractional alpha."""
+RETIRED_GRAY_50_RGBA_FRACTION = "rgba(80,80,80,0.6)"
+"""The retired gray as a compact rgba() with a fractional alpha."""
 
-RETIRED_GREY_50_RGB = "rgb(80, 80, 80)"
-"""The retired grey as rgb()."""
+RETIRED_GRAY_50_RGB = "rgb(80, 80, 80)"
+"""The retired gray as rgb()."""
 
 RETIRED_SCROLLBAR_BORDER_LITERAL = "rgba(51, 51, 51, 100)"
 """The literal image mode's scrollbar border was written as until 2026-09-25,
@@ -339,18 +339,18 @@ RETIRED_PANEL_OVERLAY_LITERAL = "#ED1A1A1A"
 """The literal APP_PANEL_OVERLAY was written as until 2026-09-24, in upper
 case, which RNV-LOWER-EIGHT retired."""
 
-RETIRED_GREY_D0 = "#d0d0d0"
+RETIRED_GRAY_D0 = "#d0d0d0"
 """The light hover plate rnv-brand retired as an interaction ground: gold text
 on it read 3.6013. Lower case: the test compares lower-cased values."""
 
-RETIRED_GREY_FA = "#fafafa"
+RETIRED_GRAY_FA = "#fafafa"
 """A light stray collapsed onto the register's surface-light-2 on 2026-09-06."""
 
-RETIRED_GREY_F8 = "#f8f8f8"
+RETIRED_GRAY_F8 = "#f8f8f8"
 """A light stray collapsed onto the register's surface-light-2 on 2026-09-06."""
 
-RETIRED_GREY_F0 = "#f0f0f0"
-"""The light stray ui/image_upload_dialog.py painted, collapsed onto GREY_EE on
+RETIRED_GRAY_F0 = "#f0f0f0"
+"""The light stray ui/image_upload_dialog.py painted, collapsed onto GRAY_EE on
 2026-09-06."""
 
 RETIRED_MATERIAL_RED = "#f44336"
@@ -394,8 +394,8 @@ RETIRED_REV30_ERROR_TEXT_LIGHT = "#b84e58"
 """The register's light error text at rev 30, which read 4.0150 on
 REGISTER_GOLD_TEXT_GROUND_FLOOR; rev 31 re-walked it to STATUS_ERROR_TEXT_LIGHT."""
 
-RETIRED_CSS_GREY = "#808080"
-"""The CSS `grey` six muted labels in two dialogs were written in, in every
+RETIRED_CSS_GRAY = "#808080"
+"""The CSS `gray` six muted labels in two dialogs were written in, in every
 mode, until RNV-MUTED-DESCRIPTIONS (2026-09-27) drew them in text_secondary."""
 
 RETIRED_WINDOWS_BLUE = "#0078d4"
@@ -429,7 +429,7 @@ the light error text is shown not to be derived from."""
 
 INVALID_HEX_FIVE_DIGITS = "#12345"
 """Five digits: validate_hex_color must refuse it and the collapse decoder must
-not read a colour in it."""
+not read a color in it."""
 
 INVALID_HEX_FOUR_DIGITS = "#FF88"
 """Four digits, which validate_hex_color must refuse for its length."""
@@ -457,5 +457,5 @@ REGISTER_REFS = {
     "REGISTER_APP_PRESSED_LIGHT": "APP.pressed-light",
     "REGISTER_STATUS_ERROR": "STATUS.error",
 }
-"""Each REGISTER_ value's name in the brand; tests/test_colour_values.py holds
+"""Each REGISTER_ value's name in the brand; tests/test_color_values.py holds
 the value to the brand at the pin."""

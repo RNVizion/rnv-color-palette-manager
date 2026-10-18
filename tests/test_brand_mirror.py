@@ -16,15 +16,15 @@ import subprocess
 
 import pytest
 
-from colour_values import (
+from color_values import (
     REGISTER_GOLD_TEXT_GROUND_FLOOR, RETIRED_OLD_DARK_GOLD,
     RETIRED_OLD_DARK_GOLD_RGB_SPACED, RETIRED_OLD_DARK_GOLD_RGB_TIGHT)
 from ui import colors as C
 
-#: RNV-COLOUR-SYNC, 2026-10-16. Where each colour comes from, as brand_map.json
-#: says. The values are held by tests/test_colours_in_sync.py, against the
+#: RNV-COLOR-SYNC, 2026-10-16. Where each color comes from, as brand_map.json
+#: says. The values are held by tests/test_colors_in_sync.py, against the
 #: register at the pin; what this file holds is the name each one takes.
-BRAND_MAP = json.loads((pathlib.Path(__file__).resolve().parents[1] / "brand_map.json").read_text(encoding="utf-8"))["colours"]
+BRAND_MAP = json.loads((pathlib.Path(__file__).resolve().parents[1] / "brand_map.json").read_text(encoding="utf-8"))["colors"]
 
 PALETTES = {
     "DARK": C.DARK_THEME_COLORS,
@@ -79,9 +79,9 @@ def test_provenance_has_no_phantom_entries():
 
 
 def test_register_values_match_rnv_brand():
-    """RNV-COLOUR-SYNC, 2026-10-16. This held the two golds by their hex codes.
+    """RNV-COLOR-SYNC, 2026-10-16. This held the two golds by their hex codes.
     The golds follow the register's accent names, as ruled (#45 A); the
-    values are written from there and held by tests/test_colours_in_sync.py."""
+    values are written from there and held by tests/test_colors_in_sync.py."""
     assert BRAND_MAP["BRAND_GOLD"] == "APP.accent"
     assert BRAND_MAP["BRAND_DARK_GOLD"] == "APP.accent-light-mode"
 
@@ -215,6 +215,17 @@ def _sources():
         path = root / rel
         if path.suffix.lower() not in (".py", ".qss", ".css", ".md"):
             continue
+        # `git ls-files` reports the INDEX, so a file deleted from the
+        # working tree is still listed until the deletion is committed.
+        # That is an ordinary transient state -- any `rm` before `git rm`
+        # produces it, and so does a rename not yet committed -- and
+        # reading it raised FileNotFoundError, turning a normal edit into
+        # three red tests with no useful message. The mixer's twin of
+        # this scan was given this line first (2026-10-18, here).
+        # test_the_retired_scan_is_still_looking still catches the case
+        # that matters, a scan that has stopped finding anything.
+        if not path.exists():
+            continue
         raw = path.read_bytes()
         try:
             text = raw.decode("utf-8-sig" if raw.startswith(b"\xef\xbb\xbf")
@@ -222,7 +233,7 @@ def _sources():
         except UnicodeDecodeError:
             text = raw.decode("utf-8", errors="surrogateescape")
         # RNV-FLEET-FLOOR 2026-09-11: one marker every scanner in this
-        # fleet honours, so a delivery script is skipped whatever it is
+        # fleet honors, so a delivery script is skipped whatever it is
         # called. Such a script QUOTES the code it replaces, which reads
         # to a sweep exactly like a live call site.
         if ("RNV-GOLD-GUARD-FILE-NAMES-RETIRED-VALUES-BY-DESIGN" in text
@@ -246,7 +257,7 @@ def test_the_retired_scan_is_still_looking():
     files = list(_sources())
     assert len(files) > 15, f"the scan found only {len(files)} files"
     assert any(rel == "ui/colors.py" for rel, _ in files), \
-        "the scan is not reading the colour file"
+        "the scan is not reading the color file"
 
 
 def test_the_old_identifier_is_gone():

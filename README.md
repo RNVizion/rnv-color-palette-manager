@@ -4,7 +4,7 @@ A professional desktop application for creating, managing, and exporting color p
 
 [![Python](https://img.shields.io/badge/Python-3.13%2B-blue.svg)](https://www.python.org/downloads/)
 [![PyQt6](https://img.shields.io/badge/PyQt6-6.5%2B-green.svg)](https://pypi.org/project/PyQt6/)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey.svg)]()
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-lightgray.svg)]()
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/Version-3.3.13-orange.svg)]()
 [![Tests (Windows)](https://github.com/RNVizion/rnv-color-palette-manager/actions/workflows/tests.yml/badge.svg)](https://github.com/RNVizion/rnv-color-palette-manager/actions/workflows/tests.yml)
@@ -192,8 +192,8 @@ RNV_Color_Palette_Manager/
 ├── LICENSE                         # MIT license
 ├── .gitignore                      # Python / IDE / OS ignores
 ├── pyproject.toml                  # PEP 621 project metadata
-├── brand_map.json                  # Where each colour comes from: rnv-brand or the app
-├── COLORS.md                       # This app's colour chart, written by the sync
+├── brand_map.json                  # Where each color comes from: rnv-brand or the app
+├── COLORS.md                       # This app's color chart, written by the sync
 ├── requirements.txt                # Quick-install dependencies
 ├── RNV_Color_Palette_Manager.py    # Main application entry point
 ├── RNV_Color_Palette_Manager.spec  # PyInstaller build spec
@@ -209,7 +209,7 @@ RNV_Color_Palette_Manager/
 │
 ├── .github/
 │   └── workflows/
-│       ├── brand-sync.yml          # Daily: colours from rnv-brand; a PR only if one moved
+│       ├── brand-sync.yml          # Daily: colors from rnv-brand; a PR only if one moved
 │       ├── tests.yml               # CI: Windows test suite on push/PR
 │       └── tests-linux.yml         # CI: Linux test suite on push/PR
 │

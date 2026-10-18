@@ -4,15 +4,15 @@ The APP register, the ink move, and the tab keys sorted out.
 FOUR THINGS LAND TOGETHER HERE, and they are one job rather than four: every
 one of them is about a name or a value that was not telling the truth.
 
-1. THE APP REGISTER IS NAMED. RETIRED_GREY_E0 and the values now named
+1. THE APP REGISTER IS NAMED. RETIRED_GRAY_E0 and the values now named
    BRAND_BLACK, APP_CARD and APP_BORDER were bare literals with no constant
    and no provenance, and every one is a REGISTERED value in
    RNVizion/rnv-brand. APP["text"] moved to APP_TEXT in rnv-brand@68d195e
    and nothing here would have noticed.
 
-2. THE DARK INK MOVES TO grey(13). The published grid is
-   grey(n) = n * 0x11, TRUE_BLACK -> WHITE in fifteen steps. It governs inks
-   and edges and deliberately not surfaces. RETIRED_GREY_E0 was one hex doing two
+2. THE DARK INK MOVES TO gray(13). The published grid is
+   gray(n) = n * 0x11, TRUE_BLACK -> WHITE in fifteen steps. It governs inks
+   and edges and deliberately not surfaces. RETIRED_GRAY_E0 was one hex doing two
    jobs -- dark ink and a LIGHT SURFACE -- which is the only reason it looked
    like an exception. Only the ink half moved.
 
@@ -59,16 +59,16 @@ ROOT = pathlib.Path(__file__).resolve().parents[1]
 SRC = ROOT / 'ui' / 'colors.py'
 ABOUT = ROOT / 'ui' / 'about_dialog.py'
 
-#: RNV-COLOUR-SYNC, 2026-10-16. Where each colour comes from, as brand_map.json
-#: says. The values are held by tests/test_colours_in_sync.py, against the
+#: RNV-COLOR-SYNC, 2026-10-16. Where each color comes from, as brand_map.json
+#: says. The values are held by tests/test_colors_in_sync.py, against the
 #: register at the pin; what this file holds is the name each one takes.
-BRAND_MAP = json.loads((ROOT / "brand_map.json").read_text(encoding="utf-8"))["colours"]
+BRAND_MAP = json.loads((ROOT / "brand_map.json").read_text(encoding="utf-8"))["colors"]
 
 GRID_STEP = 0x11
 
 PALETTES = {'DARK': DARK, 'LIGHT': LIGHT, 'IMAGE': IMAGE}
 
-#: The register's neutrals this app names. RNV-COLOUR-SYNC, 2026-10-16: this
+#: The register's neutrals this app names. RNV-COLOR-SYNC, 2026-10-16: this
 #: was PINNED, each name with its value written beside it; the values are
 #: written into ui/colors.py from the register now, and held there.
 NEUTRALS = ('TRUE_BLACK', 'WHITE', 'BRAND_BLACK', 'APP_CARD', 'APP_BORDER',
@@ -84,7 +84,7 @@ DIALOG_BTN_HOVER = {'DARK': colors.APP_PANEL_HOVER, 'LIGHT': colors.APP_HOVER_LI
                     'IMAGE': colors.APP_PANEL_HOVER}
 
 
-def grey(n: int) -> str:
+def gray(n: int) -> str:
     v = n * GRID_STEP
     return '#%02x%02x%02x' % (v, v, v)
 
@@ -121,17 +121,17 @@ def test_the_names_this_file_reads_still_exist():
 # ------------------------------------------------------------------- the value
 
 def test_the_ink_is_a_step_on_the_grid():
-    assert colors.APP_TEXT == grey(13), (
-        f'APP_TEXT is {colors.APP_TEXT}, not grey(13).')
+    assert colors.APP_TEXT == gray(13), (
+        f'APP_TEXT is {colors.APP_TEXT}, not gray(13).')
 
 
 def test_every_pinned_neutral_is_what_the_register_held():
     """The local half of the mirror. Runs everywhere.
 
-    RNV-COLOUR-SYNC, 2026-10-16. This held each value written out beside its
+    RNV-COLOR-SYNC, 2026-10-16. This held each value written out beside its
     name, and a brand move meant editing it by hand. Now it holds that
     brand_map.json takes each neutral from the register; the value is written
-    from there, and tests/test_colours_in_sync.py holds it."""
+    from there, and tests/test_colors_in_sync.py holds it."""
     own = {n: BRAND_MAP.get(n) for n in NEUTRALS
            if not isinstance(BRAND_MAP.get(n), str)}
     assert not own, (
@@ -191,12 +191,12 @@ def test_the_resolved_ink_is_the_constant():
 
 
 # RNV-NAMED-AND-USED, 2026-10-04: a test stood here holding two light
-# surfaces at RETIRED_GREY_E0 while the ink moved off it. Nothing read either key, so
+# surfaces at RETIRED_GRAY_E0 while the ink moved off it. Nothing read either key, so
 # no surface was drawn from them; they went, and the test with them.
 
 
 def test_the_light_ink_is_true_black():
-    """Primary text is one role with two mode values: dark is a grey on the
+    """Primary text is one role with two mode values: dark is a gray on the
     grid, light is TRUE_BLACK."""
     assert LIGHT['text_color'] == colors.TRUE_BLACK
 
@@ -265,12 +265,12 @@ def test_both_dialogs_now_draw_the_same_pane():
         assert resolved == palette['panel_bg'], mode
 
 
-def test_the_light_pane_is_no_longer_the_card_colour():
+def test_the_light_pane_is_no_longer_the_card_color():
     """What the alignment bought. About's pane was WHITE, the same as
     card_bg, so a card sitting on it had only its own border."""
     resolved = LIGHT.get('tab_pane_bg', LIGHT['panel_bg'])
     assert resolved != LIGHT['card_bg'], (
-        'the light pane is the card colour again')
+        'the light pane is the card color again')
     assert resolved == colors.APP_SURFACE_LIGHT_3
 
 
@@ -300,7 +300,7 @@ def _contrast(a: str, b: str) -> float:
 
 def test_the_ink_clears_the_text_floor_on_every_dark_ground_it_touches():
     grounds = (colors.TRUE_BLACK, colors.BRAND_BLACK, colors.APP_CARD,
-               colors.APP_BORDER, colors.APP_PANEL_HOVER, colors.GREY_44)
+               colors.APP_BORDER, colors.APP_PANEL_HOVER, colors.GRAY_44)
     worst = min((_contrast(colors.APP_TEXT, g), g) for g in grounds)
     assert worst[0] >= 4.5, (
         f'the ink falls to {worst[0]:.2f}:1 on {worst[1]}, under the 4.5 floor')
@@ -317,14 +317,14 @@ def test_gold_text_clears_the_dialog_button_hover_plate():
         LIGHT  BRAND_DARK_GOLD_DEEP on APP_HOVER_LIGHT   4.7875  passes
 
     FIXED 2026-08-30, AND THE XFAIL IS GONE. This carried a strict xfail from
-    the 2026-08-28 ink pass: the light plate was RETIRED_GREY_D0 and the gold label
+    the 2026-08-28 ink pass: the light plate was RETIRED_GRAY_D0 and the gold label
     measured 3.6013:1 against a 4.5 floor. The note said it was awaiting a
     ruling -- either the plate moves above REGISTER_GOLD_TEXT_GROUND_FLOOR or the
     label stops being
     gold -- and marked the xfail strict so that fixing it would FAIL and force
     this text to be rewritten rather than let the exemption outlive the defect.
 
-    That is what happened. rnv-brand retired RETIRED_GREY_D0 as a light
+    That is what happened. rnv-brand retired RETIRED_GRAY_D0 as a light
     interaction ground and registered APP["hover-light"], first as
     REGISTER_GOLD_TEXT_GROUND_FLOOR and then as APP_HOVER_LIGHT. The plate
     moved; the label did not.
@@ -333,7 +333,7 @@ def test_gold_text_clears_the_dialog_button_hover_plate():
     0.0334, and it is the
     ground BRAND_DARK_GOLD_DEEP is derived against -- rev 24 registered it as
     GOLD_TEXT_GROUND_FLOOR. A plate on that value would fail the moment the
-    gold moved by one step. APP_HOVER_LIGHT clears by 0.2875 and is grey(14)
+    gold moved by one step. APP_HOVER_LIGHT clears by 0.2875 and is gray(14)
     exactly.
     """
     for mode, palette in PALETTES.items():

@@ -26,7 +26,7 @@ from unittest import mock
 import pytest
 from PyQt6.QtGui import QColor
 
-from colour_values import DATA_QUERY_RED
+from color_values import DATA_QUERY_RED
 from conftest import _load_main_window, _trigger_shortcut
 
 

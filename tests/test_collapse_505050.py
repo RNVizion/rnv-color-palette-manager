@@ -1,23 +1,23 @@
-"""RETIRED_GREY_50 is gone from every string in this application. RNV-COLLAPSE-GUARD
+"""RETIRED_GRAY_50 is gone from every string in this application. RNV-COLLAPSE-GUARD
 
-Ruled 2026-09-02: RETIRED_GREY_50 collapses onto GREY_44. The value was on
-neither the surface ladder nor the ink grid, and its neighbours were not a
+Ruled 2026-09-02: RETIRED_GRAY_50 collapses onto GRAY_44. The value was on
+neither the surface ladder nor the ink grid, and its neighbors were not a
 visible step away. This guard pins the ruling in both directions: the keys
 hold the new value, and they hold it THROUGH the constant.
 
 WHAT THIS GUARD USED TO SAY, AND WHY IT WAS WRONG. Until 2026-09-25 its first
-line read "RETIRED_GREY_50 no longer exists in this application", and it
-passed while IMAGE_MODE_COLORS['scrollbar_handle'] read RETIRED_GREY_50_RGBA_100
--- RETIRED_GREY_50 at alpha 100, painting the main scrollbar in image mode. Three blind spots
+line read "RETIRED_GRAY_50 no longer exists in this application", and it
+passed while IMAGE_MODE_COLORS['scrollbar_handle'] read RETIRED_GRAY_50_RGBA_100
+-- RETIRED_GRAY_50 at alpha 100, painting the main scrollbar in image mode. Three blind spots
 lined up:
 
   - EXPECT listed image mode's scroll_handle and not its scrollbar_handle;
-  - the palette sweep compared whole strings with RETIRED_GREY_50;
+  - the palette sweep compared whole strings with RETIRED_GRAY_50;
   - the source sweep looked for that string, quoted.
 
 None of the three decoded rgba(), and rgba() was the only spelling the value
 had left. Every check below decodes: #rgb, #rrggbb, #aarrggbb, rgb() and
-rgba() all read as the colour they are.
+rgba() all read as the color they are.
 
 THE LAST TWO, RULED. Two constants held the value as an INTEGER TUPLE, which
 no string sweep reads at all:
@@ -26,10 +26,10 @@ no string sweep reads at all:
     HISTORY_SWATCH_BORDER    (80, 80, 80)   utils/color_history.py, the swatch pen
 
 Whether a slot border was the same decision as a scrollbar handle was a
-ruling, not a sweep, and it was asked. A render showed RETIRED_GREY_50 and
-GREY_44 all but indistinguishable at 1px, and the thick border
-(SLOT_BORDER_THICK_COLOR) differs by its width, not its colour. Ruled 2026-09-25: collapse. Since 2026-09-26 both
-are _to_rgb(GREY_44) (RNV-TUPLE-ROUND), and PENDING_RULING is empty, so any
+ruling, not a sweep, and it was asked. A render showed RETIRED_GRAY_50 and
+GRAY_44 all but indistinguishable at 1px, and the thick border
+(SLOT_BORDER_THICK_COLOR) differs by its width, not its color. Ruled 2026-09-25: collapse. Since 2026-09-26 both
+are _to_rgb(GRAY_44) (RNV-TUPLE-ROUND), and PENDING_RULING is empty, so any
 integer spelling of the value that comes back fails.
 """
 from __future__ import annotations
@@ -38,17 +38,17 @@ import ast
 import re
 from pathlib import Path
 
-from colour_values import (
-    EXAMPLE_ARGB_ALPHA_FIRST, EXAMPLE_ARGB_ALPHA_FIRST_DECODED, EXAMPLE_SHORT_GREY,
-    EXAMPLE_SHORT_GREY_EXPANDED, INVALID_HEX_FIVE_DIGITS, RETIRED_GREY_50,
-    RETIRED_GREY_50_ARGB_96, RETIRED_GREY_50_ARGB_FF_UPPER, RETIRED_GREY_50_RGB,
-    RETIRED_GREY_50_RGBA_100, RETIRED_GREY_50_RGBA_FRACTION)
-from ui.colors import GREY_44
+from color_values import (
+    EXAMPLE_ARGB_ALPHA_FIRST, EXAMPLE_ARGB_ALPHA_FIRST_DECODED, EXAMPLE_SHORT_GRAY,
+    EXAMPLE_SHORT_GRAY_EXPANDED, INVALID_HEX_FIVE_DIGITS, RETIRED_GRAY_50,
+    RETIRED_GRAY_50_ARGB_96, RETIRED_GRAY_50_ARGB_FF_UPPER, RETIRED_GRAY_50_RGB,
+    RETIRED_GRAY_50_RGBA_100, RETIRED_GRAY_50_RGBA_FRACTION)
+from ui.colors import GRAY_44
 
 ROOT = Path(__file__).resolve().parent.parent
-OLD_HEX = RETIRED_GREY_50
-NEW_HEX = GREY_44
-CONST = "GREY_44"
+OLD_HEX = RETIRED_GRAY_50
+NEW_HEX = GRAY_44
+CONST = "GRAY_44"
 EXPECT = {'dark': ['scroll_handle', 'scrollbar_handle'],
           'image': ['scroll_handle', 'scrollbar_handle']}
 PALETTE_FILE = "ui/colors.py"
@@ -58,7 +58,7 @@ DICT_NAMES = {'dark': 'DARK_THEME_COLORS', 'image': 'IMAGE_MODE_COLORS',
 #: The integer spellings of the value that await a ruling, by the name each is
 #: assigned to. Not an exemption: the sweep below must find EXACTLY these, so
 #: a new one fails. EMPTY since 2026-09-26: the last two were ruled onto
-#: GREY_44 and are written through it.
+#: GRAY_44 and are written through it.
 PENDING_RULING: set[tuple[str, str]] = set()
 
 #: Files that name the value in order to forbid it. The last is the fleet's
@@ -72,12 +72,12 @@ _FUNC = re.compile(r"\brgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})"
                    r"\s*(?:,\s*[0-9]*\.?[0-9]+\s*)?\)")
 
 
-def colours_in(text: str) -> set[str]:
-    """Every colour written in `text`, normalised to #rrggbb.
+def colors_in(text: str) -> set[str]:
+    """Every color written in `text`, normalized to #rrggbb.
 
-    #AARRGGBB is Qt's order, ALPHA FIRST: the colour is the LAST six digits.
+    #AARRGGBB is Qt's order, ALPHA FIRST: the color is the LAST six digits.
     Taking the first six turns EXAMPLE_ARGB_ALPHA_FIRST into
-    EXAMPLE_ARGB_ALPHA_FIRST_MISREAD -- a real colour and the wrong one, which
+    EXAMPLE_ARGB_ALPHA_FIRST_MISREAD -- a real color and the wrong one, which
     is the failure that does not look like a failure."""
     found = set()
     for m in _HEX.finditer(text):
@@ -130,7 +130,7 @@ def _string_uses(tree: ast.AST):
     other bare string statement. A comment is not a string at all.
 
     Use versus mention: the notes beside each ruled key say it "was"
-    RETIRED_GREY_50, and that is the record of the ruling, not a use of the
+    RETIRED_GRAY_50, and that is the record of the ruling, not a use of the
     value."""
     bare = set()
     for node in ast.walk(tree):
@@ -183,15 +183,15 @@ def _int_spellings(tree: ast.AST, rgb: tuple[int, int, int]):
 def test_the_decoder_reads_every_spelling_the_value_can_wear():
     """If this fails, every negative check below is blind in the way the first
     version of this file was."""
-    for spelling in (RETIRED_GREY_50, RETIRED_GREY_50_ARGB_96, RETIRED_GREY_50_ARGB_FF_UPPER,
-                     RETIRED_GREY_50_RGBA_100, RETIRED_GREY_50_RGBA_FRACTION,
-                     RETIRED_GREY_50_RGB):
-        assert OLD_HEX in colours_in(f"background: {spelling};"), spelling
-    assert colours_in(EXAMPLE_SHORT_GREY) == {EXAMPLE_SHORT_GREY_EXPANDED}
-    # and it does not read colours that are not there, or the wrong end
-    assert colours_in(EXAMPLE_ARGB_ALPHA_FIRST) == {EXAMPLE_ARGB_ALPHA_FIRST_DECODED}
-    assert colours_in("translate(80, 80, 80)") == set()
-    assert colours_in(INVALID_HEX_FIVE_DIGITS) == set()
+    for spelling in (RETIRED_GRAY_50, RETIRED_GRAY_50_ARGB_96, RETIRED_GRAY_50_ARGB_FF_UPPER,
+                     RETIRED_GRAY_50_RGBA_100, RETIRED_GRAY_50_RGBA_FRACTION,
+                     RETIRED_GRAY_50_RGB):
+        assert OLD_HEX in colors_in(f"background: {spelling};"), spelling
+    assert colors_in(EXAMPLE_SHORT_GRAY) == {EXAMPLE_SHORT_GRAY_EXPANDED}
+    # and it does not read colors that are not there, or the wrong end
+    assert colors_in(EXAMPLE_ARGB_ALPHA_FIRST) == {EXAMPLE_ARGB_ALPHA_FIRST_DECODED}
+    assert colors_in("translate(80, 80, 80)") == set()
+    assert colors_in(INVALID_HEX_FIVE_DIGITS) == set()
 
 
 def test_the_integer_sweep_reads_both_notations():
@@ -204,12 +204,12 @@ def test_the_integer_sweep_reads_both_notations():
 # ------------------------------------------------------------------ the ruling
 
 def test_the_ruled_keys_hold_the_new_value():
-    """Decoded, so a derived entry -- GREY_44 at an alpha -- reads as the
-    colour it is, not as a string that fails to equal GREY_44."""
+    """Decoded, so a derived entry -- GRAY_44 at an alpha -- reads as the
+    color it is, not as a string that fails to equal GRAY_44."""
     for mode, keys in EXPECT.items():
         palette = _palettes()[mode]
         for key in keys:
-            assert colours_in(palette[key]) == {NEW_HEX}, (
+            assert colors_in(palette[key]) == {NEW_HEX}, (
                 f"{mode}[{key}] is {palette[key]}, ruled onto {NEW_HEX}")
 
 
@@ -251,7 +251,7 @@ def test_the_old_value_is_gone_from_every_palette():
             if not isinstance(value, str):
                 continue
             looked += 1
-            if OLD_HEX in colours_in(value):
+            if OLD_HEX in colors_in(value):
                 holders.append(f"{mode}[{key}] = {value}")
     # 84 since RNV-NAMED-AND-USED, 2026-10-04: nine keys nothing read went
     # from each of the three palettes.
@@ -273,10 +273,10 @@ def test_the_old_value_is_not_written_anywhere_in_source():
             continue
         files += 1
         for node in _string_uses(tree):
-            if OLD_HEX in colours_in(node.value):
+            if OLD_HEX in colors_in(node.value):
                 strays.append(f"{path.relative_to(ROOT)}:{node.lineno}")
     assert files >= 40, f"only {files} files swept -- the walk has gone blind"
-    assert not strays, f"{OLD_HEX} is still written as a colour in: {strays}"
+    assert not strays, f"{OLD_HEX} is still written as a color in: {strays}"
 
 
 def test_the_integer_spellings_are_exactly_the_ones_awaiting_a_ruling():
@@ -301,8 +301,8 @@ def test_the_integer_spellings_are_exactly_the_ones_awaiting_a_ruling():
 
 
 def test_the_ruled_tuples_hold_the_new_value_through_the_constant():
-    """The two tuples the 2026-09-25 ruling collapsed. GREY_44, and written as
-    _to_rgb(GREY_44), so a later move of GREY_44 reaches them too."""
+    """The two tuples the 2026-09-25 ruling collapsed. GRAY_44, and written as
+    _to_rgb(GRAY_44), so a later move of GRAY_44 reaches them too."""
     from ui import colors
     tree = ast.parse((ROOT / PALETTE_FILE).read_text(encoding="utf-8-sig"))
     values = {}

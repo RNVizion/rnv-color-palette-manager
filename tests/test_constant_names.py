@@ -1,7 +1,7 @@
-"""A constant names a colour, not a role. RNV-NAME-GUARD
+"""A constant names a color, not a role. RNV-NAME-GUARD
 
 Ruled by Chris on 2026-09-02. Eleven names in this application answered both
-questions at once -- what colour is this, and what is it painting -- and two
+questions at once -- what color is this, and what is it painting -- and two
 answered neither, because nothing used them.
 
 The pairs that looked like palette keys were not: they were inline
@@ -16,16 +16,16 @@ import re
 import tokenize
 from pathlib import Path
 
-from colour_values import EXAMPLE_BLACK, EXAMPLE_WHITE, RETIRED_WINDOWS_BLUE
+from color_values import EXAMPLE_BLACK, EXAMPLE_WHITE, RETIRED_WINDOWS_BLUE
 from ui import colors
 
 ROOT = Path(__file__).resolve().parent.parent
 
-#: RNV-COLOUR-SYNC, 2026-10-16. Where each colour comes from, as brand_map.json
-#: says. The values are held by tests/test_colours_in_sync.py, against the
+#: RNV-COLOR-SYNC, 2026-10-16. Where each color comes from, as brand_map.json
+#: says. The values are held by tests/test_colors_in_sync.py, against the
 #: register at the pin; what this file holds is the name each one takes.
-BRAND_MAP = json.loads((ROOT / "brand_map.json").read_text(encoding="utf-8"))["colours"]
-RETIRED = ('ACCENT_PRESSED_TEXT_DARK', 'ACCENT_PRESSED_TEXT_LIGHT', 'TEXTEDIT_BG_DARK', 'TEXTEDIT_BG_LIGHT', 'SELECTION_OVERLAY_TEXT', 'IMAGE_PREVIEW_BORDER', 'IMAGE_PREVIEW_BG', 'DARK_GOLD_DEEP', 'SLOT_SELECTED_COLOR', 'CHECKBOX_ACCENT', 'SVG_EXPORT_TEXT_DARK', 'SVG_EXPORT_TEXT_LIGHT', 'GREY_60')
+BRAND_MAP = json.loads((ROOT / "brand_map.json").read_text(encoding="utf-8"))["colors"]
+RETIRED = ('ACCENT_PRESSED_TEXT_DARK', 'ACCENT_PRESSED_TEXT_LIGHT', 'TEXTEDIT_BG_DARK', 'TEXTEDIT_BG_LIGHT', 'SELECTION_OVERLAY_TEXT', 'IMAGE_PREVIEW_BORDER', 'IMAGE_PREVIEW_BG', 'DARK_GOLD_DEEP', 'SLOT_SELECTED_COLOR', 'CHECKBOX_ACCENT', 'SVG_EXPORT_TEXT_DARK', 'SVG_EXPORT_TEXT_LIGHT', 'GRAY_60')
 SKIP = {".git", "build", "dist", ".venv", "__pycache__"}
 
 
@@ -34,7 +34,7 @@ def _code_only(text: str) -> str:
 
     A guard that sweeps for the thing it forbids must tell a use from a
     mention. Doing that by excluding files stops working the moment a third
-    file has a legitimate reason to say the word; tokenising needs no list.
+    file has a legitimate reason to say the word; tokenizing needs no list.
     """
     out = []
     try:
@@ -74,20 +74,20 @@ def test_the_retired_names_are_gone():
 
 
 def test_the_values_they_named_are_still_here():
-    """A rename that loses a value is not a rename. These are the colours the
+    """A rename that loses a value is not a rename. These are the colors the
     eleven role names were standing in front of.
 
-    RNV-COLOUR-SYNC, 2026-10-16: each was held here by its hex code. Each is
+    RNV-COLOR-SYNC, 2026-10-16: each was held here by its hex code. Each is
     held in brand_map.json now, a brand name or the app's own value, and
-    tests/test_colours_in_sync.py holds the value the file writes."""
-    for name in ("TRUE_BLACK", "WHITE", "GREY_66", "GREY_EE"):
+    tests/test_colors_in_sync.py holds the value the file writes."""
+    for name in ("TRUE_BLACK", "WHITE", "GRAY_66", "GRAY_EE"):
         assert name in BRAND_MAP, f"brand_map.json does not hold {name}"
     # RNV-GOLD-HOVER (2026-09-12): the dark scrollbar handle on hover was this
     # ramp step's only consumer, here and in the transformer. The hover is the
     # brand gold now, so the step had nothing left to paint.
-    assert not hasattr(colors, "GREY_60")
-    # RNV-LIGHT-WIRING (2026-09-06): GREY_F0 collapsed onto GREY_EE.
-    assert not hasattr(colors, "GREY_F0")
+    assert not hasattr(colors, "GRAY_60")
+    # RNV-LIGHT-WIRING (2026-09-06): GRAY_F0 collapsed onto GRAY_EE.
+    assert not hasattr(colors, "GRAY_F0")
     assert colors.BRAND_DARK_GOLD_DEEP == colors.lighten(colors.BRAND_DARK_GOLD, -14)
 
 
@@ -138,7 +138,7 @@ def test_the_exported_svg_labels_follow_the_rule():
             f"{colors.contrast_ink(ground)}")
 
 
-def test_the_ink_rule_gets_saturated_colour_right():
+def test_the_ink_rule_gets_saturated_color_right():
     """The case sum(color) / 3 got wrong. Pure green is a LIGHT ground."""
     assert colors.contrast_ink((0, 255, 0)) == colors.TRUE_BLACK
     assert colors.contrast_ratio((0, 255, 0), colors.TRUE_BLACK) > 15

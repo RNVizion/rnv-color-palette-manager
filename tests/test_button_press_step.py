@@ -52,7 +52,7 @@ def test_the_plate_steps_on_press(name):
     hover, pressed = theme["main_btn_hover_bg"], theme["main_btn_pressed_bg"]
     assert hover != pressed, (
         f"{name}: pressed plate {pressed} is the hover plate. The press then "
-        f"changes only the label, which is the behaviour this ruling retired.")
+        f"changes only the label, which is the behavior this ruling retired.")
 
 
 @pytest.mark.parametrize("name", sorted(THEMES))

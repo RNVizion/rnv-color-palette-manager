@@ -62,13 +62,13 @@ from ui.colors             import (
     SEARCH_HIGHLIGHT_COLOR, SEARCH_DIM_OVERLAY, SIZE_OVERLAY_BG,
     APP_BORDER,
 )
-# RNV-COLOUR-SYNC, 2026-10-17 (#53 A, #55 B): every other colour value this suite needs
-# is named in tests/colour_values.py, reached from the repository root.
-from tests.colour_values import (
+# RNV-COLOR-SYNC, 2026-10-17 (#53 A, #55 B): every other color value this suite needs
+# is named in tests/color_values.py, reached from the repository root.
+from tests.color_values import (
     DATA_HEX_INPUT_ORANGE, DATA_HEX_INPUT_ORANGE_BARE, DATA_HEX_INPUT_ORANGE_SHORT,
     DATA_HISTORY_BLACK, DATA_HISTORY_BLACK_SHORT, DATA_HISTORY_DARK_RED,
-    DATA_HISTORY_GREEN, DATA_HISTORY_GREY_1, DATA_HISTORY_GREY_2, DATA_HISTORY_GREY_3,
-    DATA_HISTORY_GREY_4, DATA_HISTORY_NAVY, DATA_HISTORY_PALE_BLUE, DATA_HISTORY_SLATE,
+    DATA_HISTORY_GREEN, DATA_HISTORY_GRAY_1, DATA_HISTORY_GRAY_2, DATA_HISTORY_GRAY_3,
+    DATA_HISTORY_GRAY_4, DATA_HISTORY_NAVY, DATA_HISTORY_PALE_BLUE, DATA_HISTORY_SLATE,
     DATA_HISTORY_WHITE, DATA_HISTORY_WHITE_SHORT, DATA_QUERY_GREEN_BARE,
     DATA_QUERY_GREEN_RGB, DATA_QUERY_RED, DATA_QUERY_RED_BARE, DATA_QUERY_RED_PADDED,
     DATA_QUERY_RED_SHORT, DATA_QUERY_RED_UPPER, DATA_QUERY_WHITE_SHORT,
@@ -89,7 +89,7 @@ from utils.error_handler    import ErrorHandler, ValidationHelper
 from utils.file_utils       import FileUtils
 from utils.pixmap_cache     import QPixmapCache
 
-# ANSI colour helpers
+# ANSI color helpers
 _G="\033[92m"; _R="\033[91m"; _Y="\033[93m"; _C="\033[96m"; _B="\033[1m"; _X="\033[0m"
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -316,7 +316,7 @@ class TestColorHarmonies(unittest.TestCase):
 # 3. ACCESSIBILITY
 # ══════════════════════════════════════════════════════════════════════════════
 class TestAccessibility(unittest.TestCase):
-    """core/accessibility.py — WCAG contrast and colour-blindness simulation."""
+    """core/accessibility.py — WCAG contrast and color-blindness simulation."""
 
     def test_white_on_black_ratio(self):
         r = Accessibility.contrast_ratio((0,0,0),(255,255,255))
@@ -438,7 +438,7 @@ class TestColorsModule(unittest.TestCase):
     def test_size_overlay_bg_rgba(self):
         self.assertIn("rgba", SIZE_OVERLAY_BG.lower())
 
-    def test_light_hover_dark_grey(self):
+    def test_light_hover_dark_gray(self):
         self.assertEqual(get_theme_colors("light")["main_btn_hover_bg"].lower(),APP_BORDER)
 
     def test_dark_accent_is_light_gold(self):
@@ -670,7 +670,7 @@ class TestExportHistory(unittest.TestCase):
 # 9. PALETTE METADATA
 # ══════════════════════════════════════════════════════════════════════════════
 class TestPaletteMetadata(unittest.TestCase):
-    """core/palette_metadata.py — serialisation, display_name, touch."""
+    """core/palette_metadata.py — serialization, display_name, touch."""
 
     def test_default_name(self):    self.assertEqual(PaletteMetadata().name,"Untitled Palette")
     def test_custom_name(self):     self.assertEqual(PaletteMetadata(name="Sunset").name,"Sunset")
@@ -708,7 +708,7 @@ class TestPaletteMetadata(unittest.TestCase):
 # 10. SLOT GROUP
 # ══════════════════════════════════════════════════════════════════════════════
 class TestSlotGroup(unittest.TestCase):
-    """ui/slot_group.py — SlotGroupData / SlotGroupInfo serialisation."""
+    """ui/slot_group.py — SlotGroupData / SlotGroupInfo serialization."""
 
     def test_data_roundtrip(self):
         d = SlotGroupData(name="Reds",slot_count=5,collapsed=False)
@@ -803,7 +803,7 @@ class TestUndoManager(unittest.TestCase):
 # 12. COLOR HISTORY
 # ══════════════════════════════════════════════════════════════════════════════
 class TestColorHistory(unittest.TestCase):
-    """utils/color_history.py — record / trim / serialise."""
+    """utils/color_history.py — record / trim / serialize."""
 
     def setUp(self):
         self.panel = ColorHistoryPanel(max_entries=5)
@@ -853,8 +853,8 @@ class TestColorHistory(unittest.TestCase):
         self.assertEqual(e2.old_color,DATA_HISTORY_SLATE); self.assertEqual(e2.slot_index,3)
 
     def test_newest_first(self):
-        self.panel.record(DATA_HISTORY_GREY_1,DATA_HISTORY_GREY_2); self.panel.record(DATA_HISTORY_GREY_3,DATA_HISTORY_GREY_4)
-        self.assertEqual(self.panel.entries[0].new_color,DATA_HISTORY_GREY_4)
+        self.panel.record(DATA_HISTORY_GRAY_1,DATA_HISTORY_GRAY_2); self.panel.record(DATA_HISTORY_GRAY_3,DATA_HISTORY_GRAY_4)
+        self.assertEqual(self.panel.entries[0].new_color,DATA_HISTORY_GRAY_4)
 
     def test_now_returns_string(self):
         self.assertIsInstance(ColorHistoryEntry.now(),str)
@@ -1299,7 +1299,7 @@ class TestMainWindowIntegration(unittest.TestCase):
                                new_callable=lambda:property(lambda self:False)):
             from RNV_Color_Palette_Manager import MainWindow
             cls.win = MainWindow()
-        # Neutralise everything that could block teardown:
+        # Neutralize everything that could block teardown:
         # closeEvent file I/O, auto-save timer, settings sync
         cls.win.closeEvent = lambda event: event.accept()
         try: cls.win.session_manager.stop_auto_save()
@@ -1496,7 +1496,7 @@ class TestMainWindowIntegration(unittest.TestCase):
         total=sum(g.slot_count for g in self.win.slot_groups)
         self.assertEqual(total,len(self.win.slots_widgets))
 
-    # --- random colours -----------------------------------------------------
+    # --- random colors -----------------------------------------------------
     def test_add_random_color(self):
         before=len(self.win.slots_widgets); self.win._add_random_color()
         self.assertEqual(len(self.win.slots_widgets),before+1)

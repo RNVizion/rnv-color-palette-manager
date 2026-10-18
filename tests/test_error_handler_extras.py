@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import pytest
 
-from colour_values import (
+from color_values import (
     DATA_HEX_INPUT_ORANGE, DATA_HEX_INPUT_ORANGE_BARE, DATA_HEX_INPUT_ORANGE_SHORT,
     INVALID_HEX_FOUR_DIGITS, INVALID_HEX_NOT_HEX)
 from utils.error_handler import (

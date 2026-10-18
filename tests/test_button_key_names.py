@@ -24,24 +24,24 @@ ROOT = Path(__file__).resolve().parent.parent
 OLD = ("button_bg", "button_text", "button_hover_bg", "button_hover_text",
        "button_pressed_bg", "button_pressed_text", "button_border_color")
 #: RNV-NAMED-AND-USED, 2026-10-04: the main family as the application reads
-#: it. The rename carried seven names across; the seventh, a border colour
+#: it. The rename carried seven names across; the seventh, a border color
 #: written as transparent, was read by nothing -- the main button draws its
 #: border from border_color -- and went.
 NEW = tuple("main_" + n.replace("button_", "btn_") for n in OLD[:-1])
 DIALOG = ("dialog_btn_bg", "dialog_btn_text", "dialog_btn_hover_bg")
 
-#: RNV-COLOUR-SYNC, 2026-10-16: each key by the constant it paints, where it
+#: RNV-COLOR-SYNC, 2026-10-16: each key by the constant it paints, where it
 #: was written as that constant's hex code, so a brand move needs no edit here.
 PINNED_MAIN = {
     "dark": {"main_btn_bg": "BRAND_BLACK", "main_btn_text": "APP_TEXT",
              "main_btn_hover_bg": "APP_BORDER", "main_btn_hover_text": "APP_TEXT",
-             "main_btn_pressed_bg": "GREY_44", "main_btn_pressed_text": "TRUE_BLACK"},
+             "main_btn_pressed_bg": "GRAY_44", "main_btn_pressed_text": "TRUE_BLACK"},
     "light": {"main_btn_bg": "WHITE", "main_btn_text": "TRUE_BLACK",
               "main_btn_hover_bg": "APP_BORDER", "main_btn_hover_text": "TRUE_BLACK",
-              "main_btn_pressed_bg": "GREY_44", "main_btn_pressed_text": "WHITE"},
+              "main_btn_pressed_bg": "GRAY_44", "main_btn_pressed_text": "WHITE"},
     "image": {"main_btn_bg": "BRAND_BLACK", "main_btn_text": "APP_TEXT",
               "main_btn_hover_bg": "APP_BORDER", "main_btn_hover_text": "APP_TEXT",
-              "main_btn_pressed_bg": "GREY_44", "main_btn_pressed_text": "TRUE_BLACK"},
+              "main_btn_pressed_bg": "GRAY_44", "main_btn_pressed_text": "TRUE_BLACK"},
 }
 
 #: The dialog family holds exactly what those dialogs painted before the

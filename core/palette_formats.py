@@ -147,7 +147,7 @@ class PaletteFormats:
         import_method = import_methods.get(ext, PaletteFormats._import_json)
         result = import_method(path)
 
-        # Normalise: old-style methods return a plain list, new ones return ImportResult
+        # Normalize: old-style methods return a plain list, new ones return ImportResult
         if isinstance(result, ImportResult):
             return result
         return ImportResult(colors=result)

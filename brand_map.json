@@ -1,8 +1,8 @@
 {
-  "about": "Where each colour in ui/colors.py comes from. A string is a name in rnv-brand (TABLE.key, or one of its own constants, in engine/brand.py); an object is a value this application owns, with the reason. Edit this file, then run: python tools/sync_colors.py",
+  "about": "Where each color in ui/colors.py comes from. A string is a name in rnv-brand (TABLE.key, or one of its own constants, in engine/brand.py); an object is a value this application owns, with the reason. Edit this file, then run: python tools/sync_colors.py",
   "app": "RNV Color Palette Manager",
-  "colour_file": "ui/colors.py",
-  "colours": {
+  "color_file": "ui/colors.py",
+  "colors": {
     "BRAND_GOLD": "APP.accent",
     "BRAND_DARK_GOLD": "APP.accent-light-mode",
     "TRUE_BLACK": "PERMANENT.black",
@@ -13,35 +13,35 @@
     "APP_TEXT": "APP.text",
     "APP_TEXT_DIM": "APP.text-dim",
     "APP_PANEL_HOVER": "APP.panel-hover",
-    "GREY_44": {
+    "GRAY_44": {
       "app": "#444444",
-      "why": "grey(4) on the register's ink grid, which the register states as a rule and does not name. The pressed plate and the scrollbar handle (RNV-COLLAPSE-505050)."
+      "why": "gray(4) on the register's ink grid, which the register states as a rule and does not name. The pressed plate and the scrollbar handle (RNV-COLLAPSE-505050)."
     },
     "APP_HOVER_LIGHT": "APP.hover-light",
     "APP_SURFACE_LIGHT_3": "APP.surface-light-3",
-    "GREY_EE": {
+    "GRAY_EE": {
       "app": "#eeeeee",
-      "why": "grey(14) on the ink grid. Static light surfaces, a list header and a scroll ground, that share hover-light's hex without being a hover."
+      "why": "gray(14) on the ink grid. Static light surfaces, a list header and a scroll ground, that share hover-light's hex without being a hover."
     },
-    "GREY_CC": {
+    "GRAY_CC": {
       "app": "#cccccc",
-      "why": "grey(12) on the ink grid. The light-mode border."
+      "why": "gray(12) on the ink grid. The light-mode border."
     },
-    "GREY_88": {
+    "GRAY_88": {
       "app": "#888888",
-      "why": "grey(8) on the ink grid. Muted text on dark; a scrollbar handle's hover on light."
+      "why": "gray(8) on the ink grid. Muted text on dark; a scrollbar handle's hover on light."
     },
-    "GREY_55": {
+    "GRAY_55": {
       "app": "#555555",
-      "why": "grey(5) on the ink grid. Disabled text and a checkbox edge on dark."
+      "why": "gray(5) on the ink grid. Disabled text and a checkbox edge on dark."
     },
     "SELECTION_OVERLAY_COLOR": {
       "app": "rgba(0,120,215,200)",
       "why": "The blue overlay drawn during gradient and contrast selection, painted where no theme palette reaches."
     },
-    "GREY_66": {
+    "GRAY_66": {
       "app": "#666666",
-      "why": "grey(6) on the ink grid. Muted text in light mode."
+      "why": "gray(6) on the ink grid. Muted text in light mode."
     },
     "SEARCH_HIGHLIGHT_COLOR": {
       "app": [0, 255, 100],
@@ -63,11 +63,11 @@
     },
     "DATA_DEFAULT_COLOR": {
       "app": "#000000",
-      "why": "Data, not chrome: the value a colour record starts with."
+      "why": "Data, not chrome: the value a color record starts with."
     },
     "SESSION_FALLBACK_COLOR": {
       "app": "#a9a9a9",
-      "why": "Data: the grey a restored session or a reset setting falls back to."
+      "why": "Data: the gray a restored session or a reset setting falls back to."
     },
     "SESSION_FALLBACK_COLOR_IMAGE": {
       "app": "#000000",
@@ -83,7 +83,7 @@
     },
     "DEFAULT_SLOT_COLOR": {
       "app": "#a9a9a9",
-      "why": "The colour a new slot starts with in dark and light mode."
+      "why": "The color a new slot starts with in dark and light mode."
     }
   }
 }

@@ -18,7 +18,7 @@ TWO TESTS HERE WERE REPLACED RATHER THAN EDITED, and both replacements say so:
     new base that formula yields EXAMPLE_STATUS_ERROR_LIGHTENED, a third
     answer. See test_the_light_error_text_is_registered_and_why_that_changed.
 
-  * test_light_error_text_carries_to_the_published_boundary parametrised over
+  * test_light_error_text_carries_to_the_published_boundary parametrized over
     WHITE, APP_SURFACE_LIGHT_3, APP_HOVER_LIGHT and
     REGISTER_GOLD_TEXT_GROUND_FLOOR. The registered replacement does not reach
     the last two. See RNV-STATUS-LIGHT-FLOOR below -- the boundary is an
@@ -39,7 +39,7 @@ import pathlib
 
 import pytest
 
-from colour_values import (
+from color_values import (
     EXAMPLE_ARGB_BLACK_AT_ED, EXAMPLE_BLACK, EXAMPLE_BLACK_BARE, EXAMPLE_OFF_WHITE,
     EXAMPLE_OFF_WHITE_BARE, EXAMPLE_WHITE, REGISTER_GOLD_TEXT_GROUND_FLOOR,
     REGISTER_STATUS_ERROR, RETIRED_BOOTSTRAP_AMBER, RETIRED_BOOTSTRAP_GREEN,
@@ -47,10 +47,10 @@ from colour_values import (
     RETIRED_MATERIAL_RED)
 from ui import colors
 
-#: RNV-COLOUR-SYNC, 2026-10-16. Where each colour comes from, as brand_map.json
-#: says. The values are held by tests/test_colours_in_sync.py, against the
+#: RNV-COLOR-SYNC, 2026-10-16. Where each color comes from, as brand_map.json
+#: says. The values are held by tests/test_colors_in_sync.py, against the
 #: register at the pin; what this file holds is the name each one takes.
-BRAND_MAP = json.loads((pathlib.Path(__file__).resolve().parents[1] / "brand_map.json").read_text(encoding="utf-8"))["colours"]
+BRAND_MAP = json.loads((pathlib.Path(__file__).resolve().parents[1] / "brand_map.json").read_text(encoding="utf-8"))["colors"]
 
 TEXT_FLOOR = 4.5
 
@@ -67,7 +67,7 @@ def _rgb(value: str) -> str:
     instead of the ~7.57 the eye actually sees. That is the 8-digit blind
     spot the family register warns about, and it caught this very test.
 
-    The alpha is asserted rather than ignored: at 0xED the colour is 93%
+    The alpha is asserted rather than ignored: at 0xED the color is 93%
     opaque, so treating it as its own RGB is a sound approximation. Below
     that it would not be, and this stops rather than quietly approximating.
     """
@@ -75,7 +75,7 @@ def _rgb(value: str) -> str:
     if len(h) == 8:
         alpha = int(h[0:2], 16)
         assert alpha >= MIN_OPAQUE_ALPHA, (
-            f"{value} is only {alpha / 255:.0%} opaque; its effective colour "
+            f"{value} is only {alpha / 255:.0%} opaque; its effective color "
             f"depends on what is behind it and cannot be measured here")
         return h[2:]
     assert len(h) == 6, f"expected 6 or 8 hex digits, got {value!r}"
@@ -101,7 +101,7 @@ def test_the_argb_reader_is_not_fooled_by_the_alpha_channel():
     If _rgb ever goes back to slicing the first six digits, every contrast
     number measured against image mode becomes fiction -- and fiction that
     reads as a FAILURE, which is the kind that gets 'fixed' by changing the
-    colour rather than the reader.
+    color rather than the reader.
     """
     assert _rgb(EXAMPLE_ARGB_BLACK_AT_ED) == EXAMPLE_BLACK_BARE
     assert _rgb(EXAMPLE_OFF_WHITE) == EXAMPLE_OFF_WHITE_BARE
@@ -134,11 +134,11 @@ def test_the_light_error_text_is_registered_and_why_that_changed():
 
 def test_the_family_is_the_registered_one():
     """Pinned by value. A test asserting only that these differ from each
-    other would pass on two wrong colours. The two this application draws:
+    other would pass on two wrong colors. The two this application draws:
     the family's three fills are the register's, and are not carried here.
 
-    RNV-COLOUR-SYNC, 2026-10-16: pinned by name in brand_map.json, which takes
-    both from the register; tests/test_colours_in_sync.py holds the values."""
+    RNV-COLOR-SYNC, 2026-10-16: pinned by name in brand_map.json, which takes
+    both from the register; tests/test_colors_in_sync.py holds the values."""
     assert BRAND_MAP["STATUS_ERROR_TEXT"] == "STATUS.error-text"
     assert BRAND_MAP["STATUS_ERROR_TEXT_LIGHT"] == "STATUS.error-text-light"
 
@@ -156,7 +156,7 @@ def test_light_error_text_clears_its_own_dialog_ground():
 # REGISTER_APP_PRESSED_LIGHT is deliberately absent -- BRAND_DARK_GOLD_DEEP
 # fails there too, so it is the boundary for every brand text family rather
 # than a gap.
-# RNV-COLOUR-SYNC, 2026-10-16: the grounds by name;
+# RNV-COLOR-SYNC, 2026-10-16: the grounds by name;
 # REGISTER_GOLD_TEXT_GROUND_FLOOR is the register's gold text floor, which the
 # app does not draw.
 @pytest.mark.parametrize("ground", [colors.WHITE, colors.APP_SURFACE_LIGHT_3,
@@ -216,7 +216,7 @@ def test_dark_error_text_mirrors_the_register_and_still_clears():
     against 4.5801 on the card -- and is still above the floor.
 
     The assertion stays exact for the same reason it was written exact.
-    RNV-COLOUR-SYNC, 2026-10-16: exact in tests/test_colours_in_sync.py, against
+    RNV-COLOR-SYNC, 2026-10-16: exact in tests/test_colors_in_sync.py, against
     the register at the pin; here, by the name brand_map.json takes it from."""
     assert BRAND_MAP["STATUS_ERROR_TEXT"] == "STATUS.error-text"
     for name in ("DARK", "IMAGE_MODE"):

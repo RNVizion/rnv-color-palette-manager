@@ -32,7 +32,7 @@ from utils.font_loader import get_font_family
 from ui.colors import (
     BRAND_GOLD, BRAND_DARK_GOLD, BRAND_DARK_GOLD_DEEP, BRAND_GOLD_HOVER,
     TRUE_BLACK, WHITE,
-    SESSION_FALLBACK_COLOR, GREY_66, CLIPBOARD_PREVIEW_COLOR,
+    SESSION_FALLBACK_COLOR, GRAY_66, CLIPBOARD_PREVIEW_COLOR,
 )
 
 if TYPE_CHECKING:
@@ -769,7 +769,7 @@ class SettingsDialog(QDialog):
     def _update_color_preview(self) -> None:
         """Update the color preview swatch."""
         self.color_preview.setStyleSheet(
-            f"background-color: {self._default_color}; border: 1px solid {GREY_66};"
+            f"background-color: {self._default_color}; border: 1px solid {GRAY_66};"
         )
 
     def _update_clipboard_preview(self, fmt: str = "") -> None:

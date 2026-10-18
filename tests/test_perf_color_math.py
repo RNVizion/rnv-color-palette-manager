@@ -38,7 +38,7 @@ from __future__ import annotations
 
 import pytest
 
-from colour_values import EXAMPLE_BENCH_PURPLE
+from color_values import EXAMPLE_BENCH_PURPLE
 from core.color_math import ColorMath
 
 
