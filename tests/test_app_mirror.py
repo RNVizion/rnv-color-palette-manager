@@ -7,7 +7,7 @@ one of them is about a name or a value that was not telling the truth.
 1. THE APP REGISTER IS NAMED. RETIRED_GRAY_E0 and the values now named
    BRAND_BLACK, APP_CARD and APP_BORDER were bare literals with no constant
    and no provenance, and every one is a REGISTERED value in
-   RNVizion/rnv-brand. APP["text"] moved to APP_TEXT in rnv-brand@68d195e
+   RNVizion/rnv-brand. APP["text"] moved to APP_TEXT in rnv-brand@989f12e
    and nothing here would have noticed.
 
 2. THE DARK INK MOVES TO gray(13). The published grid is
