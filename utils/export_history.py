@@ -20,6 +20,7 @@ from typing import Any
 
 from utils.config import USER_DATA_DIR
 from utils.logger import Logger, get_logger_instance
+from utils.atomic_write import atomic_write_json
 
 logger: Logger = get_logger_instance(__name__)
 
@@ -130,8 +131,7 @@ class ExportHistory:
         """Persist history to disk."""
         try:
             USER_DATA_DIR.mkdir(parents=True, exist_ok=True)
-            with open(EXPORT_HISTORY_PATH, "w", encoding="utf-8") as f:
-                json.dump([e.to_dict() for e in self._entries], f, indent=2)
+            atomic_write_json(EXPORT_HISTORY_PATH, [e.to_dict() for e in self._entries], indent=2)
         except Exception as e:
             logger.warning(f"Failed to save export history: {e}")
 

@@ -22,6 +22,7 @@ from PyQt6.QtCore import QObject, QTimer, pyqtSignal
 
 from utils.config import SESSIONS_DIR
 from utils.logger import Logger, get_logger_instance
+from utils.atomic_write import atomic_write_json, atomic_write_text
 
 logger: Logger = get_logger_instance(__name__)
 
@@ -215,8 +216,8 @@ class SessionManager(QObject):
         self._ensure_directory()
         try:
             state.timestamp = datetime.now().isoformat()
-            with open(SESSION_AUTO_SAVE_PATH, "w", encoding="utf-8") as f:
-                json.dump(state.to_dict(), f, indent=2)
+            # Atomic (#83 A): the file is the old one or the new one, never a mixture.
+            atomic_write_json(SESSION_AUTO_SAVE_PATH, state.to_dict(), indent=2)
 
             self._current_state = state
             self.session_saved.emit()
@@ -253,7 +254,7 @@ class SessionManager(QObject):
     def _set_recovery_flag() -> None:
         """Mark that the application is running (for crash detection)."""
         try:
-            RECOVERY_FLAG_PATH.write_text(str(time.time()))
+            atomic_write_text(RECOVERY_FLAG_PATH, str(time.time()))
         except Exception as e:
             logger.debug(f"Could not set recovery flag: {e}")
 
