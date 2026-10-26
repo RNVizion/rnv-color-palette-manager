@@ -75,11 +75,18 @@ rnv-color-palette-manager = "RNV_Color_Palette_Manager:main"
 py-modules = ["RNV_Color_Palette_Manager"]
 
 [tool.setuptools.packages.find]
-include = ["core*", "ui*", "utils*"]
-exclude = ["tests*", "resources*"]
+include = ["core*", "ui*", "utils*", "resources*"]
+exclude = ["tests*"]
 
+# (#94 A) resources/ and its folders are found as packages (namespace
+# packages: they have no __init__.py), so their files install beside core/,
+# ui/ and utils/, where utils/config.py looks for them (BASE_DIR is the
+# parent of utils/). Package data is matched inside each package: the old
+# "resources/**/*" pattern under "*" matched nothing, and resources/ was
+# excluded. tests/test_install_resources.py holds this.
 [tool.setuptools.package-data]
-"*" = ["resources/**/*", "py.typed"]
+"*" = ["py.typed"]
+resources = ["**/*"]
 
 # ── Dependency coherence (RNV-DEPENDENCY-COHERENCE, 2026-09-07) ────
 # The declarations in this file and in requirements.txt had drifted

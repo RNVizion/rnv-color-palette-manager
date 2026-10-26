@@ -559,6 +559,14 @@ class ColorSlotWidget(QWidget):
             gradient_action.setEnabled(False)
         menu.addAction(gradient_action)
 
+        # Mix with another slot: the result is added as a new slot
+        mix_action = QAction("Mix With...", self)
+        mix_action.triggered.connect(self._start_mix_selection)
+        if (len(self.main_window.slots_widgets) < 2
+                or len(self.main_window.slots_widgets) >= MAX_SLOTS):
+            mix_action.setEnabled(False)
+        menu.addAction(mix_action)
+
         # Contrast checker (Step 15)
         contrast_action = QAction("Check Contrast With...", self)
         contrast_action.triggered.connect(self._start_contrast_check)
@@ -634,6 +642,10 @@ class ColorSlotWidget(QWidget):
     def _start_gradient_selection(self) -> None:
         """Enter gradient target selection mode via main window."""
         self.main_window.start_gradient_from(self)
+
+    def _start_mix_selection(self) -> None:
+        """Enter mix target selection mode via main window."""
+        self.main_window.start_mix_from(self)
 
     # ==================================================================
     # Theme and Lock

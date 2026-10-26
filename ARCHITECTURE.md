@@ -8,31 +8,37 @@ For a mechanical overview of what each module does, see the [Project Architectur
 
 ## Package Layout: `core / ui / utils`
 
-The codebase is split into three packages that enforce a one-way dependency direction:
+The codebase is split into three packages with a one-way dependency direction (each imports only from the packages to its right):
 
 ```
-core  ←  ui  ←  utils
+ui  →  core  →  utils
 ```
 
-- **`core/`** contains color science and palette data logic. It has zero dependencies on presentation layer — a `ColorMath` conversion or a `PaletteFormats.export_palette()` call works identically whether invoked from the GUI, a unit test, or a future CLI frontend.
+- **`core/`** contains color science and palette data logic. Apart from the slot widget (below), it has no dependency on the presentation layer — a `ColorMath` conversion or a `PaletteFormats.export_palette()` call works identically whether invoked from the GUI, a unit test, or a future CLI frontend.
 - **`ui/`** contains Qt widgets, dialogs, and the theming system. It imports from `core` (to work with palettes) and `utils` (for logging, config, helpers).
-- **`utils/`** contains infrastructure — logging, config, settings persistence, session management, file utilities. It has no knowledge of color science or palette semantics.
+- **`utils/`** contains infrastructure — logging, config, colors, settings persistence, session management, file utilities. It imports nothing from `core` or `ui`.
 
-**Why this matters:** when a bug appears in color mixing, the fix lives in `core/` and can be unit-tested without a `QApplication`. When a theming bug appears, the fix lives in `ui/` and the test suite still passes without touching color math. This separation is what makes the 374-test suite practical to maintain.
+**The exception:** `core/color_slot.py` holds the slot widget (`ColorSlotWidget`, a `QWidget`) as well as its model, and it imports `ui.image_button` and `ui.image_upload_dialog`. It is the one place where `core` reaches into `ui`.
+
+**Why this matters:** when a bug appears in color math, the fix lives in `core/` and can be unit-tested without a `QApplication`. When a theming bug appears, the fix lives in `ui/` and the test suite still passes without touching color math. This separation is what keeps the test suites practical to maintain.
+
+**Mixing functions:** `core/color_math.py` holds six mixing functions (`weighted_rgb_mix`, `weighted_hsv_mix`, `lab_perceptual_mix`, `subtractive_cmy_mix`, `weighted_ryb_mix`, `kubelka_munk_mix`). `ColorMath.MIX_NAMES` gives each one its display name and `ColorMath.mix()` calls it by that name. The slot menu's **Mix With...** reaches them through `MainWindow.start_mix_from()`, which uses the same click-the-target-slot mode as the gradient and the contrast check (while a target is being picked, `MainWindow._refresh_size_overlay()` shows *Click target slot* in the size overlay whatever its setting, and `Escape` calls `_cancel_target_pick()`); `MainWindow.mix_slots()` mixes the two colors in equal parts and adds the result as a new slot after the first one, in its group, as one undo step.
 
 **Alternative considered:** a flat layout (all modules at the repo root) matching an earlier version of the codebase. Rejected because the project grew past ~15 modules and the flat structure made dependency cycles easy to introduce by accident.
 
 ---
 
-## `colors.py` as the Single Source of Truth
+## Colors: one file, written from one map
 
-All theme color values originate from `utils/colors.py`. No other file in the codebase contains hardcoded color literals — not even for SVG exports, session-restore fallbacks, or transparency overlays. Every hex string, every RGB tuple, every `rgba(…)` CSS value lives in one file.
+All theme colors are named in `utils/colors.py`. No other file in the codebase contains hardcoded color literals — not even for SVG exports, session-restore fallbacks, or transparency overlays. Every hex string, every RGB tuple, every `rgba(…)` CSS value is named in that one file.
 
-**Why:** before the centralization pass, the codebase had ~60–65 hardcoded color literals scattered across 15 files. Changing the brand gold required a project-wide find-and-replace that inevitably missed edge cases — a light-mode tooltip would still show the old color, or an exported SVG would look wrong. After centralization, adjusting the accent color is a one-line edit.
+The values in it are not edited by hand. `brand_map.json` says where each color comes from — a name in rnv-brand, at the commit `tests/requirements-dev.txt` pins, or a value this app owns, with the reason — and `python tools/sync_colors.py` writes the values into `utils/colors.py` and writes `COLORS.md`. `tests/test_colors_in_sync.py` fails while the two disagree. The README's *Changing a color* section gives the steps.
 
-**Exceptions that are correct:** `color_search.py` retains a `COLOR_NAMES` lookup dictionary with named color strings (`"red": (255,0,0)`, etc.). This is reference data for the search feature — users typing "red" in the search bar expect it to match `#FF0000` regardless of theme. These are not theme colors and correctly live in that module.
+**Why:** before the centralization pass, the codebase had ~60–65 hardcoded color literals scattered across 15 files. Changing the brand gold required a project-wide find-and-replace that inevitably missed edge cases — a light-mode tooltip would still show the old color, or an exported SVG would look wrong. With one file of names, and the values written from one map, a color changes in one place and the diff of `utils/colors.py` shows every value that moved. The gold drawn into the button and background images does not follow; `ACCENT_IMAGES.md` lists those images.
 
-**Mode-aware exception:** `SLOT_SELECTED_COLOR` is defined in `colors.py` but resolves to different gold variants at paint time depending on active theme. Dark/image modes use the brighter `BRAND_DARK_GOLD_RGB`; light mode would blow out on a white background. This is intentional — the constant declares intent, the `paintEvent` resolves to the correct concrete color.
+**Exceptions that are correct:** `color_search.py` retains a `CSS_NAMED_COLORS` lookup dictionary with named colors (`"red": (255, 0, 0)`, etc.). This is reference data for the search feature — users typing "red" in the search bar expect it to match `#FF0000` regardless of theme. These are not theme colors and correctly live in that module.
+
+**Mode-aware selection border:** the selected slot's border gold is chosen at paint time in `ColorSlot.paintEvent()`. Dark and image modes use `BRAND_GOLD_RGB`, which shows on a dark ground; light mode uses the darker `BRAND_DARK_GOLD_RGB`, because the bright gold would wash out on a white background.
 
 ---
 
@@ -46,18 +52,19 @@ Qt offers several widget styles (Fusion, Windows, Windows11, macOS). Fusion is p
 
 ---
 
-## Two-Stage Post-Show Fix for Image Mode
+## Three-Pass Post-Show Fix for Image Mode
 
-The main window applies layout fixes after `show()` in two stages:
+The main window applies layout fixes after `show()` in up to three passes:
 
-1. **`_post_show_fix()`** runs via `QTimer.singleShot(0, ...)` — fires in the next event loop iteration, fixing slot sizes and scene rects.
-2. **`_post_show_fix_image()`** runs via `QTimer.singleShot(400, ...)` **only when image mode is active** — fixes transparency compositor issues.
+1. **`_post_show_fix()`** runs via `QTimer.singleShot(0, ...)` — fires in the next event loop iteration, fixing slot sizes, scene rects and overlay positions. In image mode it also runs `_force_image_mode_refresh()` inline, so the first paint the user sees is already correct, and schedules the second pass.
+2. **`_post_show_fix_image()`** runs 400ms later, **only in image mode** — repeats the refresh, then updates the scene rect and resets the view.
+3. **`_post_show_fix_image_final()`** runs 600ms after that (about a second after show), **only if image mode is still active** — repeats the refresh once more, and leaves the scene rect and view alone so it does not undo any zoom or pan the user has started.
 
-**Why two stages:** in Image Mode, the main window uses `WA_TranslucentBackground` to let the background image show through transparent slot regions. On Windows, the DWM (Desktop Window Manager) compositor takes a variable amount of time to establish the translucency layer after `show()`. If a repaint happens before DWM is ready, transparent slots render as solid black.
+**Why:** in Image Mode, `scroll_content` and `preview_frame` — child widgets, not the main window — carry `WA_TranslucentBackground` so the background image shows through the slots. The slots live inside a `QGraphicsProxyWidget`, and on a cold start the proxy's first rasterization can produce solid-black slots instead of the semi-transparent fills. A user-triggered theme cycle clears it, because going through a non-image theme turns the attribute off and on again, which rebuilds Qt's backing stores; calling `apply_theme()` alone does not, since setting an attribute that is already on is a no-op. `_force_image_mode_refresh()` reproduces that off-and-on toggle and then the tail of `cycle_theme()`.
 
-`singleShot(0)` fires too early — the event loop has processed the paint event but DWM hasn't finished compositor setup. 400ms is empirically the shortest reliable delay across tested Windows 10/11 configurations.
+The 400ms and later passes are insurance against timing edge cases on slower hardware; on a machine where the inline pass worked they are visual no-ops.
 
-**Why not poll:** there's no Qt API to query DWM compositor state. A fixed delay was simpler and more reliable than wrapping the paint in a retry loop.
+**Why not poll:** there's no Qt API to ask whether the backing store is ready. Fixed delays were simpler and more reliable than wrapping the paint in a retry loop.
 
 ---
 
@@ -67,15 +74,15 @@ The app renders tooltips using a custom `_ThemedToolTip` class instead of the na
 
 **Why:** `QToolTip` on Windows creates an OS-level popup window with its own frame that ignores CSS `border-radius`. In Light and Image modes this produced visibly unstyled tooltips — sharp corners where the rest of the app uses rounded corners, and a system-gray background that clashed with the dark/image themes.
 
-The custom implementation is ~80 lines and gives pixel-perfect themed tooltips in all three modes. The application-level event filter in `MainWindow.eventFilter()` intercepts `QEvent.ToolTip` and renders the custom tooltip instead.
+The custom implementation is one small `QLabel` subclass in the main script and gives pixel-perfect themed tooltips in all three modes. The application-level event filter in `MainWindow.eventFilter()` intercepts `QEvent.ToolTip` and renders the custom tooltip instead.
 
 ---
 
 ## Session Auto-Save Over Document-Based Save/Open
 
-The app doesn't have a File → Save or File → Open in the traditional sense. There's Import Palette and Export Palette for format interchange, but the active workspace state (colors, locked slots, groups, metadata) is auto-saved continuously to `~/.rnv_color_palette_manager/sessions/autosave.json` and restored on next launch.
+The app doesn't have a File → Save or File → Open in the traditional sense. There's Import Palette and Export Palette for format interchange, but the active workspace state (colors, locked slots, groups, metadata) is auto-saved to `~/.rnv_color_palette_manager/sessions/autosave.json` on a timer (every 5 minutes by default, set in Settings → General) and once more on close, and restored on next launch while *Restore last session on startup* is on.
 
-**Why:** this is a creative tool, not a document editor. Users creating a palette don't think about "saving the file" — they think about the colors. Modeling the app around sessions (continuous auto-save + crash recovery) matches user mental model and eliminates the "I forgot to save" failure case entirely.
+**Why:** this is a creative tool, not a document editor. Users creating a palette don't think about "saving the file" — they think about the colors. Modeling the app around sessions (timed auto-save + crash recovery) matches user mental model and eliminates the "I forgot to save" failure case entirely.
 
 **What's preserved across sessions:**
 - All slot colors, lock states, and order
@@ -84,27 +91,23 @@ The app doesn't have a File → Save or File → Open in the traditional sense. 
 - Color change history (for the History panel)
 - Active theme
 
-**Crash recovery:** a `.recovery_needed` flag file is created on startup and deleted on clean shutdown. If the flag exists on next launch, the app knows the previous session crashed and offers to restore the last auto-saved state.
+**Crash recovery:** a `.recovery_needed` flag file is created when auto-save starts and deleted when it stops or the app shuts down cleanly. If the flag exists on next launch and the auto-saved session is less than 24 hours old, the app knows the previous session crashed and offers to restore it; declining discards it. Both files are written atomically through `utils/atomic_write.py`.
 
 ---
 
-## `unittest` Instead of `pytest`
+## Two Test Suites: `unittest` and `pytest`
 
-The test suite uses Python's standard `unittest` module rather than `pytest`.
+The project has two suites, and `python run_tests.py` runs both under coverage and merges the results. [TESTING.md](TESTING.md) is the full guide.
 
-**Why:** zero additional dependencies. The test suite runs via `python test_rnv_palette_manager.py` on any machine with Python 3.13 and PyQt6 already installed — no `pip install pytest` step, no `conftest.py`, no plugin ecosystem to maintain.
+- **`test_rnv_palette_manager.py`** (repository root) uses the standard `unittest` module. It needs nothing beyond the app's own requirements: `python test_rnv_palette_manager.py` runs it on any machine with Python 3.13, PyQt6 and Pillow installed. It is the established baseline and is kept as it is.
+- **`tests/`** is a pytest suite, with `tests/conftest.py` for shared setup and fixtures, pytest-qt for widget tests, Hypothesis for property tests, pytest-benchmark for benchmarks, and pytest-timeout installed beside them. Its tools, and rnv-brand at the pinned commit, come from `tests/requirements-dev.txt`. New tests go here, including the guard tests that hold rules across the repository.
+
+**Why both:** the `unittest` file came first and still runs with no test dependencies at all. The pytest suite was added later (the phase table in TESTING.md records the steps) for what `unittest` makes awkward: fixtures, parametrization, property-based tests, `qtbot`, and benchmarks.
 
 **Tradeoffs accepted:**
-- More verbose test signatures (`def test_...(self):` instead of `def test_...():`)
-- Less elegant parameterization (manual loops instead of `@pytest.mark.parametrize`)
-- Simpler fixtures (`setUpClass` / `tearDownClass` instead of `@pytest.fixture`)
-
-**Tradeoffs avoided:**
-- Plugin version conflicts
-- `conftest.py` scope confusion
-- The "should I use `pytest` or `pytest-qt`?" decision
-
-For a project this size, the standard library is sufficient and the no-dependency constraint is worth preserving.
+- Two styles of test in one repository (`def test_...(self):` classes in the root file, plain functions and fixtures in `tests/`)
+- Shared helpers have to be reachable from both: the root suite imports `tests.color_values`, the pytest suite imports `color_values`
+- The pytest suite needs `tests/requirements-dev.txt` installed, including network access for the rnv-brand pin
 
 ---
 
@@ -128,7 +131,7 @@ The codebase uses Python 3.13 features consistently throughout:
 - `type` alias syntax (`type RGB = tuple[int, int, int]`)
 - `match/case` for theme dispatch and platform detection
 - `X | None` union syntax instead of `Optional[X]`
-- `pathlib.Path` for all filesystem operations (no `os.path`)
+- `pathlib.Path` for filesystem operations (a few helpers in `core/palette_formats.py`, `utils/error_handler.py` and `utils/file_utils.py` still call `os.path`)
 - `Final` annotations on true constants
 - Dataclasses for structured data (`PaletteMetadata`, `PaletteState`, `SlotGroupData`, etc.)
 

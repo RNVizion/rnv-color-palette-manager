@@ -231,6 +231,10 @@ class MainWindow(QMainWindow):
         self.slot_groups: list[SlotGroupInfo] = []
         self._group_headers: list[SlotGroupHeader] = []  # header widgets in the grid
         self._gradient_source: ColorSlotWidget | None = None  # Gradient selection mode
+        # (#95 A) Mix With... selection mode, and the algorithm last chosen
+        self._mix_source: ColorSlotWidget | None = None
+        self._last_mix_algorithm: str = ColorMath.MIX_NAMES[0]
+        self._contrast_source: ColorSlotWidget | None = None  # Contrast selection mode
         self._selected_slot: ColorSlotWidget | None = None  # Currently selected slot
         self.undo_manager = UndoManager()
         self.rows = self.settings_manager.starting_rows
@@ -523,16 +527,49 @@ class MainWindow(QMainWindow):
         logger.debug(f"Slot border style set to: {style}")
 
     def _apply_size_overlay_visibility(self, visible: bool = True) -> None:
-        """Show or hide the size percentage overlay."""
-        self.size_overlay.setVisible(visible)
+        """Show or hide the size percentage overlay (the pick hint stays)."""
+        self.size_overlay.setVisible(visible or self._is_picking_target())
         logger.debug(f"Size overlay visible: {visible}")
 
     def _toggle_size_overlay(self) -> None:
         """Toggle size overlay visibility (F12)."""
-        new_state = not self.size_overlay.isVisible()
-        self.size_overlay.setVisible(new_state)
+        new_state = not self.settings_manager.show_size_overlay
         self.settings_manager.show_size_overlay = new_state
+        self._refresh_size_overlay()
         logger.debug(f"Size overlay toggled: {new_state}")
+
+    def _size_overlay_text(self) -> str:
+        """The window size as a percentage of the reference size."""
+        width_pct = int((self.width() / self.ref_width) * 100)
+        height_pct = int((self.height() / self.ref_height) * 100)
+        return f"{width_pct}% \u00d7 {height_pct}%"
+
+    def _refresh_size_overlay(self) -> None:
+        """Draw the top-right status overlay for the current state.
+
+        (#99 A) While Generate Gradient To..., Mix With... or Check Contrast
+        With... waits for a target, it shows "Click target slot" whatever
+        the size overlay setting. Otherwise it shows the window size, and
+        only when the setting is on.
+        """
+        theme = self.theme_manager.get_current_theme()
+        if self._is_picking_target():
+            self.size_overlay.setText("Click target slot")
+            self.size_overlay.setToolTip("Click the second slot, or press Esc to cancel")
+            self.size_overlay.setStyleSheet(
+                f"background-color: {SELECTION_OVERLAY_COLOR}; color: {WHITE}; "
+                "font-weight: bold; padding: 4px; border-radius: 4px;"
+            )
+            self.size_overlay.setVisible(True)
+            self.size_overlay.raise_()
+        else:
+            self.size_overlay.setText(self._size_overlay_text())
+            self.size_overlay.setToolTip("Window size percentage (F12 to toggle)")
+            self.size_overlay.setStyleSheet(
+                f"background-color: {SIZE_OVERLAY_BG}; color: {theme['text_color']}; "
+                "font-weight: bold; padding: 4px; border-radius: 4px;"
+            )
+            self.size_overlay.setVisible(self.settings_manager.show_size_overlay)
 
     def _toggle_tooltips(self) -> None:
         """Toggle tooltips on/off application-wide (F11)."""
@@ -713,8 +750,11 @@ class MainWindow(QMainWindow):
     # ==================================================================
 
     def _shortcut_escape(self) -> None:
-        """Escape: close search if open, otherwise deselect slot."""
-        if self.color_search_bar.isVisible():
+        """Escape: cancel picking a target slot; else close search if open;
+        else deselect slot."""
+        if self._is_picking_target():
+            self._cancel_target_pick()
+        elif self.color_search_bar.isVisible():
             self.color_search_bar.close_search()
         else:
             self.select_slot(None)
@@ -987,7 +1027,28 @@ class MainWindow(QMainWindow):
             QInputDialog QPushButton:default {{
                 border-color: {accent};
             }}
+            /* ---- QInputDialog input field (Gradient Steps, Mix Colors, New
+                    Group): the input keys the settings dialog's inputs use ---- */
+            QInputDialog QSpinBox,
+            QInputDialog QComboBox,
+            QInputDialog QLineEdit {{
+                background-color: {theme['input_bg']};
+                color: {theme['text_color']};
+                border: 1px solid {theme['border_color']};
+                border-radius: 3px;
+                padding: 4px 6px;
+                selection-background-color: {sel_bg};
+                selection-color: {sel_text};
+            }}
+            QInputDialog QComboBox QAbstractItemView {{
+                background-color: {theme['card_bg']};
+                color: {theme['text_color']};
+                border: 1px solid {theme['border_color']};
+                selection-background-color: {sel_bg};
+                selection-color: {sel_text};
+            }}
             QInputDialog QSpinBox:focus,
+            QInputDialog QComboBox:focus,
             QInputDialog QLineEdit:focus {{
                 border: 1px solid {accent};
                 outline: none;
@@ -1055,14 +1116,8 @@ class MainWindow(QMainWindow):
         # Theme button
         self.apply_theme_button_style()
 
-        # Size overlay
-        self.size_overlay.setStyleSheet(f"""
-            background-color: {SIZE_OVERLAY_BG};
-            color: {theme['text_color']};
-            font-weight: bold;
-            padding: 4px;
-            border-radius: 4px;
-        """)
+        # Size overlay (or the pick hint, while a target is being picked)
+        self._refresh_size_overlay()
 
         # Update all buttons
         for btn in self.right_buttons_dict.values():
@@ -1445,15 +1500,12 @@ class MainWindow(QMainWindow):
         self._push_undo()
 
         # Remove from flat list
-        old_idx = self.slots_widgets.index(slot_widget)
         self.slots_widgets.remove(slot_widget)
         source_group.slot_count -= 1
 
-        # Insert at end of target group's range
+        # Insert at end of target group's range. The counts already leave
+        # the removed slot out, so this index needs no further adjustment.
         insert_at = self._flat_index_for_group_end(target_group)
-        # Adjust if we removed before the insert point
-        if old_idx < insert_at:
-            insert_at -= 1
         self.slots_widgets.insert(insert_at, slot_widget)
         target_group.slot_count += 1
 
@@ -1652,18 +1704,33 @@ class MainWindow(QMainWindow):
         self.update_grid()
 
     # ==================================================================
+    # Picking a target slot: Gradient, Mix With and Contrast
+    # ==================================================================
+
+    def _is_picking_target(self) -> bool:
+        """True while a slot-menu action waits for the user to click a second slot."""
+        return any(source is not None for source in (
+            self._gradient_source, self._mix_source, self._contrast_source,
+        ))
+
+    def _cancel_target_pick(self) -> None:
+        """Leave target picking without acting (Esc)."""
+        if self._gradient_source is not None:
+            self._cancel_gradient_mode()
+        if self._mix_source is not None:
+            self._cancel_mix_mode()
+        if self._contrast_source is not None:
+            self._cancel_contrast_mode()
+
+    # ==================================================================
     # Step 9: Gradient Generation
     # ==================================================================
 
     def start_gradient_from(self, source_widget: ColorSlotWidget) -> None:
         """Enter gradient selection mode -- next slot click picks the target."""
         self._gradient_source = source_widget
-        # Visual hint: change status overlay
-        self.size_overlay.setText("Click target slot")
-        self.size_overlay.setStyleSheet(
-            f"background-color: {SELECTION_OVERLAY_COLOR}; color: {WHITE}; "
-            "font-weight: bold; padding: 4px; border-radius: 4px;"
-        )
+        # Visual hint: "Click target slot" in the status overlay
+        self._refresh_size_overlay()
 
         # Temporarily re-route left clicks on all other slots
         for w in self.slots_widgets:
@@ -1696,6 +1763,8 @@ class MainWindow(QMainWindow):
         # Insert intermediate colors (skip first and last which are source/target)
         src_idx = self.slots_widgets.index(source) if source in self.slots_widgets else -1
         insert_pos = src_idx + 1 if src_idx >= 0 else len(self.slots_widgets)
+        # The new slots join the source's group, as duplicate_slot's do
+        source_group = self.get_group_for_slot(source)
 
         for rgb in gradient_colors[1:-1]:
             if len(self.slots_widgets) >= MAX_SLOTS:
@@ -1710,6 +1779,8 @@ class MainWindow(QMainWindow):
             widget.hex_label.setText(slot.color.name())
             self.slots_widgets.insert(insert_pos, widget)
             insert_pos += 1
+            if source_group:
+                source_group.slot_count += 1
 
         self.update_grid()
         logger.info(f"Generated gradient with {count} steps")
@@ -1720,12 +1791,83 @@ class MainWindow(QMainWindow):
         # Restore normal click routing on all slots
         for w in self.slots_widgets:
             w.slot.mousePressEvent = w._on_slot_press
-        # Reset overlay style
-        theme = self.theme_manager.get_current_theme()
-        self.size_overlay.setStyleSheet(
-            f"background-color: {SIZE_OVERLAY_BG}; color: {theme['text_color']}; "
-            "font-weight: bold; padding: 4px; border-radius: 4px;"
+        # Put the overlay back as it was before the pick
+        self._refresh_size_overlay()
+
+    # ==================================================================
+    # Mixing: Mix With... on the slot menu
+    # ==================================================================
+
+    def start_mix_from(self, source_widget: ColorSlotWidget) -> None:
+        """Enter mix target selection mode -- next slot click picks the other color."""
+        self._mix_source = source_widget
+        self._refresh_size_overlay()
+        for w in self.slots_widgets:
+            if w is not source_widget:
+                w.slot.mousePressEvent = (
+                    lambda ev, target=w: self._mix_target_selected(target)
+                )
+
+    def _mix_target_selected(self, target_widget: ColorSlotWidget) -> None:
+        """Target slot was clicked -- ask for the algorithm and add the mix."""
+        source = self._mix_source
+        self._cancel_mix_mode()
+        if source is None or source is target_widget:
+            return
+        if len(self.slots_widgets) >= MAX_SLOTS:
+            DialogHelper.show_warning(self, f"Maximum {MAX_SLOTS} color slots allowed!")
+            return
+
+        names = ColorMath.MIX_NAMES
+        current = (names.index(self._last_mix_algorithm)
+                   if self._last_mix_algorithm in names else 0)
+        name, ok = QInputDialog.getItem(
+            self, "Mix Colors",
+            f"Mix {source.slot.color.name()} and "
+            f"{target_widget.slot.color.name()} in equal parts with:",
+            names, current, False,
         )
+        if not ok:
+            return
+        self.mix_slots(source, target_widget, name)
+
+    def mix_slots(
+        self, source: ColorSlotWidget, target: ColorSlotWidget, algorithm: str,
+    ) -> ColorSlotWidget | None:
+        """Mix two slots' colors in equal parts and add the result as a new
+        slot right after the source, in the source's group."""
+        if source not in self.slots_widgets or len(self.slots_widgets) >= MAX_SLOTS:
+            return None
+        rgb_a = (source.slot.color.red(), source.slot.color.green(), source.slot.color.blue())
+        rgb_b = (target.slot.color.red(), target.slot.color.green(), target.slot.color.blue())
+        mixed = ColorMath.mix(algorithm, [(rgb_a, 1), (rgb_b, 1)])
+        if mixed is None:
+            return None
+
+        self._push_undo()
+        slot = ColorSlot(
+            base_size=MIN_SLOT_SIZE, max_size=MAX_SLOT_SIZE,
+            theme_manager=self.theme_manager,
+        )
+        slot.color = QColor(*mixed)
+        slot._is_default_color = False
+        widget = ColorSlotWidget(slot, self.preview_grid, self)
+        widget.hex_label.setText(slot.color.name())
+        source_group = self.get_group_for_slot(source)
+        self.slots_widgets.insert(self.slots_widgets.index(source) + 1, widget)
+        if source_group:
+            source_group.slot_count += 1
+        self._last_mix_algorithm = algorithm
+        self.update_grid()
+        logger.info(f"Mixed {rgb_a} and {rgb_b} ({algorithm}): {slot.color.name()}")
+        return widget
+
+    def _cancel_mix_mode(self) -> None:
+        """Exit mix selection mode and restore normal click handlers."""
+        self._mix_source = None
+        for w in self.slots_widgets:
+            w.slot.mousePressEvent = w._on_slot_press
+        self._refresh_size_overlay()
 
     # ==================================================================
     # Step 15: Contrast Checker
@@ -1734,11 +1876,7 @@ class MainWindow(QMainWindow):
     def start_contrast_from(self, source_widget: ColorSlotWidget) -> None:
         """Enter contrast target selection mode."""
         self._contrast_source = source_widget
-        self.size_overlay.setText("Click target slot")
-        self.size_overlay.setStyleSheet(
-            f"background-color: {SELECTION_OVERLAY_COLOR}; color: {WHITE}; "
-            "font-weight: bold; padding: 4px; border-radius: 4px;"
-        )
+        self._refresh_size_overlay()
         for w in self.slots_widgets:
             if w is not source_widget:
                 w.slot.mousePressEvent = (
@@ -1763,11 +1901,7 @@ class MainWindow(QMainWindow):
         self._contrast_source = None
         for w in self.slots_widgets:
             w.slot.mousePressEvent = w._on_slot_press
-        theme = self.theme_manager.get_current_theme()
-        self.size_overlay.setStyleSheet(
-            f"background-color: {SIZE_OVERLAY_BG}; color: {theme['text_color']}; "
-            "font-weight: bold; padding: 4px; border-radius: 4px;"
-        )
+        self._refresh_size_overlay()
 
     # ==================================================================
     # Step 16: Color Blindness Simulation
@@ -1948,11 +2082,20 @@ class MainWindow(QMainWindow):
                 return
 
             start_dir = self.settings_manager.last_export_dir or ""
+            filters = [f"{name} ({ext})" for name, ext in PaletteFormats.get_export_formats()]
+            # Preselect the Default Export Format (Settings -> Export)
+            default_ext = self.settings_manager.last_export_format.lower()
+            initial_filter = next(
+                (f for f, (_, ext) in zip(filters, PaletteFormats.get_export_formats())
+                 if ext == f"*{default_ext}"),
+                "",
+            )
             file_path, selected_filter = QFileDialog.getSaveFileName(
                 self,
                 "Export Palette",
                 start_dir,
-                ";;".join([f"{name} ({ext})" for name, ext in PaletteFormats.get_export_formats()]),
+                ";;".join(filters),
+                initial_filter,
             )
 
             if not file_path:
@@ -2485,11 +2628,10 @@ class MainWindow(QMainWindow):
 
         self.update_all_slot_sizes()
 
-        width_pct = int((self.width() / self.ref_width) * 100)
-        height_pct = int((self.height() / self.ref_height) * 100)
-
-        # Always update text (so it's current when toggled visible)
-        self.size_overlay.setText(f"{width_pct}% \u00d7 {height_pct}%")
+        # Always update text (so it's current when toggled visible),
+        # except while it shows the pick hint
+        if not self._is_picking_target():
+            self.size_overlay.setText(self._size_overlay_text())
 
         # Position settings gear (top-right corner)
         self.btn_settings.move(

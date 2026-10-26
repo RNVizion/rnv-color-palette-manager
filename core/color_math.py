@@ -276,64 +276,59 @@ class ColorMath:
     @staticmethod
     def subtractive_cmy_mix(colors_weights: list[ColorWeight]) -> RGB | None:
         """
-        Mix colors using subtractive CMY model (like inks/dyes).
-        
-        Subtractive mixing simulates how pigments absorb light:
+        Mix colors the way inks and filters mix (subtractive CMY).
+
+        Each color is treated as a filter that passes c / 255 of the light
+        in each channel (its transmittance). Inks and filters laid together
+        multiply what they pass, so each channel of the mix is the weighted
+        geometric mean of the transmittances, times 255 and rounded:
+
+            mix_i = 255 * prod(t_k ** (w_k / sum(w)))
+
         - Yellow + Cyan = Green
-        - Yellow + Magenta = Red  
+        - Yellow + Magenta = Red
         - Cyan + Magenta = Blue
-        - All colors = Black
-        
+        - All three = Black
+        - Yellow + Blue = a dark green (not the gray-green of an RGB average)
+        - A channel at 0 absorbs fully: the mix is 0 in a channel whenever
+          any weighted color is 0 there
+        - In each channel the mix lies between the darkest and the lightest
+          of the colors, and a color mixed with itself is itself
+
+        Colors with weight 0 are ignored. The RNV Color Mixer mixes by the
+        same formula, to the last digit.
+
         Args:
             colors_weights: List of (color, weight) tuples where color is (r, g, b)
-            
+
         Returns:
             Mixed color as RGB tuple, or None if no valid colors
         """
         if not colors_weights:
             return None
-        
+
         # Filter out zero weights
         weighted = [(color, weight) for color, weight in colors_weights if weight > 0]
         if not weighted:
             return None
-        
+
         total_weight = sum(weight for _, weight in weighted)
-        if total_weight == 0:
-            return None
-        
-        # Convert RGB to CMY (subtractive primaries)
-        # CMY = 1 - RGB (normalized)
-        total_c = 0.0
-        total_m = 0.0
-        total_y = 0.0
-        
-        for color, weight in weighted:
-            r, g, b = (c / 255.0 for c in color)
-            # Convert to CMY
-            c = 1.0 - r
-            m = 1.0 - g
-            y = 1.0 - b
-            
-            total_c += c * weight
-            total_m += m * weight
-            total_y += y * weight
-        
-        # Average CMY values
-        avg_c = total_c / total_weight
-        avg_m = total_m / total_weight
-        avg_y = total_y / total_weight
-        
-        # Convert back to RGB
-        r = (1.0 - avg_c) * 255
-        g = (1.0 - avg_m) * 255
-        b = (1.0 - avg_y) * 255
-        
-        return (
-            max(0, min(255, int(r))),
-            max(0, min(255, int(g))),
-            max(0, min(255, int(b)))
-        )
+
+        # (#98 A) Each color is a filter passing c / 255 of each channel's light.
+        # Filters multiply what they pass, so the mix is the weighted
+        # geometric mean of the transmittances. A channel at 0 passes
+        # nothing, and nothing passes it after that.
+        mixed = []
+        for channel in range(3):
+            if any(color[channel] == 0 for color, _ in weighted):
+                mixed.append(0)
+                continue
+            transmittance = 1.0
+            for color, weight in weighted:
+                transmittance *= (color[channel] / 255.0) ** (weight / total_weight)
+            mixed.append(max(0, min(255, round(transmittance * 255))))
+
+        return (mixed[0], mixed[1], mixed[2])
     
     @staticmethod
     def rgb_to_ryb(rgb: RGB) -> RGBFloat:
@@ -549,7 +544,38 @@ class ColorMath:
     # ==========================================================================
     # END PHASE 2: REALISTIC COLOR MIXING ALGORITHMS
     # ==========================================================================
-    
+
+    # Display names of the six mixing algorithms, in the order the slot
+    # menu's Mix With... prompt lists them.
+    MIX_NAMES: list[str] = [
+        "RGB Weighted",
+        "HSV Weighted",
+        "CIE LAB Perceptual",
+        "RYB Artist's Wheel",
+        "Subtractive CMY",
+        "Kubelka-Munk",
+    ]
+
+    @staticmethod
+    def mix(name: str, colors_weights: list[ColorWeight]) -> RGB | None:
+        """Mix colors by the algorithm's display name (see MIX_NAMES).
+        Returns None for an unknown name or when there is nothing to mix."""
+        match name:
+            case "RGB Weighted":
+                return ColorMath.weighted_rgb_mix(colors_weights)
+            case "HSV Weighted":
+                return ColorMath.weighted_hsv_mix(colors_weights)
+            case "CIE LAB Perceptual":
+                return ColorMath.lab_perceptual_mix(colors_weights)
+            case "RYB Artist's Wheel":
+                return ColorMath.weighted_ryb_mix(colors_weights)
+            case "Subtractive CMY":
+                return ColorMath.subtractive_cmy_mix(colors_weights)
+            case "Kubelka-Munk":
+                return ColorMath.kubelka_munk_mix(colors_weights)
+            case _:
+                return None
+
     @staticmethod
     def calculate_average_region_color(pixels: list[RGB]) -> RGB | None:
         """

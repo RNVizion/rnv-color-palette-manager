@@ -9,7 +9,7 @@ mode. It is the single source of truth for "how this project does testing."
 ## Quick start
 
 ```powershell
-# Install test dependencies (one-time)
+# Install test dependencies (one-time; or run .\in.ps1, see the README)
 pip install -r tests/requirements-dev.txt
 
 # Run the full suite (unittest + pytest + coverage report)
@@ -55,7 +55,7 @@ The project has **two coexisting test suites**, by design:
 The two suites are independently runnable. `run_tests.py` runs both and
 merges their coverage data.
 
-**Combined: over 800 tests, 70% coverage, 0 hangs, 0 flakes.**
+**Combined: over 800 tests, 0 hangs, 0 flakes.**
 
 ---
 
@@ -66,6 +66,7 @@ merges their coverage data.
 ├── test_rnv_palette_manager.py         # unittest suite
 ├── tests/
 │   ├── conftest.py                     # Shared pytest fixtures & helpers
+│   ├── color_values.py                 # Color values the tests share
 │   ├── test_color_math_properties.py   # Hypothesis property tests
 │   ├── test_export_snapshots.py        # Export format snapshots
 │   ├── test_import_snapshots.py        # Import format snapshots
@@ -75,17 +76,29 @@ merges their coverage data.
 │   ├── test_qt_color_slot_paint.py     # ColorSlot paintEvent visual tests
 │   ├── test_qt_drag_drop.py            # Drag/drop event handler tests
 │   ├── test_qt_search_and_workflows.py # Search bar + end-to-end workflows
+│   ├── test_qt_mix_with.py             # Mix With... from slot menu to new slot
+│   ├── test_qt_pick_target.py          # Click target slot hint and Esc while picking
+│   ├── test_qt_prompt_inputs.py        # Prompt input fields in each theme
+│   ├── test_subtractive_cmy.py         # Subtractive CMY mixes like inks
+│   ├── test_qt_group_membership.py     # Gradient and Move to Group keep slots in their groups
+│   ├── test_qt_export_default_format.py # Export dialog opens on the default format
 │   ├── test_error_handler.py           # error_handler.py logic tests
 │   ├── test_error_handler_extras.py    # Validator + suggestion logic tests
 │   ├── test_file_utils.py              # FileUtils helper tests
 │   ├── test_session_manager.py         # SessionManager + state tests
 │   ├── test_perf_color_math.py         # Benchmarks for color math
-│   └── test_perf_palette_io.py         # Benchmarks for palette I/O
+│   ├── test_perf_palette_io.py         # Benchmarks for palette I/O
+│   └── test_*.py                       # The rest: colors, contrast, images,
+│                                       # dependencies, workflows and the
+│                                       # guard tests (see Guard tests below)
+├── snapshots/                          # canonical.* files the snapshot tests compare against
 ├── run_tests.py                        # Unified runner (both suites + coverage)
 ├── .coveragerc                         # Coverage configuration
-├── pyproject.toml                      # Includes [tool.pytest.ini_options]
 └── .benchmarks/                        # pytest-benchmark history (created on first run)
 ```
+
+There is no pytest configuration file: `tests/conftest.py` does the setup
+(see *Common gotchas*), and pytest runs with its defaults.
 
 The `tests/` directory has **no `__init__.py`**. Adding one breaks pytest
 collection because the project root has its own `__init__.py` that imports
@@ -97,43 +110,35 @@ from `utils.config`.
 
 Run via `python run_tests.py`. Combines coverage from both suites.
 
-Current coverage (after Phase 13):
+Coverage is measured on every full run. `python run_tests.py --report` prints the current
+figure for every module; it differs a little between Windows and Linux. CI prints the same
+report and sets no minimum. `python run_tests.py --summary` lists only the modules with
+gaps, and `--html` also writes `htmlcov/`.
 
-| Module | Coverage |
+The Tier 4 dialogs (`ui/about_dialog.py`, `ui/batch_export_dialog.py`,
+`ui/image_upload_dialog.py`, `ui/settings_dialog.py`) and `utils/dialog_helper.py`
+are omitted from measurement in `.coveragerc`, because their `.exec()` calls
+block under offscreen Qt. They are not counted at all, so they are not where
+the reported gap is: the uncovered code the report shows is in the modules
+that are measured, the main window, the slot widget and the preview grid among
+them.
+
+---
+
+## Guard tests
+
+Besides the tests of the app's behavior, a set of guard tests holds rules that span the
+repository.
+
+| Test | Holds |
 |---|---|
-| `core/accessibility.py` | 100% |
-| `core/color_harmonies.py` | 100% |
-| `core/palette_metadata.py` | 100% |
-| `utils/colors.py` | 100% |
-| `utils/undo_manager.py` | 99% |
-| `core/color_math.py` | 96% |
-| `ui/slot_group.py` | 97% |
-| `utils/session_manager.py` | 94% |
-| `ui/theme_manager.py` | 92% |
-| `ui/color_search.py` | 91% |
-| `utils/file_utils.py` | 89% |
-| `utils/color_history.py` | 86% |
-| `core/color_extractor.py` | 85% |
-| `utils/error_handler.py` | 84% |
-| `utils/export_history.py` | 81% |
-| `utils/config.py` | 78% |
-| `core/palette_formats.py` | 77% |
-| `utils/recent_palettes.py` | 76% |
-| `utils/settings_manager.py` | 74% |
-| `utils/pixmap_cache.py` | 66% |
-| `ui/zoomable_graphics_view.py` | 62% |
-| `RNV_Color_Palette_Manager.py` | 55% |
-| `core/color_slot.py` | 48% |
-| `utils/logger.py` | 47% |
-| `ui/image_button.py` | 44% |
-| `utils/font_loader.py` | 41% |
-| `ui/preview_grid.py` | 31% |
-| **Total** | **70%** |
-
-The remaining uncovered code is primarily Tier 4 (dialogs, native file
-pickers, Windows-specific font registration). These paths are only
-exercisable with real OS-level UI interaction; they are deliberately
-excluded from the coverage target.
+| `tests/test_colors_in_sync.py` | the color file and `COLORS.md` are what `brand_map.json` and the pinned brand say |
+| `tests/test_register_pin.py` | the installed rnv-brand is the pinned commit |
+| `tests/test_atomic_state_writes.py` | every file the app keeps is written atomically |
+| `tests/test_status_carried_by_a_word.py` | a status is never shown by color alone: each one has a word or a mark beside it |
+| `tests/test_accent_images.py` | `ACCENT_IMAGES.md` matches the images |
+| `tests/test_setup_scripts.py` | `in.sh` and `in.ps1` install the same files |
+| `tests/test_readme_test_counts.py` | every test count the docs state is a floor that holds |
 
 ---
 
@@ -242,7 +247,9 @@ assert slot._search_highlight  # True only if handler ran
 unexpectedly. Offscreen Qt's `update_grid()` is known to be slow on
 large slot counts.
 
-**Solution:** Always cap cleanup loops at a small iteration count.
+**Solution:** Always cap cleanup loops at a small iteration count. The
+helper below is defined in `tests/test_qt_main_window.py` and
+`tests/test_qt_search_and_workflows.py`.
 
 ```python
 def _undo_until(main_window, target_count: int, max_iters: int = 5) -> None:
@@ -258,9 +265,9 @@ Always prefer the leak.
 ### 5. Constructing widgets that need a `theme_manager`
 
 **Problem:** `ColorSlotWidget` and many other widgets read theme keys via
-`main_window.theme_manager.get_current_theme()['button_bg']` etc. Hand-
+`main_window.theme_manager.get_current_theme()['main_btn_bg']` etc. Hand-
 rolling a mock dict is fragile because `ImageButton.apply_style()` consumes
-many keys (`button_bg`, `button_text`, `button_hover_bg`, `border_color`,
+many keys (`main_btn_bg`, `main_btn_text`, `main_btn_hover_bg`, `border_color`,
 plus several optional ones via `.get()`).
 
 **Solution:** Use a real `ThemeManager()`. It takes no constructor args
@@ -275,7 +282,7 @@ mw.settings_manager = mock.MagicMock()
 mw.settings_manager.single_click_edit = False
 # ColorSlotWidget construction also schedules a deferred
 # _sync_scroll_content_height callback. Set these to None so the safe
-# early-return in color_slot.py:905 fires:
+# early-return in ColorSlotWidget._sync_scroll_content_height() fires:
 mw.scroll_content = None
 mw.zoom_view = None
 ```
@@ -329,7 +336,7 @@ def test_drag_enter_accepts_slot_reorder_mime(qtbot):
 When testing modules with persistent state on disk (like `session_manager`),
 the module typically has constants pointing to the user's real config
 directory. Monkeypatch these to `tmp_path` so tests don't pollute the
-user's actual data:
+user's actual data. This fixture is in `tests/test_session_manager.py`:
 
 ```python
 @pytest.fixture
@@ -372,9 +379,10 @@ near-grayscale) live in the same file under explicit parametrize blocks.
 ## Snapshot tests
 
 `test_export_snapshots.py` and `test_import_snapshots.py` use a fixed
-canonical 16-color palette and metadata with frozen timestamps
+canonical 5-color palette and metadata with frozen timestamps
 (`"2025-01-01T00:00:00"`) to produce deterministic output for every
-format. Snapshots live in `tests/snapshots/`.
+format. Snapshots live in `snapshots/` at the repository root, one
+`canonical.<ext>` per format.
 
 To regenerate snapshots after intentional format changes:
 
@@ -398,18 +406,21 @@ to track performance regressions in hot-path code.
 ### Running benchmarks
 
 ```powershell
-# Run benchmarks once (no comparison)
+# Run the color math benchmarks once (no comparison)
 python -m pytest tests/test_perf_color_math.py --benchmark-only
 
 # Save current run as the baseline
-python -m pytest tests/test_perf_*.py --benchmark-only --benchmark-save=baseline
+python -m pytest tests/test_perf_color_math.py tests/test_perf_palette_io.py --benchmark-only --benchmark-save=baseline
 
 # Compare current run against the baseline
-python -m pytest tests/test_perf_*.py --benchmark-only --benchmark-compare
+python -m pytest tests/test_perf_color_math.py tests/test_perf_palette_io.py --benchmark-only --benchmark-compare
 
 # Fail if any benchmark regresses by 25% or more
-python -m pytest tests/test_perf_*.py --benchmark-only --benchmark-compare-fail=mean:25%
+python -m pytest tests/test_perf_color_math.py tests/test_perf_palette_io.py --benchmark-only --benchmark-compare --benchmark-compare-fail=mean:25%
 ```
+
+PowerShell passes `tests/test_perf_*.py` to pytest as it is, without expanding
+it, so the commands name the two files. In bash the glob works too.
 
 Benchmark history is stored in `.benchmarks/` (gitignored). To establish
 a new baseline after intentional optimizations or refactors, delete the
@@ -423,11 +434,11 @@ old saves and re-run with `--benchmark-save=baseline`.
   4-slot input plus worst-case 30-slot inputs for the slowest two
   (`lab_perceptual_mix`, `kubelka_munk_mix`)
 - **Palette generation**: `generate_color_palette` with 5 and 30 colors
-- **Palette I/O**: Export and import for JSON, GPL, ASE, SVG, ACO
+- **Palette I/O**: Export for JSON, GPL, ASE, SVG, ACO; import for JSON, GPL, ASE
 
-These run as part of the regular pytest suite (each as a 1-iteration test)
-during `python run_tests.py`. The full warm-up + iteration cycle only
-runs when `--benchmark-only` is passed.
+These run as part of the regular pytest suite during `python run_tests.py`,
+calibrated and timed as usual, and pytest prints the benchmark table at the
+end. `--benchmark-only` runs the benchmarks and skips every other test.
 
 ---
 
@@ -450,20 +461,14 @@ at the top of the file, before any `from PyQt6...` line.
 
 Adding 30+ slots to a MainWindow and calling `update_grid()` can take
 seconds. Tests that need many slots should either use the existing
-default palette (which has ~30 slots already) or use `add_slot_with_color`
-sparingly and undo at the end with bounded iteration.
+default grid (12 slots at the default 3 rows × 4 columns) or use
+`add_slot_with_color` sparingly and undo at the end with bounded iteration.
 
 ### `MagicMock()` auto-creates attributes on access
 
 This means `getattr(mock_main_window, 'scroll_content', None)` returns a
 MagicMock, not None — defeating the safe-default fallback. Set
 `mw.scroll_content = None` explicitly when you want the fallback path.
-
-### Pillow `DecompressionBombWarning`
-
-A few tests use very large test images that exceed Pillow's default
-decompression limit. The warnings are harmless and come from Pillow,
-not our code. They're filtered at the project level.
 
 ---
 
@@ -496,7 +501,7 @@ Total: **374 unittest + 371 pytest = 745 tests, 70% coverage.**
 
 A few quick-diagnosis tips:
 
-- **`KeyError: 'button_bg'`** during widget construction → use a real
+- **`KeyError: 'main_btn_bg'`** during widget construction → use a real
   `ThemeManager()` instead of a mock dict.
 - **`TypeError: '<' not supported between instances of 'MagicMock'`** →
   set `main_window.scroll_content = None` and `zoom_view = None` on
@@ -521,5 +526,6 @@ A few quick-diagnosis tips:
   Python that runs your tests.
 - **Tests touching the user's real session files** → the
   `session_manager` module has path constants that point to the user's
-  config dir. Use the `isolated_session_paths` fixture (or write your
-  own with `monkeypatch.setattr`) to redirect to `tmp_path`.
+  config dir. Use the `isolated_session_paths` fixture in
+  `tests/test_session_manager.py` (or write your own with
+  `monkeypatch.setattr`) to redirect to `tmp_path`.

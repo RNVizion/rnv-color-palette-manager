@@ -256,8 +256,8 @@ class SettingsDialog(QDialog):
         self.combo_border_style.setView(QListView())
         self.combo_border_style.addItems(["none", "thin", "thick"])
         self.combo_border_style.setToolTip(
-            "none: No visible border around slots\n"
-            "thin: 1px border (default)\n"
+            "none: No visible border around slots (default)\n"
+            "thin: 1px border\n"
             "thick: 2px border"
         )
         slot_grid.addWidget(self.combo_border_style, 0, 1)
@@ -284,7 +284,9 @@ class SettingsDialog(QDialog):
         self.chk_show_overlay = QCheckBox("Show size percentage overlay")
         self.chk_show_overlay.setToolTip(
             "Show or hide the window size percentage\n"
-            "indicator in the top-left corner."
+            "indicator in the top-right corner.\n"
+            "While you pick a target slot, the corner\n"
+            "shows Click target slot either way."
         )
         layout_grid.addWidget(self.chk_show_overlay, 0, 0, 1, 2)
 
@@ -311,7 +313,10 @@ class SettingsDialog(QDialog):
         fmt_layout.addWidget(QLabel("Format:"), 0, 0)
         self.combo_format = QComboBox()
         self.combo_format.setView(QListView())
-        self.combo_format.setToolTip("Default file format for palette exports")
+        self.combo_format.setToolTip(
+            "Format preselected in the Export Palette dialog;\n"
+            "exporting a palette sets it to the format used"
+        )
         self.combo_format.addItems([
             ".json", ".ase", ".aco", ".acb", ".gpl",
             ".swatches", ".afpalette", ".clr", ".colors",

@@ -26,7 +26,7 @@ TEXT_SUFFIXES = {".py", ".md", ".txt", ".toml", ".yml", ".yaml", ".ini",
 # indentation, so this line -- drawn under `tests/` -- is correct as written.
 # Rewriting it would read as tests/tests/... to anyone looking at the diagram.
 DIAGRAM_LINES = {
-    "README.md": "│   └── requirements-dev.txt        # Test/benchmark dependencies",
+    "README.md": "│   ├── requirements-dev.txt        # Test/benchmark dependencies",
 }
 
 

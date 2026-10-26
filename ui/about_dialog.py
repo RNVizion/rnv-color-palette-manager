@@ -207,17 +207,18 @@ class AboutDialog(QDialog):
 <h3>Professional Color Palette Manager</h3>
 
 <p>{APP_NAME} is a desktop application for creating, managing, and exporting
-professional color palettes. Extract colors from images, mix and blend using
-multiple algorithms, and export to formats used by Adobe, GIMP, Procreate,
-Affinity, and web development tools.</p>
+professional color palettes. Extract colors from images, mix colors with six
+algorithms, generate harmonies and gradients, check contrast, and export to
+formats used by Adobe, GIMP, Procreate, Affinity, and web development tools.</p>
 
 <h4>Core Capabilities:</h4>
 <ul>
 <li><b>Color Extraction</b> – Extract palettes from uploaded images</li>
-<li><b>Multiple Mixing Algorithms</b> – RGB, HSV, LAB, RYB, CMY, Kubelka-Munk</li>
-<li><b>Color Harmonies</b> – Complementary, analogous, triadic, split-complementary</li>
-<li><b>16+ Export Formats</b> – ASE, ACO, GPL, Procreate, CSS, JSON, SVG, and more</li>
-<li><b>Three Theme Modes</b> – Dark, Light, and custom Image Mode</li>
+<li><b>Color Mixing</b> – Six algorithms: RGB, HSV, LAB, RYB, CMY, Kubelka-Munk</li>
+<li><b>Color Harmonies</b> – Complementary, analogous, triadic, split-complementary, tetradic, monochromatic</li>
+<li><b>Accessibility</b> – WCAG contrast check and color blindness preview</li>
+<li><b>16 Export Formats</b> – ASE, ACO, GPL, Procreate, CSS, JSON, SVG, and more; 15 import</li>
+<li><b>Three Theme Modes</b> – Dark, Light, and Image Mode</li>
 <li><b>Session Management</b> – Auto-save and restore your workspace</li>
 </ul>
 
@@ -256,19 +257,19 @@ Affinity, and web development tools.</p>
 <ul>
 <li><b>Color Slots</b> – Add up to 99 individual color slots</li>
 <li><b>Color Picker</b> – Full color dialog with hex, RGB, HSV input</li>
-<li><b>Image Upload</b> – Use full images or extract average color</li>
-<li><b>Palette Extraction</b> – Pull dominant colors from any image</li>
+<li><b>Image Upload</b> – Show the image in a slot or use its average color</li>
+<li><b>Palette Extraction</b> – Pull 3–12 dominant colors from any image</li>
 <li><b>Random Generation</b> – Quick-start with random color palettes</li>
 </ul>
 
-<h4>🔬 Color Mixing Algorithms</h4>
+<h4>🔬 Color Tools</h4>
 <ul>
-<li><b>RGB Weighted</b> – Standard additive color mixing</li>
-<li><b>HSV Weighted</b> – Perceptually-aware hue blending</li>
-<li><b>CIE LAB</b> – Perceptually uniform color space mixing</li>
-<li><b>RYB Artist's Wheel</b> – Traditional paint mixing (Yellow+Blue=Green)</li>
-<li><b>Subtractive CMY</b> – Ink and dye simulation</li>
-<li><b>Kubelka-Munk</b> – Realistic pigment/paint physics model</li>
+<li><b>Gradient</b> – Colors between two slots, interpolated in CIE LAB</li>
+<li><b>Mix With</b> – Mix two slots in equal parts; the mix becomes a new slot</li>
+<li><b>Contrast Check</b> – WCAG 2.1 ratio with AA/AAA results for two slots</li>
+<li><b>Color Blindness Preview</b> – Protanopia, deuteranopia, tritanopia, achromatopsia</li>
+<li><b>Color Search</b> – Find slots by hex, RGB, color name, or group name</li>
+<li><b>Slot Groups</b> – Named, collapsible groups of slots</li>
 </ul>
 
 <h4>🌈 Color Harmonies</h4>
@@ -278,23 +279,36 @@ Affinity, and web development tools.</p>
 <li><b>Triadic</b> – Three evenly-spaced colors</li>
 <li><b>Split-Complementary</b> – Nuanced contrast</li>
 <li><b>Tetradic / Square</b> – Four-color balanced schemes</li>
+<li><b>Monochromatic</b> – Variations of one hue</li>
 </ul>
 
-<h4>📤 Export Formats (16+)</h4>
+<h4>🧪 Mixing Algorithms</h4>
+<ul>
+<li><b>RGB Weighted</b> – Average of the red, green and blue values</li>
+<li><b>HSV Weighted</b> – Hue blended around the color wheel</li>
+<li><b>CIE LAB Perceptual</b> – Average in the perceptual CIE LAB space</li>
+<li><b>RYB Artist's Wheel</b> – Paint-style mixing (yellow + blue = green)</li>
+<li><b>Subtractive CMY</b> – Mixes like inks: each color filters the light, so yellow + blue = dark green</li>
+<li><b>Kubelka-Munk</b> – Pigment model of absorption and scattering</li>
+</ul>
+
+<h4>📤 Export Formats (16)</h4>
 <ul>
 <li><b>Adobe</b> – ASE (Swatch Exchange), ACO (Color), ACB (Color Book)</li>
 <li><b>Open Source</b> – GPL (GIMP/Inkscape/Krita)</li>
 <li><b>Procreate</b> – .swatches format</li>
 <li><b>Affinity</b> – .afpalette format</li>
+<li><b>macOS</b> – .clr color list</li>
 <li><b>Web</b> – CSS variables, JSON, XML, SVG, HEX, HSL, HSV</li>
-<li><b>Text</b> – Plain text with multiple color representations</li>
+<li><b>Text</b> – .colors and plain text, with hex and RGB per color</li>
+<li><b>Import</b> – Every format except ACB</li>
 </ul>
 
 <h4>🖥️ Interface & Themes</h4>
 <ul>
 <li><b>Dark Mode</b> – Comfortable dark interface</li>
 <li><b>Light Mode</b> – Clean light interface</li>
-<li><b>Image Mode</b> – Custom background with transparent overlays</li>
+<li><b>Image Mode</b> – Bundled background with transparent overlays</li>
 <li><b>Zoomable Canvas</b> – Pan and zoom the color slot workspace</li>
 <li><b>Live Preview Grid</b> – Real-time palette overview</li>
 </ul>
@@ -303,7 +317,7 @@ Affinity, and web development tools.</p>
 <ul>
 <li><b>Auto-Save</b> – Periodic session backup</li>
 <li><b>Session Restore</b> – Resume where you left off</li>
-<li><b>Undo/Redo</b> – Full action history</li>
+<li><b>Undo/Redo</b> – Up to 50 steps</li>
 <li><b>Export History</b> – Track all export operations</li>
 </ul>
 """
@@ -360,6 +374,7 @@ Affinity, and web development tools.</p>
 <tr><td><b>Ctrl+Shift+Z</b></td><td>Redo</td></tr>
 <tr><td><b>Ctrl+Y</b></td><td>Redo (Alternate)</td></tr>
 <tr><td><b>Escape</b></td><td>Deselect Current Slot</td></tr>
+<tr><td><b>Escape</b></td><td>Cancel Picking a Target Slot (Gradient, Mix, Contrast)</td></tr>
 </table>
 
 <h4>Application</h4>
@@ -375,9 +390,14 @@ Affinity, and web development tools.</p>
 
 <h4>Mouse Interactions</h4>
 <table width="100%">
-<tr><td width="40%"><b>Click Slot</b></td><td>Open Color Picker</td></tr>
-<tr><td><b>Right-Click Slot</b></td><td>Context Menu (Harmonies, Copy, etc.)</td></tr>
-<tr><td><b>Right-Click Add</b></td><td>Random Color Generation Menu</td></tr>
+<tr><td width="40%"><b>Click Slot</b></td><td>Open Color Picker (or select the slot, when single-click editing is off)</td></tr>
+<tr><td><b>Double-Click Slot</b></td><td>Open Color Picker</td></tr>
+<tr><td><b>Drag Slot</b></td><td>Move the Slot</td></tr>
+<tr><td><b>Click Hex Label</b></td><td>Copy Color to Clipboard</td></tr>
+<tr><td><b>Mouse Wheel</b></td><td>Zoom the Workspace</td></tr>
+<tr><td><b>Drag Empty Space</b></td><td>Pan the Workspace</td></tr>
+<tr><td><b>Right-Click Slot</b></td><td>Context Menu (Harmonies, Gradient, Mix, Contrast, Copy, etc.)</td></tr>
+<tr><td><b>Right-Click Add</b></td><td>Random Colors and New Group Menu</td></tr>
 <tr><td><b>Right-Click Import</b></td><td>Recent Palettes Menu</td></tr>
 <tr><td><b>Right-Click Export</b></td><td>Export Options (Single / Batch)</td></tr>
 </table>
@@ -414,7 +434,7 @@ designers, and developers work with color more effectively.</p>
 <tr><td width="40%"><b>Framework:</b></td><td>PyQt6</td></tr>
 <tr><td><b>Language:</b></td><td>Python 3</td></tr>
 <tr><td><b>Image Processing:</b></td><td>Pillow (PIL)</td></tr>
-<tr><td><b>Color Science:</b></td><td>CIE LAB, Kubelka-Munk, RYB</td></tr>
+<tr><td><b>Color Science:</b></td><td>CIE LAB, Kubelka-Munk, RYB, sRGB, WCAG 2.1</td></tr>
 </table>
 
 <h4>Color Format Standards</h4>
@@ -428,10 +448,11 @@ designers, and developers work with color more effectively.</p>
 
 <h4>Color Science References</h4>
 <ul>
-<li>CIE 1976 L*a*b* color space for perceptual mixing</li>
-<li>Kubelka-Munk theory for pigment simulation</li>
+<li>CIE 1976 L*a*b* color space for gradients and mixing</li>
+<li>Kubelka-Munk theory for pigment mixing</li>
 <li>RYB artist's color wheel model</li>
 <li>sRGB gamma correction (IEC 61966-2-1)</li>
+<li>WCAG 2.1 contrast ratio</li>
 </ul>
 
 <h4>Special Thanks</h4>
